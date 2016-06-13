@@ -21,7 +21,7 @@ triangles, some parts of which we link with the bone structure. The  movement
 of the bones is based on a physical model, which allows the characters to be
 easily moved.
 
-The software can be run on multiple operation systems like Mac OS X, GNU Linux
+The software can be run on multiple operating systems like Mac OS X, GNU Linux
 and Windows. Animata can be connected with widespread programming environments
 (e.g. Max/MSP, Pure Data, EyesWeb) used by multimedia developers and artists in
 order to make use of the possibilities of these applications in the fields of
