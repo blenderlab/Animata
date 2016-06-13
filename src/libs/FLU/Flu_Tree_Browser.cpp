@@ -21,8 +21,12 @@
 #include "FLU/Flu_Tree_Browser.h"
 #include "FLU/flu_pixmaps.h"
 
+#ifndef MAX
 #define MAX( x, y ) ( (x)>(y) ? (x) : (y) )
+#endif /* MAX */
+#ifndef MIN
 #define MIN( x, y ) ( (x)<(y) ? (x) : (y) )
+#endif /* MIN */
 #define ABS( x ) ( (x)>0 ? (x) : -(x) )
 #define LERP( t, x0, x1 ) ( (x0) + (t)*( (x1) - (x0) ) )
 

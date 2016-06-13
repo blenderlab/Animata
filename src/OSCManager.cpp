@@ -106,7 +106,7 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 		}
 		else if (strcmp(m.AddressPattern(), "/joint") == 0)
 		{
-			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
+//			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
 			const char *namePattern;
 			float x, y;
 			//args >> namePattern >> x >> y >> osc::EndMessage;
@@ -166,7 +166,7 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 		}
 		else if (strcmp(m.AddressPattern(), "/layervis") == 0)
 		{
-			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
+//			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
 			const char *namePattern;
 			bool val;
 
@@ -280,7 +280,7 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 		}
 		else if (strcmp(m.AddressPattern(), "/layerpos") == 0)
 		{
-			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
+//			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
 			const char *namePattern;
 			float x;
 			float y;
@@ -358,7 +358,7 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 		}
 		else if (strcmp(m.AddressPattern(), "/layerdeltapos") == 0)
 		{
-			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
+//			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
 			const char *namePattern;
 			float x;
 			float y;

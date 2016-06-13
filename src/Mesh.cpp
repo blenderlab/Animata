@@ -495,7 +495,7 @@ void Mesh::deleteSelectedVertex(void)
 void Mesh::deleteSelectedFace(Face *f)
 {
 	/* delete the face */
-	vector<Face *>::iterator iter = faces->begin();
+//	vector<Face *>::iterator iter = faces->begin();
 	for (unsigned i = 0; i < faces->size(); i++)
 	{
 		Face *face = (*faces)[i];
