@@ -50,6 +50,7 @@ class Matrix
 		Matrix& inverse();								///< computes and returns the inverse of this matrix
 		Matrix& translate(float x, float y, float z);	///< mutiplies the current matrix with the given translate matrix
 		Matrix& scale(float x, float y, float z);		///< mutiplies the current matrix with the given scale matrix
+        Matrix& rotate(float theta);        ///< multiplies the current matrix with the given rotation
 
 		void print();
 };

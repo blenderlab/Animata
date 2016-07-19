@@ -54,6 +54,7 @@ Layer::Layer(Layer *p)
 	x = y = z = 0.f;
 	alpha = 1.0;
 	scale = 1.0;
+    theta = 0.0;
 
 	visible = true;
 
@@ -140,14 +141,16 @@ void Layer::setName(const char *str)
  * \param z depth
  * \param alpha alpha
  * \param scale scale
+ * \param theta theta
  */
-void Layer::setup(float x, float y, float z, float alpha, float scale)
+void Layer::setup(float x, float y, float z, float alpha, float scale, float theta)
 {
 	this->x = x;
 	this->y = y;
 	this->z = z;
 	this->alpha = alpha;
 	this->scale = scale;
+    this->theta = theta;
 
 	calcTransformationMatrix();
 }
@@ -270,7 +273,7 @@ void Layer::calcTransformationMatrix()
 {
 	transformation.loadIdentity();
 	transformation.scale(scale, scale, 1.0f);
-
+    transformation.rotate(theta);
 	transformation.translate(x, y, z);
 
 	Layer *actLayer = this;
@@ -278,6 +281,7 @@ void Layer::calcTransformationMatrix()
 	{
 		actLayer = actLayer->getParent();
 		transformation.scale(actLayer->getScale(), actLayer->getScale(), 1.0f);
+        transformation.rotate(actLayer->getTheta());
 		transformation.translate(actLayer->getX(), actLayer->getY(), actLayer->getZ());
 	}
 

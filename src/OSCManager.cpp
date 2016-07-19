@@ -356,6 +356,67 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 			}
 			unlock();
 		}
+        else if (strcmp(m.AddressPattern(), "/layer/rotation") == 0)
+        {
+            //			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
+            const char *namePattern;
+            float theta;
+            //args >> namePattern >> x >> y >> osc::EndMessage;
+            osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
+            namePattern = (arg++)->AsString();
+            /* parameters can be float or int */
+            if (arg->IsInt32())
+                theta = (arg++)->AsInt32();
+            else
+                theta = (arg++)->AsFloat();
+            if (arg != m.ArgumentsEnd())
+                throw osc::ExcessArgumentException();
+
+            // get all layers
+            lock();
+            vector<Layer *> *layers = ui->editorBox->getAllLayers();
+
+            int found = 0;
+            // try to find exact match for layer names first
+            vector<Layer *>::iterator l = layers->begin();
+            for (; l < layers->end(); l++)
+            {
+                const char *layerName = (*l)->getName();
+                // skip unnamed layers
+                if (layerName[0] == 0)
+                    continue;
+                if (strcmp(layerName, namePattern) == 0)
+                {
+                    (*l)->setTheta(theta);
+                    found = 1;
+                }
+            }
+
+            // if exact match is not found try regular expression match
+            if (!found)
+            {
+                vector<Layer *>::iterator l = layers->begin();
+                for (; l < layers->end(); l++)
+                {
+                    const char *layerName = (*l)->getName();
+                    // skip unnamed layers
+                    if (layerName[0] == 0)
+                        continue;
+                    if (patternMatch(layerName, namePattern))
+                    {
+                        (*l)->setTheta(theta);
+                        found = 1;
+                    }
+                }
+            }
+
+            if (!found)
+            {
+                cerr << "OSC error: " << m.AddressPattern() << ": "
+                << "layer " << namePattern << " is not found" << "\n";
+            }
+            unlock();
+        }
 		else if (strcmp(m.AddressPattern(), "/layerdeltapos") == 0)
 		{
 //			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();

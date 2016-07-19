@@ -588,7 +588,7 @@ Layer *IO::loadLayer(TiXmlNode *layerNode, Layer *layerParent /* = NULL */)
 	TiXmlElement *l = layerNode->ToElement();
 
 	const char *name;
-	float x, y, z, scale, alpha;
+	float x, y, z, scale, theta, alpha;
 	int vis;
 
 	name = l->Attribute("name");
@@ -602,6 +602,7 @@ Layer *IO::loadLayer(TiXmlNode *layerNode, Layer *layerParent /* = NULL */)
 	QUERY_ATTR(l, "y", y, 0);
 	QUERY_ATTR(l, "z", z, 0);
 	QUERY_ATTR(l, "scale", scale, 1.0);
+	QUERY_ATTR(l, "theta", theta, 0.0);
 	QUERY_ATTR(l, "alpha", alpha, 1.0);
 	QUERY_ATTR(l, "vis", vis, 1);
 
@@ -617,7 +618,7 @@ Layer *IO::loadLayer(TiXmlNode *layerNode, Layer *layerParent /* = NULL */)
 	}
 
 	layer->setName(name);
-	layer->setup(x, y, z, alpha, scale);
+	layer->setup(x, y, z, alpha, scale, theta);
 	layer->setVisibility(vis);
 
 	// load mesh

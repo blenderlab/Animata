@@ -215,6 +215,29 @@ Matrix& Matrix::scale(float x, float y, float z)
 	return *this;
 }
 
+/**
+ * constructs a rotation matrix from the given angle
+ * and multiplies it to the current matrix
+ * /param theta angle to rotate around the z-axis
+ **/
+Matrix& Matrix::rotate(float theta)
+{
+    Matrix t;
+    t.loadIdentity();
+
+    float sinTheta = sin(theta);
+    float cosTheta = cos(theta);
+
+    t[0] = cosTheta;
+    t[1] = -sinTheta;
+    t[4] = sinTheta;
+    t[5] = cosTheta;
+
+    // left or right?
+    *this *= t;
+    return *this;
+}
+
 void Matrix::print()
 {
 	for(int i = 0; i < 4; i++)
