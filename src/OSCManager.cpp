@@ -106,10 +106,8 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 		}
 		else if (strcmp(m.AddressPattern(), "/joint") == 0)
 		{
-//			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
 			const char *namePattern;
 			float x, y;
-			//args >> namePattern >> x >> y >> osc::EndMessage;
 			osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
 			namePattern = (arg++)->AsString();
 			/* parameters can be float or int */
@@ -166,7 +164,6 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 		}
 		else if (strcmp(m.AddressPattern(), "/layervis") == 0)
 		{
-//			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
 			const char *namePattern;
 			bool val;
 
@@ -280,11 +277,8 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 		}
         else if (strcmp(m.AddressPattern(), "/layer/offset") == 0)
         {
-            //			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
             const char *namePattern;
-            float x;
-            float y;
-            //args >> namePattern >> x >> y >> osc::EndMessage;
+            float x, y;
             osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
             namePattern = (arg++)->AsString();
             /* parameters can be float or int */
@@ -348,12 +342,8 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
         }
 		else if (strcmp(m.AddressPattern(), "/layerpos") == 0)
 		{
-//			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
 			const char *namePattern;
-			float x;
-			float y;
-			float z;
-			//args >> namePattern >> x >> y >> osc::EndMessage;
+			float x, y, z;
 			osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
 			namePattern = (arg++)->AsString();
 			/* parameters can be float or int */
@@ -426,10 +416,8 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 		}
         else if (strcmp(m.AddressPattern(), "/layer/rotation") == 0)
         {
-            //			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
             const char *namePattern;
             float theta;
-            //args >> namePattern >> x >> y >> osc::EndMessage;
             osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
             namePattern = (arg++)->AsString();
             /* parameters can be float or int */
@@ -487,11 +475,8 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
         }
 		else if (strcmp(m.AddressPattern(), "/layerdeltapos") == 0)
 		{
-//			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
 			const char *namePattern;
-			float x;
-			float y;
-			//args >> namePattern >> x >> y >> osc::EndMessage;
+			float x, y;
 			osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
 			namePattern = (arg++)->AsString();
 			/* parameters can be float or int */
@@ -555,8 +540,7 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 	catch (osc::Exception& e)
 	{
 		// any parsing errors get thrown as exceptions
-		cerr << "OSC error: " << m.AddressPattern() << ": "
-			<< e.what() << "\n";
+		cerr << "OSC error: " << m.AddressPattern() << ": " << e.what() << "\n";
 	}
 }
 
