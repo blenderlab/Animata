@@ -241,7 +241,10 @@ void IO::saveLayer(TiXmlElement *parent, Layer *layer)
 	layerXML->SetDoubleAttribute("y", layer->getY());
 	layerXML->SetDoubleAttribute("z", layer->getZ());
 	layerXML->SetDoubleAttribute("alpha", layer->getAlpha());
+    layerXML->SetDoubleAttribute("offsetX", layer->getOffsetX());
+    layerXML->SetDoubleAttribute("offsetY", layer->getOffsetY());
 	layerXML->SetDoubleAttribute("scale", layer->getScale());
+    layerXML->SetDoubleAttribute("theta", layer->getTheta());
 	layerXML->SetAttribute("vis", layer->getVisibility());
 
 	Mesh *m = layer->getMesh();
@@ -588,7 +591,7 @@ Layer *IO::loadLayer(TiXmlNode *layerNode, Layer *layerParent /* = NULL */)
 	TiXmlElement *l = layerNode->ToElement();
 
 	const char *name;
-	float x, y, z, scale, theta, alpha;
+	float x, y, z, offsetX, offsetY, scale, theta, alpha;
 	int vis;
 
 	name = l->Attribute("name");
@@ -601,6 +604,8 @@ Layer *IO::loadLayer(TiXmlNode *layerNode, Layer *layerParent /* = NULL */)
 	QUERY_ATTR(l, "x", x, 0);
 	QUERY_ATTR(l, "y", y, 0);
 	QUERY_ATTR(l, "z", z, 0);
+    QUERY_ATTR(l, "offsetX", offsetX, 0.0);
+    QUERY_ATTR(l, "offsetY", offsetY, 0.0);
 	QUERY_ATTR(l, "scale", scale, 1.0);
 	QUERY_ATTR(l, "theta", theta, 0.0);
 	QUERY_ATTR(l, "alpha", alpha, 1.0);
@@ -618,7 +623,7 @@ Layer *IO::loadLayer(TiXmlNode *layerNode, Layer *layerParent /* = NULL */)
 	}
 
 	layer->setName(name);
-	layer->setup(x, y, z, alpha, scale, theta);
+	layer->setup(x, y, z, alpha, offsetX, offsetX, scale, theta);
 	layer->setVisibility(vis);
 
 	// load mesh

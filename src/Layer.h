@@ -46,9 +46,10 @@ class Layer
 		Skeleton	*skeleton;			///< the skeleton belonging to this layer
 
 		char name[16];					///< name of layer
-		float x, y, z;					///< position of the layer
+		float x, y, z;					///< position of the layer origin
 		float alpha;					///< layer alpha
 		float scale;					///< layer scale
+        float offsetX, offsetY;         ///< layer scale and rotation offset
         float theta;                    ///< layer rotation
 		bool visible;					///< visibility on/off
 
@@ -128,6 +129,10 @@ class Layer
         inline float getTheta(void) const { return theta; }
 		/// Returns alpha.
 		inline float getAlpha(void) const { return alpha; }
+    	/// Returns x offset
+    	inline float getOffsetX(void) const { return offsetX; }
+    	/// Returns y offset
+    	inline float getOffsetY(void) const { return offsetY; }
 
 		float getAccumulatedAlpha(void);
 
@@ -146,6 +151,10 @@ class Layer
         inline void setTheta(float theta) { this->theta = theta; calcTransformationMatrix(); }
 		/// Sets alpha.
 		inline void setAlpha(float alpha) { this->alpha = alpha; }
+    	/// Sets x offset
+    	inline void setOffsetX(float x) { this->offsetX = x; }
+    	/// Sets y offset
+    	inline void setOffsetY(float y) { this->offsetY = y; }
 
 		void setVisibility(bool v);
 
@@ -173,7 +182,8 @@ class Layer
 
 		void scaleAroundPoint(float s, float ox, float oy);
 
-		void setup(float x, float y, float z, float alpha, float scale, float theta);
+		void setup(float x, float y, float z, float alpha, float offsetX,
+                   float offsetY, float scale, float theta);
 
 		inline static bool zorder(const Layer *a, const Layer *b)
 			{ return a->getTotalDepth() > b->getTotalDepth(); }

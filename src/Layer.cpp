@@ -141,15 +141,20 @@ void Layer::setName(const char *str)
  * \param z depth
  * \param alpha alpha
  * \param scale scale
+ * \param rotX rotX
+ * \param rotY rotY
  * \param theta theta
  */
-void Layer::setup(float x, float y, float z, float alpha, float scale, float theta)
+void Layer::setup(float x, float y, float z, float alpha, float offsetX,
+                  float offsetY, float scale, float theta)
 {
 	this->x = x;
 	this->y = y;
 	this->z = z;
 	this->alpha = alpha;
-	this->scale = scale;
+    this->offsetX = offsetX;
+    this->offsetY = offsetY;
+    this->scale = scale;
     this->theta = theta;
 
 	calcTransformationMatrix();
@@ -272,17 +277,21 @@ void Layer::simulate(int times)
 void Layer::calcTransformationMatrix()
 {
 	transformation.loadIdentity();
+    transformation.translate(-offsetX, -offsetY, 0.0f);
 	transformation.scale(scale, scale, 1.0f);
     transformation.rotate(theta);
-	transformation.translate(x, y, z);
+	transformation.translate(x + offsetX, y + offsetY, z);
 
 	Layer *actLayer = this;
 	while(actLayer->getParent())
 	{
 		actLayer = actLayer->getParent();
+        transformation.translate(-actLayer->getOffsetX(), -actLayer->getOffsetY(), 0.0f);
 		transformation.scale(actLayer->getScale(), actLayer->getScale(), 1.0f);
         transformation.rotate(actLayer->getTheta());
-		transformation.translate(actLayer->getX(), actLayer->getY(), actLayer->getZ());
+		transformation.translate(actLayer->getX() + actLayer->getOffsetX(),
+                                 actLayer->getY() + actLayer->getOffsetY(),
+                                 actLayer->getZ());
 	}
 
 	// transformation matrix of this layer changed
