@@ -211,7 +211,7 @@ void Layer::drawWithoutRecursion(int mode)
 		(((ui->settings.mode >= ANIMATA_MODE_CREATE_JOINT) &&
 		  (ui->settings.mode <= ANIMATA_MODE_SKELETON_DELETE)) ||
 		 ((ui->settings.mode >= ANIMATA_MODE_LAYER_MOVE) &&
-		  (ui->settings.mode <= ANIMATA_MODE_LAYER_DEPTH)) ||
+		  (ui->settings.mode <= ANIMATA_MODE_LAYER_ROTATE)) ||
 		 /* FIXME: camera & view have no ANIMATA_MODE set */
 		 (ui->settings.mode == ANIMATA_MODE_NONE)) ||
 		mode & RENDER_OUTPUT) &&

@@ -1040,6 +1040,9 @@ void AnimataWindow::handleMouseDrag(void)
 			// FIXME: scale shouldn't alter distance when moving layers
 			cLayer->move(worldDist.x * cLayer->getScale(), worldDist.y * cLayer->getScale());
 			break;
+		case ANIMATA_MODE_LAYER_OFFSET:
+            cLayer->setOffset(mouseX, mouseY);
+            break;
 
 		case ANIMATA_MODE_TEXTURE_SCALE:
 			/*
@@ -1062,6 +1065,9 @@ void AnimataWindow::handleMouseDrag(void)
 			*/
 			cLayer->scaleAroundPoint(cLayer->getScale() + (float)(viewDist.y) / 100.f, dragTrans.x, dragTrans.y);
 			break;
+        case ANIMATA_MODE_LAYER_ROTATE:
+            cLayer->rotate((float)(viewDist.y) / 100.f);
+            break;
 
 		case ANIMATA_MODE_LAYER_DEPTH:
 			cLayer->depth(viewDist.y);
@@ -1080,7 +1086,7 @@ void AnimataWindow::handleMouseWheel(void)
 {
 	Vector3D target(camera->getTarget());
 
-	target.z += Fl::event_dy();
+	target.z -= Fl::event_dy();
 	camera->setTarget(&target);
 	ui->playback->getCamera()->setTarget(&target);
 }
@@ -1277,6 +1283,56 @@ void AnimataWindow::setLayerPrefsFromUI(enum ANIMATA_PREFERENCES prefParam, void
 			*/
 			cLayer->setVisibility(*((int *)value));
 			break;
+        case PREFS_LAYER_X:
+            /*
+             for (; l < selectedLayers.end(); l++)
+             (*l)->setVisibility(*((int *)value));
+             */
+            cLayer->setX(*((float *)value));
+            break;
+        case PREFS_LAYER_Y:
+            /*
+             for (; l < selectedLayers.end(); l++)
+             (*l)->setVisibility(*((int *)value));
+             */
+            cLayer->setY(*((float *)value));
+            break;
+        case PREFS_LAYER_DEPTH:
+            /*
+             for (; l < selectedLayers.end(); l++)
+             (*l)->setVisibility(*((int *)value));
+             */
+            cLayer->setZ(*((float *)value));
+            sort(allLayers->begin(), allLayers->end(), Layer::zorder);
+            break;
+        case PREFS_LAYER_OFFSET_X:
+            /*
+             for (; l < selectedLayers.end(); l++)
+             (*l)->setVisibility(*((int *)value));
+             */
+            cLayer->setOffsetX(*((float *)value));
+            break;
+        case PREFS_LAYER_OFFSET_Y:
+            /*
+             for (; l < selectedLayers.end(); l++)
+             (*l)->setVisibility(*((int *)value));
+             */
+            cLayer->setOffsetY(*((float *)value));
+            break;
+        case PREFS_LAYER_ROTATION:
+            /*
+             for (; l < selectedLayers.end(); l++)
+             (*l)->setVisibility(*((int *)value));
+             */
+            cLayer->setTheta(*((float *)value));
+            break;
+        case PREFS_LAYER_SCALE:
+            /*
+             for (; l < selectedLayers.end(); l++)
+             (*l)->setVisibility(*((int *)value));
+             */
+            cLayer->setScale(*((float *)value));
+            break;
 		default:
 			break;
 	}

@@ -1,22 +1,23 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0303 
 header_name {.h} 
 code_name {.cpp}
-decl {class Fl_Eval_Slider;} {public
+decl {class Fl_Eval_Slider;} {public local
 } 
 
 class AnimataUI {open
 } {
-  decl {Playback *playback;} {public
+  decl {Playback *playback;} {public local
   }
-  decl {AnimataSettings settings;} {public
+  decl {AnimataSettings settings;} {public local
   }
-  Function {AnimataUI()} {} {
+  Function {AnimataUI()} {open
+  } {
     Fl_Window window {
       label animata
       callback {if (Fl::event()==FL_SHORTCUT && Fl::event_key()==FL_Escape) 
-   return; // ignore Escape}
-      xywh {419 53 855 650} type Double box BORDER_BOX color 0 selection_color 7 resizable
+   return; // ignore Escape} open
+      xywh {257 166 983 691} type Double box BORDER_BOX color 0 selection_color 7 resizable
       code0 {\#include <stdlib.h>}
       code1 {\#include "animata.h"}
       code2 {\#include <FL/Fl_File_Chooser.H>}
@@ -130,11 +131,11 @@ for (int i = 0; i < n; ++i)
 	}
 }
 
-editorBox->take_focus();}
-        private xywh {0 500 2048 160} box BORDER_BOX color 21 selection_color 3 align 0 resizable
+editorBox->take_focus();} open
+        private xywh {0 500 2125 161} box BORDER_BOX color 21 selection_color 3 align 0 resizable
       } {
         Fl_Group imagePanel {
-          label {&1 Image}
+          label {&1 Image} open
           tooltip {Add, move and scale image textures in this tab.} xywh {0 520 2048 140} color 30 selection_color 30 labelsize 11 labelcolor 7 hide
           code0 {o->resizable(imageScrollArea);}
         } {
@@ -157,7 +158,7 @@ for(int i = 1; i <= count; i++)
 	const char *filename = fileChooser->value(i);
 	loadImage(filename);
 }}
-              tooltip {(A)} xywh {15 606 90 20} box BORDER_BOX shortcut 0x61 color 30 selection_color 3 labelsize 10 labelcolor 7
+              tooltip {(A)} xywh {15 621 90 20} box BORDER_BOX shortcut 0x61 color 30 selection_color 3 labelsize 10 labelcolor 7
               code0 {\#include <FL/Fl_JPEG_Image.H>}
               code1 {\#include <FL/Fl_PNG_Image.H>}
               code2 {\#include "ImageBox.h"}
@@ -177,20 +178,20 @@ settings.mode = (ANIMATA_MODES)(unsigned)v;
 //printf("BEFORE: SCALE setting MODE is %d\\n ", settings.mode);
 settings.mode = (ANIMATA_MODES)(unsigned)v;
 //printf("AFTER: SCALE setting MODE is %d\\n ", settings.mode);}
-              tooltip {(S)} xywh {15 554 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+              tooltip {(S)} xywh {15 558 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
             }
           }
           Fl_Scroll imageScrollArea {open
-            xywh {135 535 710 106} box FLAT_BOX color 36 selection_color 36
+            xywh {111 535 710 106} box FLAT_BOX color 36 selection_color 36
           } {
             Fl_Pack imagePack {
-              xywh {140 540 700 80} type HORIZONTAL color 36 selection_color 36
+              xywh {116 540 700 80} type HORIZONTAL color 36 selection_color 36
               code0 {o->spacing(10);}
             } {}
           }
         }
         Fl_Group {} {
-          label {&2 Mesh}
+          label {&2 Mesh} open
           tooltip {Create the mesh in this tab.} xywh {0 525 2048 135} box FLAT_BOX color 30 selection_color 30 labelsize 11 labelcolor 7 hide
           code0 {o->resizable(NULL);}
         } {
@@ -210,14 +211,14 @@ settings.mode = (ANIMATA_MODES)(unsigned)v;}
             label {Create Triangle}
             user_data ANIMATA_MODE_CREATE_TRIANGLE user_data_type long
             callback cb_Create
-            tooltip {(T)} xywh {15 554 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x74 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+            tooltip {(T)} xywh {15 558 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x74 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
             code3 {/* how to create static callbacks? */}
           }
           Fl_Button {} {
             label Triangulate user_data_type {void*}
             callback {editorBox->triangulate();
 o->clear();}
-            tooltip {(A)} xywh {110 554 90 20} type Toggle box BORDER_BOX down_box BORDER_BOX shortcut 0x61 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+            tooltip {(A)} xywh {111 558 90 20} type Toggle box BORDER_BOX down_box BORDER_BOX shortcut 0x61 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
           }
           Fl_Button {} {
             label Texturize
@@ -228,30 +229,30 @@ if(texture)
 	editorBox->getMesh()->attachTexture(texture);
 
 o->clear();}
-            tooltip {(X)} xywh {15 573 90 20} type Toggle box BORDER_BOX down_box BORDER_BOX shortcut 0x78 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+            tooltip {(X)} xywh {15 581 90 20} type Toggle box BORDER_BOX down_box BORDER_BOX shortcut 0x78 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
             code0 {\#include <vector>}
           }
           Fl_Button {} {
             label {Select / Move}
             user_data ANIMATA_MODE_MESH_SELECT user_data_type long
             callback cb_Create
-            tooltip {(S)} xywh {15 606 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+            tooltip {(S)} xywh {15 604 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
           }
           Fl_Button {} {
             label Delete
             user_data ANIMATA_MODE_MESH_DELETE user_data_type long
             callback cb_Create
-            tooltip {(D)} xywh {15 625 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x64 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+            tooltip {(D)} xywh {15 627 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x64 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
           }
           Fl_Value_Slider {} {
             label threshold
             callback {settings.triangulateAlphaThreshold = (int)(o->value());}
-            xywh {208 556 175 17} type Horizontal box BORDER_BOX color 30 selection_color 3 labeltype NO_LABEL labelsize 10 labelcolor 7 align 5 maximum 255 step 1 value 100 textcolor 7
+            xywh {207 558 175 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labeltype NO_LABEL labelsize 10 labelcolor 7 align 5 maximum 255 step 1 value 100 textcolor 7
           }
         }
         Fl_Group {} {
-          label {&3 Skeleton}
-          tooltip {Create the skeleton in this tab.} xywh {0 525 2048 135} box FLAT_BOX color 30 selection_color 30 labelsize 11 labelcolor 7
+          label {&3 Skeleton} open
+          tooltip {Create the skeleton in this tab.} xywh {0 525 2048 135} box FLAT_BOX color 30 selection_color 30 labelsize 11 labelcolor 7 hide
           code0 {o->resizable(NULL);}
         } {
           Fl_Button {} {
@@ -264,87 +265,89 @@ o->clear();}
             label {Create Bone}
             user_data ANIMATA_MODE_CREATE_BONE user_data_type long
             callback cb_Create
-            tooltip {(B)} xywh {15 554 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x62 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+            tooltip {(B)} xywh {15 558 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x62 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
           }
           Fl_Button {} {
             label {Attach Vertices}
             user_data ANIMATA_MODE_ATTACH_VERTICES user_data_type long
             callback cb_Create
-            tooltip {(A)} xywh {15 573 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x61 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+            tooltip {(A)} xywh {15 581 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x61 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
           }
           Fl_Button {} {
             label {Select / Move}
             user_data ANIMATA_MODE_SKELETON_SELECT user_data_type long
             callback cb_Create
-            tooltip {(S)} xywh {15 606 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+            tooltip {(S)} xywh {15 604 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
           }
           Fl_Button {} {
             label Delete
             user_data ANIMATA_MODE_SKELETON_DELETE user_data_type long
             callback cb_Create
-            tooltip {(D)} xywh {15 625 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x64 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+            tooltip {(D)} xywh {15 627 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x64 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
           }
-          Fl_Tabs skeletonPrefTabs {
-            xywh {135 535 640 110} box NO_BOX color 30 selection_color 30
+          Fl_Tabs skeletonPrefTabs {open
+            xywh {111 531 640 121} box NO_BOX color 30 selection_color 30
           } {
             Fl_Group jointPrefs {
-              xywh {135 535 570 110} color 30 selection_color 30
+              label {Joint Properties} open
+              xywh {111 531 320 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17
             } {
-              Fl_Box {} {
-                label Joint
-                xywh {140 539 43 16} color 30 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 20
-              }
               Fl_Input jointName {
                 label {Name:}
                 callback {tempStorage.str = o->value();
 editorBox->setJointPrefsFromUI(PREFS_JOINT_NAME, &tempStorage);}
-                xywh {185 560 200 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 1 textsize 12 textcolor 22
+                xywh {164 558 250 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 1 textsize 12 textcolor 22
               }
-              Fl_Value_Input jointX {
-                label {Pos: x }
-                callback {tempStorage.f = o->value();
-editorBox->setJointPrefsFromUI(PREFS_JOINT_X, &tempStorage);}
-                xywh {185 585 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
-              }
-              Fl_Value_Input jointY {
-                label {y }
-                callback {tempStorage.f = o->value();
-editorBox->setJointPrefsFromUI(PREFS_JOINT_Y, &tempStorage);}
-                xywh {250 585 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
-              }
-              Fl_Check_Button jointFixed {
-                label fixed
-                callback {tempStorage.i = o->value();
-editorBox->setJointPrefsFromUI(PREFS_JOINT_FIXED, &tempStorage);}
-                xywh {310 585 50 20} box BORDER_BOX down_box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7
-              }
+              Fl_Group {} {open
+                xywh {161 577 254 69}
+              } {}
               Fl_Check_Button jointOSC {
-                label OSC
+                label {OSC output}
                 callback {tempStorage.i = o->value();
 editorBox->setJointPrefsFromUI(PREFS_JOINT_OSC, &tempStorage);}
-                xywh {185 610 50 20} box BORDER_BOX down_box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7
+                xywh {164 604 75 20} box BORDER_BOX down_box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7
+              }
+              Fl_Group {} {
+                label {Position: } open
+                xywh {164 581 250 20} box FLAT_BOX color 40 labelsize 10 labelcolor 7 align 4
+              } {
+                Fl_Value_Input jointX {
+                  label {x: }
+                  callback {tempStorage.f = o->value();
+editorBox->setJointPrefsFromUI(PREFS_JOINT_X, &tempStorage);}
+                  xywh {184 581 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+                }
+                Fl_Value_Input jointY {
+                  label {y: }
+                  callback {tempStorage.f = o->value();
+editorBox->setJointPrefsFromUI(PREFS_JOINT_Y, &tempStorage);}
+                  xywh {269 581 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+                }
+                Fl_Check_Button jointFixed {
+                  label fixed
+                  callback {tempStorage.i = o->value();
+editorBox->setJointPrefsFromUI(PREFS_JOINT_FIXED, &tempStorage);}
+                  xywh {364 581 50 20} box BORDER_BOX down_box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7
+                }
               }
             }
             Fl_Group bonePrefs {
-              xywh {135 535 640 110} color 30 selection_color 30 hide
+              label {Bone Properties} open
+              xywh {111 531 610 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17 hide
             } {
-              Fl_Box {} {
-                label Bone
-                xywh {140 539 43 16} labelfont 1 labelsize 12 labelcolor 3 align 21
-              }
               Fl_Input boneName {
-                label {Name:}
+                label {Name: }
                 callback {editorBox->setBonePrefsFromUI(o->value());}
-                xywh {185 560 200 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 1 textsize 12 textcolor 22
+                xywh {161 558 250 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 1 textsize 12 textcolor 22
               }
               Fl_Value_Slider boneStiffness {
-                label {Stiffness:}
+                label {Stiffness: }
                 callback {editorBox->setBonePrefsFromUI(NULL, o->value());}
-                xywh {185 583 250 17} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 minimum 0.16 maximum 0.840896 step 0.001 value 0.840896 textcolor 16
+                xywh {161 581 250 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 minimum 0.16 maximum 0.840896 step 0.001 value 0.840896 textcolor 16
                 class Fl_Eval_Slider
               }
               Fl_Value_Slider boneLengthMult {
-                label {Lm:}
+                label {Length: }
                 callback {float m = o->value();
 float mil = boneLengthMultMin->value();
 float mal = boneLengthMultMax->value();
@@ -359,10 +362,10 @@ else if (m > mal)
 	o->value(m);
 }
 editorBox->setBonePrefsFromUI(NULL, -1, m);}
-                tooltip {Bone length multiplier} xywh {481 560 250 17} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 minimum 0.01 maximum 2 value 1 textcolor 16
+                tooltip {Bone length multiplier} xywh {457 558 250 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 minimum 0.01 maximum 2 value 1 textcolor 16
               }
               Fl_Value_Slider boneLengthMultMin {
-                label {Min:}
+                label {Min: }
                 callback {float mmin = o->value();
 editorBox->setBoneLengthMultMin(mmin);
 
@@ -372,10 +375,10 @@ if (mult < mmin)
 	boneLengthMult->value(mmin);
 	editorBox->setBonePrefsFromUI(NULL, -1, mmin);
 }}
-                tooltip {Minimum of length multiplier} xywh {481 581 250 17} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 minimum 0.01 maximum 2 value 0.01 textcolor 16
+                tooltip {Minimum of length multiplier} xywh {457 581 250 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 minimum 0.01 maximum 2 value 0.01 textcolor 16
               }
               Fl_Value_Slider boneLengthMultMax {
-                label {Max:}
+                label {Max: }
                 callback {float mmax = o->value();
 editorBox->setBoneLengthMultMax(mmax);
 
@@ -385,46 +388,43 @@ if (mmax < mult)
 	boneLengthMult->value(mmax);
 	editorBox->setBonePrefsFromUI(NULL, -1, mmax);
 }}
-                tooltip {Maximum of length multiplier} xywh {481 600 250 17} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 maximum 2 value 1 textcolor 16
+                tooltip {Maximum of length multiplier} xywh {457 604 250 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 maximum 2 value 1 textcolor 16
               }
               Fl_Value_Slider boneTempo {
                 label {Tempo: }
                 callback {editorBox->setBoneTempo(o->value());}
-                xywh {481 620 249 17} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 step 0.001 textcolor 16
+                xywh {457 627 250 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 step 0.001 textcolor 16
               }
             }
-            Fl_Group attachVertices {open
-              xywh {135 535 570 110} color 30 selection_color 30 hide
+            Fl_Group attachVertices {
+              label {Attach Vertices}
+              xywh {111 531 520 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17 hide
             } {
-              Fl_Box {} {
-                label {Attach Vertices}
-                xywh {140 539 110 16} labelfont 1 labelsize 12 labelcolor 3 align 21
-              }
               Fl_Value_Slider attachArea {
                 label {Area:}
                 callback {editorBox->setAttachPrefsFromUI(o->value());}
-                xywh {185 560 450 17} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 maximum 10 value 1 textcolor 22
+                xywh {161 558 450 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 maximum 10 value 1 textcolor 22
               }
               Fl_Value_Slider attachFalloff {
                 label {Falloff:}
                 callback {editorBox->setAttachPrefsFromUI(FLT_MAX, o->value());}
-                xywh {185 580 450 17} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 minimum 0.01 value 1 textcolor 22
+                xywh {161 581 450 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 minimum 0.01 value 1 textcolor 22
               }
               Fl_Button {} {
                 label Attach
                 callback {editorBox->attachVertices();
 o->clear();}
-                tooltip {(SHIFT+A)} xywh {140 621 100 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x10061 color 30 selection_color 3 labelsize 10 labelcolor 7
+                tooltip {(SHIFT+A)} xywh {161 627 100 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x10061 color 30 selection_color 3 labelsize 10 labelcolor 7
               }
               Fl_Button {} {
-                label Disattach
+                label Detach
                 callback {editorBox->disattachVertices();
 o->clear();}
-                tooltip {(SHIFT+D)} xywh {245 621 100 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x10064 color 30 selection_color 3 labelsize 10 labelcolor 7
+                tooltip {(SHIFT+D)} xywh {266 627 100 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x10064 color 30 selection_color 3 labelsize 10 labelcolor 7
               }
             }
             Fl_Group noPrefs {open
-              xywh {135 535 570 110} color 35 selection_color 35 hide
+              xywh {111 531 570 121} color 35 selection_color 35 hide
             } {}
           }
         }
@@ -462,8 +462,8 @@ settings.gravityY = cos(a);}
           }
         }
         Fl_Group {} {
-          label {&5 Layer}
-          tooltip {Set up layering in this tab.} xywh {0 525 2048 135} box FLAT_BOX color 30 selection_color 30 labelsize 11 labelcolor 7 hide
+          label {&5 Layer} open selected
+          tooltip {Set up layering in this tab.} xywh {0 525 2125 135} box FLAT_BOX color 30 selection_color 30 labelsize 11 labelcolor 7
           code0 {o->resizable(NULL);}
         } {
           Fl_Button {} {
@@ -476,13 +476,13 @@ settings.gravityY = cos(a);}
             label Scale
             user_data ANIMATA_MODE_LAYER_SCALE user_data_type long
             callback cb_Create
-            tooltip {(S)} xywh {15 554 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+            tooltip {(S)} xywh {15 558 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
           }
           Fl_Button {} {
             label Depth
             user_data ANIMATA_MODE_LAYER_DEPTH user_data_type long
             callback cb_Create
-            tooltip {(E)} xywh {15 573 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x65 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+            tooltip {(E)} xywh {15 581 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x65 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
           }
           Fl_Button {} {
             label Add
@@ -503,7 +503,7 @@ if (layer)
   newNode->user_data(newLayer);
   layers->redraw();
 }}
-            tooltip {(A)} xywh {15 606 90 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x61 color 30 selection_color 3 labelsize 10 labelcolor 7
+            tooltip {(A)} xywh {15 604 90 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x61 color 30 selection_color 3 labelsize 10 labelcolor 7
           }
           Fl_Button {} {
             label Delete
@@ -544,17 +544,14 @@ for (int i = n; i >= 1; i--)
   layerTree->remove(node);
 }
 layers->redraw();}
-            tooltip {(D)} xywh {15 625 90 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x64 color 30 selection_color 3 labelsize 10 labelcolor 7
+            tooltip {(D)} xywh {15 627 90 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x64 color 30 selection_color 3 labelsize 10 labelcolor 7
           }
           Fl_Group {} {
-            xywh {135 535 570 110} box BORDER_BOX color 30 selection_color 30
+            label {Layer Properties} open
+            xywh {217 531 315 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17
           } {
-            Fl_Box {} {
-              label Preferences
-              xywh {140 539 43 16} labelfont 1 labelsize 12 labelcolor 3 align 21
-            }
             Fl_Input layerName {
-              label {Name:}
+              label {Name: }
               callback {tempStorage.str = o->value();
 editorBox->setLayerPrefsFromUI(PREFS_LAYER_NAME, &tempStorage);
 
@@ -563,35 +560,112 @@ if (n)
 {    
     n->label(o->value());
 }}
-              xywh {195 560 250 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 1 textsize 12 textcolor 22
+              xywh {272 558 250 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 1 textsize 12 textcolor 22
             }
             Fl_Value_Slider layerAlpha {
               label {Alpha: }
               callback {tempStorage.f = o->value();
 editorBox->setLayerPrefsFromUI(PREFS_LAYER_ALPHA, &tempStorage);}
-              xywh {195 583 249 17} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 step 0.001 textcolor 16
+              xywh {272 581 200 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 step 0.001 textcolor 16
             }
             Fl_Check_Button layerVisible {
-              label {Visible: } user_data_type long
+              label Visible user_data_type long
               callback {tempStorage.i = o->value();
 editorBox->setLayerPrefsFromUI(PREFS_LAYER_VISIBILITY, &tempStorage);}
-              xywh {195 605 15 20} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7 align 4
+              xywh {471 581 51 20} box BORDER_BOX down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
             }
+            Fl_Group {} {
+              label {Position: }
+              xywh {272 604 250 20} box FLAT_BOX color 40 labelsize 10 labelcolor 7 align 4
+            } {
+              Fl_Value_Input layerX {
+                label {x: }
+                callback {tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_X, &tempStorage);}
+                xywh {291 604 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+              }
+              Fl_Value_Input layerY {
+                label {y: }
+                callback {tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_Y, &tempStorage);}
+                xywh {375 604 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+              }
+              Fl_Value_Input layerDepth {
+                label {depth: }
+                callback {tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_DEPTH, &tempStorage);}
+                xywh {472 604 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+              }
+            }
+            Fl_Group {} {
+              label {Rotation: }
+              xywh {272 627 250 20} box FLAT_BOX color 40 labelsize 10 labelcolor 7 align 4
+            } {
+              Fl_Value_Input layerRotation {
+                label {𝝧: }
+                callback {tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_ROTATION, &tempStorage);}
+                xywh {291 627 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+              }
+              Fl_Value_Input layerOffsetX {
+                label {Cx: }
+                callback {tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_OFFSET_X, &tempStorage);}
+                xywh {375 627 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+              }
+              Fl_Value_Input layerOffsetY {
+                label {Cy: }
+                callback {tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_OFFSET_Y, &tempStorage);}
+                xywh {472 627 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+              }
+            }
+          }
+          Fl_Group {} {
+            label Rotation open
+            xywh {111 531 100 121} box BORDER_FRAME color 36 labelfont 1 labelsize 12 labelcolor 3 align 17
+          } {}
+          Fl_Button {} {
+            label {Set Center}
+            user_data ANIMATA_MODE_LAYER_OFFSET user_data_type long
+            callback cb_Create
+            tooltip {(S)} xywh {116 558 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+          }
+          Fl_Button {} {
+            label Rotate
+            user_data ANIMATA_MODE_LAYER_ROTATE user_data_type long
+            callback cb_Create
+            tooltip {(S)} xywh {116 581 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
           }
         }
         Fl_Group {} {
-          label {&6 Camera}
+          label {&6 Camera} open
           tooltip {Set up cameras in this tab.} xywh {0 525 2048 135} box FLAT_BOX color 30 selection_color 30 labelsize 11 labelcolor 7 hide
           code0 {o->resizable(NULL);}
         } {}
         Fl_Group {} {
-          label {&7 View}
-          tooltip {Set up views in this tab.} xywh {0 525 2048 135} box BORDER_BOX color 30 selection_color 30 labelsize 11 labelcolor 7 hide
+          label {&7 View} open
+          tooltip {Set up views in this tab.} xywh {0 525 2048 136} box BORDER_BOX color 30 selection_color 30 labelsize 11 labelcolor 7 hide
           code0 {o->resizable(NULL);}
         } {
+          Fl_Check_Button playback_show_hide {
+            label {show / hide output}
+            callback {if(o->value())
+{
+  //playback->border(0); 
+  playback->show();
+  //playback->set_visible();
+}
+else
+{
+  playback->hide();
+  //playback->clear_visible();
+}}
+            tooltip {(S)} xywh {230 550 125 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 12 labelcolor 7
+          }
           Fl_Group {} {
-            label Editor open
-            xywh {5 545 70 110} color 0 selection_color 22 labelcolor 7
+            label Editor
+            xywh {15 531 100 121} box BORDER_FRAME color 36 labelfont 1 labelsize 12 labelcolor 3 align 21
           } {
             Fl_Check_Button {} {
               label Vertex
@@ -607,92 +681,77 @@ else
 		~(unsigned)v;
 
 }}
-              private xywh {10 550 65 20} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
+              private xywh {25 550 65 20} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
               code0 {o->do_callback();}
             }
             Fl_Check_Button {} {
               label Triangle
               user_data DISPLAY_EDITOR_TRIANGLE user_data_type long
               callback cb_Vertex
-              private xywh {10 570 65 20} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
+              private xywh {25 568 65 20} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
               code0 {o->do_callback();}
             }
             Fl_Check_Button {} {
               label Joint
               user_data DISPLAY_EDITOR_JOINT user_data_type long
               callback cb_Vertex
-              private xywh {10 590 65 20} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
+              private xywh {25 586 65 20} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
               code0 {o->do_callback();}
             }
             Fl_Check_Button {} {
               label Bone
               user_data DISPLAY_EDITOR_BONE user_data_type long
               callback cb_Vertex
-              private xywh {10 610 65 20} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
+              private xywh {25 604 65 20} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
               code0 {o->do_callback();}
             }
             Fl_Check_Button {} {
               label Texture
               user_data DISPLAY_EDITOR_TEXTURE user_data_type long
               callback cb_Vertex
-              private xywh {10 630 65 25} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
+              private xywh {25 622 65 25} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
               code0 {o->do_callback();}
             }
           }
           Fl_Group {} {
             label Output
-            xywh {80 545 70 110} color 0 selection_color 22 labelcolor 7
+            xywh {125 531 100 121} box BORDER_FRAME color 36 labelfont 1 labelsize 12 labelcolor 3 align 21
           } {
             Fl_Check_Button {} {
               label Vertex
               user_data DISPLAY_OUTPUT_VERTEX user_data_type long
               callback cb_Vertex
-              private xywh {85 550 65 20} down_box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7
+              private xywh {135 550 65 20} down_box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7
               code0 {o->do_callback();}
             }
             Fl_Check_Button {} {
               label Triangle
               user_data DISPLAY_OUTPUT_TRIANGLE user_data_type long
               callback cb_Vertex
-              private xywh {85 570 65 20} down_box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7
+              private xywh {135 568 65 20} down_box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7
               code0 {o->do_callback();}
             }
             Fl_Check_Button {} {
               label Joint
               user_data DISPLAY_OUTPUT_JOINT user_data_type long
               callback cb_Vertex
-              private xywh {85 590 65 20} down_box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7
+              private xywh {135 586 65 20} down_box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7
               code0 {o->do_callback();}
             }
             Fl_Check_Button {} {
               label Bone
               user_data DISPLAY_OUTPUT_BONE user_data_type long
               callback cb_Vertex
-              private xywh {85 610 65 20} down_box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7
+              private xywh {135 604 65 20} down_box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7
               code0 {o->do_callback();}
             }
             Fl_Check_Button {} {
               label Texture
               user_data DISPLAY_OUTPUT_TEXTURE user_data_type long
               callback cb_Vertex
-              private xywh {85 630 65 25} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
+              private xywh {135 622 65 25} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
               code0 {o->do_callback();}
             }
-          }
-          Fl_Check_Button playback_show_hide {
-            label {show / hide}
-            callback {if(o->value())
-{
-  //playback->border(0); 
-  playback->show();
-  //playback->set_visible();
-}
-else
-{
-  playback->hide();
-  //playback->clear_visible();
-}}
-            tooltip {(S)} xywh {140 525 95 25} down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelcolor 7
           }
         }
       }
@@ -701,7 +760,7 @@ else
         xywh {0 20 640 480} box BORDER_BOX color 0 selection_color 0
         class AnimataWindow
       }
-      Fl_Group layers {
+      Fl_Group layers {open
         private xywh {640 20 220 501} color 22 selection_color 22 labeltype NO_LABEL labelcolor 32
         code0 {\#include "Layer.h"}
       } {
@@ -804,15 +863,14 @@ imagePack->add(box);
 
 imageScrollArea->redraw();
 
-return box;} {selected
-    }
+return box;} {}
   }
   Function {~AnimataUI()} {} {
     code {delete editorBox;
 delete fileChooser;
 delete playback;} {}
   }
-  decl {Fl_File_Chooser *fileChooser;} {public
+  decl {Fl_File_Chooser *fileChooser;} {public local
   }
   Function {refreshLayerTree(Layer *root)} {} {
     code {clearLayerTree();
@@ -876,14 +934,18 @@ if(subLayers)
   }
 }} {}
   }
-  decl {union { int i; float f; const char *str; } tempStorage /* temporary storage space for returning values as void * */;} {}
+  decl {union { int i; float f; const char *str; } tempStorage /* temporary storage space for returning values as void * */;} {private local
+  }
 } 
 
 class Fl_Eval_Slider {: {public Fl_Slider}
 } {
-  decl {\#include <FL/fl_draw.H>} {}
-  decl {uchar textfont_, textsize_;} {}
-  decl {unsigned textcolor_;} {}
+  decl {\#include <FL/fl_draw.H>} {private local
+  }
+  decl {uchar textfont_, textsize_;} {private local
+  }
+  decl {unsigned textcolor_;} {private local
+  }
   Function {Fl_Eval_Slider(int X, int Y, int W, int H, const char *L) : Fl_Slider(X, Y, W, H, L)} {} {
     code {step(1, 100);
 textfont_ = FL_HELVETICA;

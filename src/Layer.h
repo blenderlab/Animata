@@ -49,8 +49,8 @@ class Layer
 		float x, y, z;					///< position of the layer origin
 		float alpha;					///< layer alpha
 		float scale;					///< layer scale
-        float offsetX, offsetY;         ///< layer scale and rotation offset
-        float theta;                    ///< layer rotation
+		float offsetX, offsetY;		 	///< layer scale and rotation offset
+		float theta;					///< layer rotation
 		bool visible;					///< visibility on/off
 
 		/** Counts the created layers so far.
@@ -125,14 +125,14 @@ class Layer
 		inline float getTotalDepth() const { return transformation.f[14]; }
 		/// Returns scale.
 		inline float getScale(void) const { return scale; }
-        /// Returns theta.
-        inline float getTheta(void) const { return theta; }
+		/// Returns theta.
+		inline float getTheta(void) const { return theta; }
 		/// Returns alpha.
 		inline float getAlpha(void) const { return alpha; }
-    	/// Returns x offset
-    	inline float getOffsetX(void) const { return offsetX; }
-    	/// Returns y offset
-    	inline float getOffsetY(void) const { return offsetY; }
+		/// Returns x offset
+		inline float getOffsetX(void) const { return offsetX; }
+		/// Returns y offset
+		inline float getOffsetY(void) const { return offsetY; }
 
 		float getAccumulatedAlpha(void);
 
@@ -147,14 +147,14 @@ class Layer
 		inline void setZ(float z) { this->z = z; /* calcTransformationMatrix(); */ }
 		/// Sets scale.
 		inline void setScale(float scale) { this->scale = scale; calcTransformationMatrix(); }
-        /// Sets theta.
-        inline void setTheta(float theta) { this->theta = theta; calcTransformationMatrix(); }
+		/// Sets theta.
+		inline void setTheta(float theta) { this->theta = theta; calcTransformationMatrix(); }
 		/// Sets alpha.
 		inline void setAlpha(float alpha) { this->alpha = alpha; }
-    	/// Sets x offset
-    	inline void setOffsetX(float x) { this->offsetX = x; }
-    	/// Sets y offset
-    	inline void setOffsetY(float y) { this->offsetY = y; }
+		/// Sets x offset
+		inline void setOffsetX(float x) { this->offsetX = x; }
+		/// Sets y offset
+		inline void setOffsetY(float y) { this->offsetY = y; }
 
 		void setVisibility(bool v);
 
@@ -164,16 +164,22 @@ class Layer
 		 * \param y y-distance to move by
 		 **/
 		inline void move(float x, float y) { this->x += x; this->y += y; calcTransformationMatrix(); }
+		inline void setOffset(float x, float y)
+		{
+			this->offsetX = x;
+			this->offsetY = y;
+			calcTransformationMatrix();
+		}
 		/**
 		 * Resizes layer.
 		 * \param s value added to scale
 		 **/
 		inline void resize(float s) { this->scale += s; calcTransformationMatrix(); }
-        /**
-         * Rotates layer.
-         * \param s value added to theta
-         **/
-        inline void rotate(float s) { this->theta += s; calcTransformationMatrix(); }
+		/**
+		 * Rotates layer.
+		 * \param s value added to theta
+		 **/
+		inline void rotate(float s) { this->theta += s; calcTransformationMatrix(); }
 		/**
 		 * Changes layer depth.
 		 * \param z value to add to the layer z-coordinate
@@ -183,7 +189,7 @@ class Layer
 		void scaleAroundPoint(float s, float ox, float oy);
 
 		void setup(float x, float y, float z, float alpha, float offsetX,
-                   float offsetY, float scale, float theta);
+				   float offsetY, float scale, float theta);
 
 		inline static bool zorder(const Layer *a, const Layer *b)
 			{ return a->getTotalDepth() > b->getTotalDepth(); }
