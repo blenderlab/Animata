@@ -64,6 +64,10 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 			float val;
 			args >> namePattern >> val >> osc::EndMessage;
 
+            // filter out NaNs
+            if (val != val)
+                return;
+
 			// FIXME: locking?, bones should not be deleted while this is
 			// running
 			lock();
@@ -121,6 +125,10 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 				y = (arg++)->AsFloat();
 			if (arg != m.ArgumentsEnd())
 				throw osc::ExcessArgumentException();
+
+            // filter out NaNs
+            if (x != x || y != y)
+                return;
 
 			lock();
 			vector<Joint *> *joints = ui->editorBox->getAllJoints();
@@ -230,6 +238,10 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 			float val;
 			args >> namePattern >> val >> osc::EndMessage;
 
+            // filter out NaNs
+            if (val != val)
+                return;
+
 			// get all layers
 			lock();
 			vector<Layer *> *layers = ui->editorBox->getAllLayers();
@@ -292,6 +304,10 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                 y = (arg++)->AsFloat();
             if (arg != m.ArgumentsEnd())
                 throw osc::ExcessArgumentException();
+
+            // filter out NaNs
+            if (x != x || y != y)
+                return;
 
             // get all layers
             lock();
@@ -365,6 +381,10 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 			if (arg != m.ArgumentsEnd())
 				throw osc::ExcessArgumentException();
 
+            // filter out NaNs
+            if (x != x || y != y || z != z)
+                return;
+
 			// get all layers
 			lock();
 			vector<Layer *> *layers = ui->editorBox->getAllLayers();
@@ -428,6 +448,10 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
             if (arg != m.ArgumentsEnd())
                 throw osc::ExcessArgumentException();
 
+            // filter out NaNs
+            if (theta != theta)
+                return;
+
             // get all layers
             lock();
             vector<Layer *> *layers = ui->editorBox->getAllLayers();
@@ -490,6 +514,10 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
 				y = (arg++)->AsFloat();
 			if (arg != m.ArgumentsEnd())
 				throw osc::ExcessArgumentException();
+
+            // filter out NaNs
+            if (x != x || y != y)
+                return;
 
 			// get all layers
 			lock();

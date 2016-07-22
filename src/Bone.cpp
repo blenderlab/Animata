@@ -157,6 +157,8 @@ void Bone::animateLengthMult(float t)
  **/
 void Bone::animateBone(float t)
 {
+    if (t != t)
+        return;
 	if (t < 0.0f)
 		t = 0.0f;
 	else if (t > 1.0f)
