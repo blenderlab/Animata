@@ -532,6 +532,14 @@ void AnimataUI::cb_layerOffsetY(Fl_Value_Input* o, void* v) {
   ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_layerOffsetY_i(o,v);
 }
 
+void AnimataUI::cb_layerScale_i(Fl_Value_Input* o, void*) {
+  tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_SCALE, &tempStorage);
+}
+void AnimataUI::cb_layerScale(Fl_Value_Input* o, void* v) {
+  ((AnimataUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_layerScale_i(o,v);
+}
+
 void AnimataUI::cb_playback_show_hide_i(Fl_Check_Button* o, void*) {
   if(o->value())
 {
@@ -1245,7 +1253,7 @@ AnimataUI::AnimataUI() {
           o->labelcolor(FL_BACKGROUND2_COLOR);
           o->callback((Fl_Callback*)cb_Delete);
         } // Fl_Button* o
-        { Fl_Group* o = new Fl_Group(217, 531, 315, 121, "Layer Properties");
+        { Fl_Group* o = new Fl_Group(217, 531, 403, 121, "Layer Properties");
           o->box(FL_BORDER_FRAME);
           o->color((Fl_Color)36);
           o->selection_color((Fl_Color)30);
@@ -1368,6 +1376,17 @@ AnimataUI::AnimataUI() {
             } // Fl_Value_Input* layerOffsetY
             o->end();
           } // Fl_Group* o
+          { layerScale = new Fl_Value_Input(563, 604, 50, 20, "scale: ");
+            layerScale->box(FL_BORDER_BOX);
+            layerScale->color((Fl_Color)30);
+            layerScale->selection_color((Fl_Color)30);
+            layerScale->labelsize(10);
+            layerScale->labelcolor(FL_BACKGROUND2_COLOR);
+            layerScale->textsize(10);
+            layerScale->textcolor((Fl_Color)16);
+            layerScale->callback((Fl_Callback*)cb_layerScale);
+            layerScale->when(FL_WHEN_ENTER_KEY);
+          } // Fl_Value_Input* layerScale
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(111, 531, 100, 121, "Rotation");

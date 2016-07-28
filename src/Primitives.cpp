@@ -26,6 +26,7 @@
 #include "Primitives.h"
 #include "Bone.h"
 #include "Joint.h"
+#include "Layer.h"
 
 using namespace Animata;
 
@@ -49,6 +50,16 @@ float Primitives::vertexSize = 5;
 float Primitives::border = 4;
 int Primitives::dAlpha = 100;
 
+
+///////////////////////////////    LAYER     //////////////////////////////////
+
+void Primitives::drawCrossHairs(Layer *l)
+{
+    strokeColor(255, 255, 0, 128);
+    float x = l->getOffsetX(), y = l->getOffsetY();
+    drawLine(x, -1000000, x, 1000000);
+    drawLine(-1000000, y, 1000000, y);
+}
 
 ///////////////////////////////    BONE     //////////////////////////////////
 

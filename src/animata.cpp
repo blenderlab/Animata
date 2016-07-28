@@ -850,7 +850,7 @@ void AnimataWindow::handleLeftMousePress(void)
 			break;
 
 		case ANIMATA_MODE_LAYER_OFFSET:
-			cLayer->setOffset(mouseX, mouseY);
+			cLayer->setOffset((float)transMouse.x, (float)transMouse.y);
 			setLayerUIPrefs(cLayer);
 			break;
 
@@ -1051,18 +1051,21 @@ void AnimataWindow::handleMouseDrag(void)
 			break;
 			*/
 			// TEXTURE_SCALE is the same as LAYER_SCALE now
-		case ANIMATA_MODE_LAYER_SCALE:
+        case ANIMATA_MODE_LAYER_SCALE: {
 			// the scale center has to be transformed into the layer coordinate space
 			/*
 			cLayer->scaleAroundPoint(cLayer->getScale() + (float)(viewDist.y) / 100.f,
 											(dragMouseX - cLayer->getX()) / cLayer->getScale(),
 											(dragMouseY - cLayer->getY()) / cLayer->getScale());
 			*/
-			cLayer->scaleAroundPoint(cLayer->getScale() + (float)(viewDist.y) / 100.f, dragTrans.x, dragTrans.y);
+//			cLayer->scaleAroundPoint(cLayer->getScale() + (float)(viewDist.y) / 100.f, dragTrans.x, dragTrans.y);
+            float scale = cLayer->getScale() + (float)(viewDist.y) / 100.f;
+            cLayer->setScale(scale > 0.f ? scale : 0.f);
 			setLayerUIPrefs(cLayer);
+        }
 			break;
 		case ANIMATA_MODE_LAYER_OFFSET:
-			cLayer->setOffset(mouseX, mouseY);
+			cLayer->setOffset((float)transMouse.x, (float)transMouse.y);
 			setLayerUIPrefs(cLayer);
 			break;
 		case ANIMATA_MODE_LAYER_ROTATE:
@@ -1358,6 +1361,7 @@ void AnimataWindow::setLayerUIPrefs(Layer *l)
 		ui->layerOffsetX->value(l->getOffsetX());
 		ui->layerOffsetY->value(l->getOffsetY());
 		ui->layerRotation->value(l->getTheta());
+        ui->layerScale->value(l->getScale());
 	}
 }
 

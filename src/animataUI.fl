@@ -462,7 +462,7 @@ settings.gravityY = cos(a);}
           }
         }
         Fl_Group {} {
-          label {&5 Layer} open
+          label {&5 Layer} open selected
           tooltip {Set up layering in this tab.} xywh {0 525 2125 135} box FLAT_BOX color 30 selection_color 30 labelsize 11 labelcolor 7
           code0 {o->resizable(NULL);}
         } {
@@ -548,7 +548,7 @@ layers->redraw();}
           }
           Fl_Group {} {
             label {Layer Properties} open
-            xywh {217 531 315 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17
+            xywh {217 531 403 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17
           } {
             Fl_Input layerName {
               label {Name: }
@@ -575,7 +575,7 @@ editorBox->setLayerPrefsFromUI(PREFS_LAYER_VISIBILITY, &tempStorage);}
               xywh {471 581 51 20} box BORDER_BOX down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
             }
             Fl_Group {} {
-              label {Position: }
+              label {Position: } open
               xywh {272 604 250 20} box FLAT_BOX color 40 labelsize 10 labelcolor 7 align 4
             } {
               Fl_Value_Input layerX {
@@ -619,6 +619,12 @@ editorBox->setLayerPrefsFromUI(PREFS_LAYER_OFFSET_X, &tempStorage);}
 editorBox->setLayerPrefsFromUI(PREFS_LAYER_OFFSET_Y, &tempStorage);}
                 xywh {472 627 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
               }
+            }
+            Fl_Value_Input layerScale {
+              label {scale: }
+              callback {tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_SCALE, &tempStorage);}
+              xywh {563 604 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
             }
           }
           Fl_Group {} {
@@ -760,7 +766,7 @@ else
         xywh {0 20 640 480} box BORDER_BOX color 0 selection_color 0
         class AnimataWindow
       }
-      Fl_Group layers {open selected
+      Fl_Group layers {open
         private xywh {640 20 220 501} box FLAT_BOX color 7 selection_color 22 labeltype NO_LABEL labelcolor 32
         code0 {\#include "Layer.h"}
       } {

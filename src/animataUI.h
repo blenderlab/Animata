@@ -218,6 +218,11 @@ private:
   inline void cb_layerOffsetY_i(Fl_Value_Input*, void*);
   static void cb_layerOffsetY(Fl_Value_Input*, void*);
 public:
+  Fl_Value_Input *layerScale;
+private:
+  inline void cb_layerScale_i(Fl_Value_Input*, void*);
+  static void cb_layerScale(Fl_Value_Input*, void*);
+public:
   Fl_Check_Button *playback_show_hide;
 private:
   inline void cb_playback_show_hide_i(Fl_Check_Button*, void*);

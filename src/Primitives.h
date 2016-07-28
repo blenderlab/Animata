@@ -26,6 +26,7 @@
 
 #include "Bone.h"
 #include "Joint.h"
+#include "Layer.h"
 
 #define fillColor(r, g, b, a) \
 { \
@@ -51,6 +52,8 @@ namespace Animata
 class Primitives
 {
 	public:
+	    static void drawCrossHairs(Layer *l);
+
 		static void drawBone(Bone *b, int mouseOver, int active);
 		static void drawBoneWhileConnecting(float x1, float y1, float x2, float y2);
 
