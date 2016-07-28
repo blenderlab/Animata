@@ -637,7 +637,9 @@ Vector2D AnimataWindow::transformMouseToWorld(int x, int y)
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	camera->setupModelView();
-	glMultMatrixf(cMatrix->f);
+	Matrix m(*cMatrix);
+	m.rotate(cLayer->getTheta() * -1.f);
+	glMultMatrixf(m.f);
 
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
@@ -672,16 +674,6 @@ Vector2D AnimataWindow::transformMouseToWorld(int x, int y)
 
 	return Vector2D(p.x, p.y);
 }
-
-/*
-Vector2D AnimataWindow::transformMouseToWorld(int x, int y)
-{
-	float wx = (x - cMatrix->f[12]) * (1 + cMatrix->f[14] / camera->getDistance()) / cMatrix->f[0];
-	float wy = (y - cMatrix->f[13]) * (1 + cMatrix->f[14] / camera->getDistance()) / cMatrix->f[5];
-
-	return Vector2D(wx, wy);
-}
-*/
 
 void AnimataWindow::handleLeftMousePress(void)
 {
