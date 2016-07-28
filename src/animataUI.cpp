@@ -602,7 +602,7 @@ void AnimataUI::cb_layerTree(Flu_Tree_Browser* o, void* v) {
 }
 
 AnimataUI::AnimataUI() {
-  { Fl_Double_Window* o = window = new Fl_Double_Window(983, 691, "animata");
+  { Fl_Double_Window* o = window = new Fl_Double_Window(859, 660, "animata");
     window->box(FL_BORDER_BOX);
     window->color(FL_FOREGROUND_COLOR);
     window->selection_color(FL_BACKGROUND2_COLOR);
@@ -1570,13 +1570,14 @@ AnimataUI::AnimataUI() {
       editorBox->when(FL_WHEN_RELEASE);
     } // AnimataWindow* editorBox
     { layers = new Fl_Group(640, 20, 220, 501);
-      layers->color((Fl_Color)22);
+      layers->box(FL_FLAT_BOX);
+      layers->color(FL_BACKGROUND2_COLOR);
       layers->selection_color((Fl_Color)22);
       layers->labeltype(FL_NO_LABEL);
       layers->labelcolor(FL_GRAY0);
-      { layerTree = new Flu_Tree_Browser(640, 20, 215, 501, "layers");
-        layerTree->box(FL_BORDER_BOX);
-        layerTree->color((Fl_Color)30);
+      { layerTree = new Flu_Tree_Browser(645, 20, 215, 501, "layers");
+        layerTree->box(FL_FLAT_BOX);
+        layerTree->color(FL_BACKGROUND2_COLOR);
         layerTree->selection_color((Fl_Color)31);
         layerTree->labeltype(FL_NO_LABEL);
         layerTree->labelfont(0);
