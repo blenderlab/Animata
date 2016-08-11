@@ -401,6 +401,7 @@ void IO::loadSkeleton(TiXmlNode *parent, Skeleton *skeleton, Mesh *m)
 		bone->setLengthMult(lengthMult);
 		bone->setLengthMultMin(lengthMultMin);
 		bone->setLengthMultMax(lengthMultMax);
+		bone->setLengthMult(lengthMult);
 		bone->setTempo(tempo);
 		bone->setTime(time);
 		bone->selected = selected;

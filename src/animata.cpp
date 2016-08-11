@@ -1395,6 +1395,7 @@ void timerCallback(void *v)
 void loadFileAtStartup(void *filename)
 {
 	ui->editorBox->loadScene((char *)filename);
+	ui->editorBox->setFilename((char*)filename);
 }
 
 void init(void)
