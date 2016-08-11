@@ -257,7 +257,7 @@ void AnimataUI::cb_boneName(Fl_Input* o, void* v) {
 }
 
 void AnimataUI::cb_boneStiffness_i(Fl_Eval_Slider* o, void*) {
-  editorBox->setBonePrefsFromUI(NULL, o->value());
+  editorBox->setBonePrefsFromUI(NULL, o->value(), -1);
 }
 void AnimataUI::cb_boneStiffness(Fl_Eval_Slider* o, void* v) {
   ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_boneStiffness_i(o,v);
