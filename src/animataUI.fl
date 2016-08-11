@@ -252,7 +252,7 @@ o->clear();}
         }
         Fl_Group {} {
           label {&3 Skeleton} open
-          tooltip {Create the skeleton in this tab.} xywh {0 525 2048 135} box FLAT_BOX color 30 selection_color 30 labelsize 11 labelcolor 7 hide
+          tooltip {Create the skeleton in this tab.} xywh {0 525 2048 135} box FLAT_BOX color 30 selection_color 30 labelsize 11 labelcolor 7
           code0 {o->resizable(NULL);}
         } {
           Fl_Button {} {
@@ -290,7 +290,7 @@ o->clear();}
           } {
             Fl_Group jointPrefs {
               label {Joint Properties} open
-              xywh {111 531 320 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17
+              xywh {111 531 320 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17 hide
             } {
               Fl_Input jointName {
                 label {Name:}
@@ -333,16 +333,16 @@ editorBox->setJointPrefsFromUI(PREFS_JOINT_FIXED, &tempStorage);}
             }
             Fl_Group bonePrefs {
               label {Bone Properties} open
-              xywh {111 531 610 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17 hide
+              xywh {111 531 610 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17
             } {
               Fl_Input boneName {
                 label {Name: }
-                callback {editorBox->setBonePrefsFromUI(o->value());}
+                callback {editorBox->setBonePrefsFromUI(o->value(), -1, -1);}
                 xywh {161 558 250 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 1 textsize 12 textcolor 22
               }
               Fl_Value_Slider boneStiffness {
                 label {Stiffness: }
-                callback {editorBox->setBonePrefsFromUI(NULL, o->value());}
+                callback {editorBox->setBonePrefsFromUI(NULL, o->value(), -1);}
                 xywh {161 581 250 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 minimum 0.16 maximum 0.840896 step 0.001 value 0.840896 textcolor 16
                 class Fl_Eval_Slider
               }
@@ -392,7 +392,7 @@ if (mmax < mult)
               }
               Fl_Value_Slider boneTempo {
                 label {Tempo: }
-                callback {editorBox->setBoneTempo(o->value());}
+                callback {editorBox->setBoneTempo(o->value());} selected
                 xywh {457 627 250 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 step 0.001 textcolor 16
               }
             }
@@ -462,8 +462,8 @@ settings.gravityY = cos(a);}
           }
         }
         Fl_Group {} {
-          label {&5 Layer} open selected
-          tooltip {Set up layering in this tab.} xywh {0 525 2125 135} box FLAT_BOX color 30 selection_color 30 labelsize 11 labelcolor 7
+          label {&5 Layer} open
+          tooltip {Set up layering in this tab.} xywh {0 525 2125 135} box FLAT_BOX color 30 selection_color 30 labelsize 11 labelcolor 7 hide
           code0 {o->resizable(NULL);}
         } {
           Fl_Button {} {

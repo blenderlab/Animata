@@ -250,7 +250,7 @@ void AnimataUI::cb_jointFixed(Fl_Check_Button* o, void* v) {
 }
 
 void AnimataUI::cb_boneName_i(Fl_Input* o, void*) {
-  editorBox->setBonePrefsFromUI(o->value());
+  editorBox->setBonePrefsFromUI(o->value(), -1, -1);
 }
 void AnimataUI::cb_boneName(Fl_Input* o, void* v) {
   ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_boneName_i(o,v);
@@ -810,7 +810,6 @@ AnimataUI::AnimataUI() {
         o->selection_color((Fl_Color)30);
         o->labelsize(11);
         o->labelcolor(FL_BACKGROUND2_COLOR);
-        o->hide();
         { Fl_Button* o = new Fl_Button(15, 535, 90, 20, "Create Joint");
           o->tooltip("(J)");
           o->type(102);
@@ -889,6 +888,7 @@ AnimataUI::AnimataUI() {
             jointPrefs->labelsize(12);
             jointPrefs->labelcolor((Fl_Color)3);
             jointPrefs->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+            jointPrefs->hide();
             { jointName = new Fl_Input(164, 558, 250, 20, "Name:");
               jointName->box(FL_BORDER_BOX);
               jointName->color((Fl_Color)30);
@@ -961,7 +961,6 @@ AnimataUI::AnimataUI() {
             bonePrefs->labelsize(12);
             bonePrefs->labelcolor((Fl_Color)3);
             bonePrefs->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-            bonePrefs->hide();
             { boneName = new Fl_Input(161, 558, 250, 20, "Name: ");
               boneName->box(FL_BORDER_BOX);
               boneName->color((Fl_Color)30);
@@ -1191,6 +1190,7 @@ AnimataUI::AnimataUI() {
         o->selection_color((Fl_Color)30);
         o->labelsize(11);
         o->labelcolor(FL_BACKGROUND2_COLOR);
+        o->hide();
         { Fl_Button* o = new Fl_Button(15, 535, 90, 20, "Move");
           o->tooltip("(M)");
           o->type(102);

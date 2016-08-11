@@ -261,9 +261,9 @@ void Skeleton::setSelectedBoneParameters(const char *str, float s, float lm, flo
 				b->setName(str);
 			if (lm >= 0)
 				b->setLengthMult(lm);
-			if (aRad < FLT_MAX)
+			if (aRad >= 0 && aRad < FLT_MAX)
 				b->setRadiusMult(aRad);
-			if (falloff < FLT_MAX)
+			if (falloff >= 0 && falloff < FLT_MAX)
 			{
 				b->setFalloff(falloff); // set new falloff value
 				// calculate new weights of attached vertices

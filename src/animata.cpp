@@ -1202,7 +1202,7 @@ void AnimataWindow::setBoneUIPrefs(Bone *b)
  **/
 void AnimataWindow::setBonePrefsFromUI(const char *name, float stiffness, float lengthMult)
 {
-	cSkeleton->setSelectedBoneParameters(name, stiffness, lengthMult);
+	cSkeleton->setSelectedBoneParameters(name, stiffness, lengthMult, -1, -1);
 }
 
 /**
