@@ -34,10 +34,9 @@ using namespace Animata;
 /**
  * Creates a joint at the (x, y) coordinate.
  **/
-Joint::Joint(float x, float y)
+Joint::Joint(Vector2D& v)
 {
-    this->x = x;
-    this->y = y;
+    this->position = v;
     fixed = false;
     dragged = false;
     selected = false;
@@ -73,8 +72,7 @@ void Joint::setName(const char *str)
 void Joint::simulate(void)
 {
     if ((ui->settings.gravity == 1) & (!fixed) & (!dragged)) {
-        x += ui->settings.gravityForce * ui->settings.gravityX;
-        y += ui->settings.gravityForce * ui->settings.gravityY;
+        position += ui->settings.gravity * ui->settings.gravityForce;
     }
 }
 
@@ -103,11 +101,10 @@ void Joint::flipSelection(void)
  * \param timeStamp timestamp to prevent moving joints multiple times when
  *        they belong to several bones
  **/
-void Joint::drag(float dx, float dy, int timeStamp /* = 0*/)
+void Joint::drag(Vector2D& d, int timeStamp /* = 0*/)
 {
     if ((dragTS != timeStamp) || (timeStamp == 0)) {
-        x += dx;
-        y += dy;
+        position += d;
         dragged = true;
         dragTS = timeStamp;
     }

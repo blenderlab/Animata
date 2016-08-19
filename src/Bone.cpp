@@ -46,14 +46,10 @@ Bone::Bone(Joint *j0, Joint *j1)
 
     damp = BONE_DEFAULT_DAMP;
 
-    float x0 = j0->x;
-    float y0 = j0->y;
-    float x1 = j1->x;
-    float y1 = j1->y;
-
     setName("");
 
-    dOrig = sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+    Vector2D diff(j1->position - j0->position);
+    dOrig = diff.size();;
 
     selected = false;
 
@@ -88,30 +84,18 @@ void Bone::simulate(void)
         animateLengthMult(0.5 + sin(time) * 0.5f);
     }
 
-    float x0 = j0->x;
-    float y0 = j0->y;
-    float x1 = j1->x;
-    float y1 = j1->y;
-
-    float dx = (x1 - x0);
-    float dy = (y1 - y0);
-    float dCurrent = sqrt(dx*dx + dy*dy);
-
-    if (dCurrent > FLT_EPSILON) {
-        dx /= dCurrent;
-        dy /= dCurrent;
-    }
+    Vector2D d(j1->position - j0->position);
+    float dCurrent = d.size();
+    d.normalize();
 
     float m = ((dOrig * lengthMult) - dCurrent) * damp;
 
+    d *= m;
     if (!j0->fixed && !j0->dragged) {
-        j0->x -= m*dx;
-        j0->y -= m*dy;
+        j0->position -= d;
     }
-
     if (!j1->fixed && !j1->dragged) {
-        j1->x += m*dx;
-        j1->y += m*dy;
+        j1->position += d;
     }
 
 }
@@ -169,51 +153,32 @@ void Bone::animateBone(float t)
  **/
 void Bone::translateVertices(void)
 {
-    float x0 = j0->x;
-    float y0 = j0->y;
-    float x1 = j1->x;
-    float y1 = j1->y;
-
-    float dx = (x1 - x0);
-    float dy = (y1 - y0);
-
-    float x = x0 + dx * 0.5f;
-    float y = y0 + dy * 0.5f;
-
-    float dCurrent = sqrt(dx*dx + dy*dy);
-    if (dCurrent < FLT_EPSILON) {
-        dCurrent = FLT_EPSILON;
-    }
-    dx /= dCurrent;
-    dy /= dCurrent;
+    Vector2D d(j1->position - j0->position);
+    d.normalize();
+    Vector2D c = getCenter();
 
     for (unsigned i = 0; i < attachedVertices->size(); i++) {
         Vertex *v = (*attachedVertices)[i];
-
-        float vx = v->coord.x;
-        float vy = v->coord.y;
-
-        float tx = x + (dx * ca[i] - dy * sa[i]);
-        float ty = y + (dx * sa[i] + dy * ca[i]);
-
-        vx += (tx - vx) * weights[i];
-        vy += (ty - vy) * weights[i];
-        v->coord.x = vx;
-        v->coord.y = vy;
+        Vector2D t;
+        t.x = c.x + (d.x * ca[i] - d.y * sa[i]);
+        t.y = c.y + (d.x * sa[i] + d.y * ca[i]);
+        t -= v->coord;
+        t *= weights[i];
+        v->coord += t;
     }
 }
 
 /**
  * Moves bone by the given vector.
- * \param dx x distance
- * \param dy y distance
+ * \param d distance vector
  * \param timeStamp timestamp to prevent moving joints multiple times when
  *        they belong to several bones
  **/
-void Bone::drag(float dx, float dy, int timeStamp /* = 0*/)
+void Bone::drag(float x, float y, int timeStamp /* = 0*/)
 {
-    j0->drag(dx, dy, timeStamp);
-    j1->drag(dx, dy, timeStamp);
+    Vector2D d(x, y);
+    j0->drag(d, timeStamp);
+    j1->drag(d, timeStamp);
 }
 
 /**
@@ -236,21 +201,17 @@ void Bone::draw(int mouseOver, int active)
 
     // FIXME: screws up selection
     if (ui->settings.mode == ANIMATA_MODE_ATTACH_VERTICES) {
-        int cx = (int)((j0->vx + j1->vx) * .5f);
-        int cy = (int)((j0->vy + j1->vy) * .5f);
-
         // cannot use getRadius(), as it isn't view-dependent
         int r = (int)(getViewRadius());
-
         if (selected) {
-            Primitives::drawSelectionCircle(cx, cy, r);
+            Vector2D c(getViewCenter());
+            Primitives::drawSelectionCircle(c.x, c.y, r);
             for (unsigned i = 0; i < attachedVertices->size(); i++) {
                 Vertex *v = (*attachedVertices)[i];
                 Primitives::drawVertexAttached(v);
             }
         }
     }
-
 }
 
 /**
@@ -287,7 +248,17 @@ void Bone::setName(const char *str)
  **/
 Vector2D Bone::getCenter(void)
 {
-    Vector2D c((j0->vx + j1->vx) * .5f, (j0->vy + j1->vy) * .5f);
+    Vector2D c((j0->position + j1->position) * 0.5f);
+    return c;
+}
+
+/**
+ * Gets bone center coordinates.
+ * \return center vector
+ **/
+Vector2D Bone::getViewCenter(void)
+{
+    Vector2D c((j0->viewPosition + j1->viewPosition) * 0.5f);
     return c;
 }
 
@@ -299,9 +270,8 @@ float Bone::getViewRadius()
 {
     /* Distance has to be recalculated every time as it's based on the view
      * position of the joints. */
-    float dView = sqrt(  (j1->vx-j0->vx)*(j1->vx-j0->vx)
-                       + (j1->vy-j0->vy)*(j1->vy-j0->vy));
-    return dView * 0.5f * attachRadiusMult;
+    Vector2D d(j1->viewPosition - j0->viewPosition);
+    return d.size() * 0.5f * attachRadiusMult;
 }
 
 /**
@@ -320,28 +290,16 @@ void Bone::attachVertices(vector<Vertex *> *verts)
     sa = new float[count];
     ca = new float[count];
 
-    float x0 = j0->x;
-    float y0 = j0->y;
-    float x1 = j1->x;
-    float y1 = j1->y;
-
-    float alpha = atan2(y1 - y0, x1 - x0);
-    float dx = (x1 - x0);
-    float dy = (y1 - y0);
-    float dCurrent = sqrt(dx*dx + dy*dy);
-    float x = x0 + dx * 0.5f;
-    float y = y0 + dy * 0.5f;
-
-    dx /= dCurrent;
-    dy /= dCurrent;
+    Vector2D d(j1->position - j0->position);
+    float alpha = d.atan2();
+    Vector2D c = getCenter();
+    d.normalize();
 
     for (unsigned i = 0; i < count; i++) {
         Vertex *v = (*verts)[i];
-
         if (v->selected) {
-            float vx = v->coord.x;
-            float vy = v->coord.y;
-            float vd = sqrt((x - vx) * (x - vx) + (y - vy) * (y - vy));
+            Vector2D s = Vector2D(v->coord - c);
+            float vd = s.size();
 
             dsts[i] = vd;
 
@@ -354,7 +312,7 @@ void Bone::attachVertices(vector<Vertex *> *verts)
                 weights[i] = pow(1.0 - vdnorm, 1.0 / falloff);
             }
 
-            float a = atan2(vy - y, vx - x) - alpha;
+            float a = s.atan2() - alpha;
             sa[i] = vd * (sin(a));
             ca[i] = vd * (cos(a));
 

@@ -109,6 +109,7 @@ public:
 
     /// Returns bone centre.
     Vector2D getCenter(void);
+    Vector2D getViewCenter(void);
 
     Joint *j0; ///< one endpoint of bone
     Joint *j1; ///< the other endpoint of bone

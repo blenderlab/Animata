@@ -124,8 +124,8 @@ void IO::saveSkeleton(TiXmlElement *parent, Skeleton *s, Mesh *m)
             const char *name = j->getName();
             if (name[0] != 0) // save name only for named joints
                 jointXML->SetAttribute("name", name);
-            jointXML->SetDoubleAttribute("x", j->x);
-            jointXML->SetDoubleAttribute("y", j->y);
+            jointXML->SetDoubleAttribute("x", j->position.x);
+            jointXML->SetDoubleAttribute("y", j->position.y);
             jointXML->SetAttribute("fixed", j->fixed);
             jointXML->SetAttribute("selected", j->selected);
             jointXML->SetAttribute("osc", j->osc);

@@ -73,7 +73,8 @@ Skeleton::~Skeleton()
  **/
 Joint *Skeleton::addJoint(float x, float y)
 {
-    Joint *j = new Joint(x, y);
+    Vector2D v(x, y);
+    Joint *j = new Joint(v);
     joints->push_back(j);
 
     /* add to vector of all joints */
@@ -121,12 +122,13 @@ Bone *Skeleton::addBone(Joint *j0, Joint *j1)
 int Skeleton::moveSelectedJoints(float dx, float dy)
 {
     int movedJoints = 0;
+    Vector2D d(dx, dy);
 
     for (unsigned i = 0; i < joints->size(); i++) {
         Joint *j = (*joints)[i];
 
         if (j->selected) {
-            j->drag(dx, dy);
+            j->drag(d);
             movedJoints++;
         }
     }
@@ -197,10 +199,10 @@ void Skeleton::setSelectedJointParameters(enum ANIMATA_PREFERENCES prefParam,
                     j->setName(*((const char **)value));
                     break;
                 case PREFS_JOINT_X:
-                    j->x = *((float *)value);
+                    j->position.x = *((float *)value);
                     break;
                 case PREFS_JOINT_Y:
-                    j->y = *((float *)value);
+                    j->position.y = *((float *)value);
                     break;
                 case PREFS_JOINT_FIXED:
                     j->fixed = *((int *)value);
@@ -433,7 +435,7 @@ void Skeleton::selectVerticesInRange(Mesh *mesh)
                 /* selection happens in screen coordinate system, just like the
                  * drawSelectionBox in animata.cpp */
                 // so get the view radius as in Bone.draw()
-                Vector2D v = b->getCenter();
+                Vector2D v = b->getViewCenter();
                 // float r = b->getRadius();
                 float r = b->getViewRadius();
                 selector->doCircleSelect(mesh, Selection::SELECT_VERTEX,
@@ -488,14 +490,14 @@ void Skeleton::setJointViewCoords(float *coords, unsigned int size)
 
         // joint is out of screen lets do projection here
         if (i + 1 < size && coords[i + 1] == Selection::OUT_OF_SCREEN) {
-            Vector3D view = Transform::project(j->x, j->y, 0);
+            Vector3D view = Transform::project(j->position.x, j->position.y, 0);
 
-            j->vx = view.x;
-            j->vy = view.y;
+            j->viewPosition.x = view.x;
+            j->viewPosition.y = view.y;
         }
         else {
-            j->vx = coords[i + 1];
-            j->vy = coords[i + 2];
+            j->viewPosition.x = coords[i + 1];
+            j->viewPosition.y = coords[i + 2];
         }
     }
 }
@@ -568,7 +570,7 @@ void Skeleton::draw(int mode, int active)
 
             glPassThrough(i);
             glBegin(GL_POINTS);
-                glVertex2f(joint->x, joint->y);
+                glVertex2f(joint->position.x, joint->position.y);
             glEnd();
         }
     }

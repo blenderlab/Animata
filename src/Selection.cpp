@@ -263,7 +263,7 @@ void Selection::doCircleSelect(Drawable *node, unsigned type, int xc, int yc,
     glLoadIdentity();
 
     /* No mirroring is required here as coordinates come from the bone structure
-     * (bone.getCenter), which has its coordinates in the opengl coordinate
+     * (bone.getViewCenter), which has its coordinates in the opengl coordinate
      * system, not in the window coordinate system. */
     glOrtho(x0, x1, y0, y1, -1, 1);
 

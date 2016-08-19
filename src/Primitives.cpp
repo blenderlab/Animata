@@ -65,23 +65,12 @@ void Primitives::drawCrossHairs(Layer *l)
 
 void Primitives::drawBone(Bone *b, int mouseOver, int active)
 {
-    float x1 = b->j0->vx;
-    float y1 = b->j0->vy;
-    float x2 = b->j1->vx;
-    float y2 = b->j1->vy;
+    Vector2D d(b->j1->viewPosition - b->j0->viewPosition);
+    d.normalize();
+    d *= boneSize;
 
-    float dx = (x2 - x1); // to prevent bone joint overlapping
-    float dy = (y2 - y1);
-    float dCurrent = sqrt(dx*dx + dy*dy);
-
-    dx /= dCurrent;
-    dy /= dCurrent;
-
-    x1 += dx * boneSize;
-    y1 += dy * boneSize;
-
-    x2 -= dx * boneSize;
-    y2 -= dy * boneSize; // move the endpoints towards the center boneSize
+    Vector2D v1(b->j0->viewPosition + d);
+    Vector2D v2(b->j1->viewPosition - d);
 
     float size = b->damp*3;
 
@@ -95,7 +84,7 @@ void Primitives::drawBone(Bone *b, int mouseOver, int active)
     else {
         strokeColor(0, 0, 0, 128 - alpha);
     }
-    drawLine(x1, y1, x2, y2);
+    drawLine(v1.x, v1.y, v2.x, v2.y);
     strokeWeight(boneSize * size);
     if (mouseOver) {
         strokeColor(255, 255, 0, 128 - alpha);
@@ -109,11 +98,11 @@ void Primitives::drawBone(Bone *b, int mouseOver, int active)
     else {
         strokeColor(255, 255, 255, 128 - alpha);
     }
-    drawLine(x1, y1, x2, y2);
+    drawLine(v1.x, v1.y, v2.x, v2.y);
     if (!(b->selected)) {
         strokeWeight(boneSize / 3 * size);
         strokeColor(255, 255, 255, 128 - alpha);
-        drawLine(x1, y1, x2, y2);
+        drawLine(v1.x, v1.y, v2.x, v2.y);
     }
 }
 
@@ -132,15 +121,15 @@ void Primitives::drawBoneWhileConnecting(float x1, float y1, float x2, float y2)
 
 void Primitives::drawJoint(Joint *j, int mouseOver, int active)
 {
-    float x = j->vx;
-    float y = j->vy;
+//    float x = j->vx;
+//    float y = j->vy;
 
     int alpha = active ? 0 : dAlpha;
 
     stroke(false);
     fill(true);
     fillColor(0, 0, 0, 128 - alpha);
-    drawCircle(x, y, jointSize + border);
+    drawCircle(j->viewPosition.x, j->viewPosition.y, jointSize + border);
 
     if (mouseOver) {
         stroke(true);
@@ -166,7 +155,7 @@ void Primitives::drawJoint(Joint *j, int mouseOver, int active)
         strokeColor(255, 255, 255, 200 - alpha);
     }
     strokeWeight(2);
-    drawCircle(x, y, jointSize);
+    drawCircle(j->viewPosition.x, j->viewPosition.y, jointSize);
 }
 
 ///////////////////////////////    VERTEX   //////////////////////////////////

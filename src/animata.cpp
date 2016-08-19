@@ -475,8 +475,8 @@ void AnimataWindow::draw()
         // show hint line for bone creation
         case ANIMATA_MODE_CREATE_BONE:
             if (pointedJoint) {
-                Primitives::drawBoneWhileConnecting(pointedJoint->vx,
-                                                    pointedJoint->vy,
+                Primitives::drawBoneWhileConnecting(pointedJoint->viewPosition.x,
+                                                    pointedJoint->viewPosition.y,
                                                     mouseX, h() - mouseY);
             }
             break;
@@ -1065,8 +1065,8 @@ int AnimataWindow::handle(int event)
 void AnimataWindow::setJointUIPrefs(Joint *j)
 {
     ui->jointName->value(j->getName());
-    ui->jointX->value(j->x);
-    ui->jointY->value(j->y);
+    ui->jointX->value(j->position.x);
+    ui->jointY->value(j->position.y);
     ui->jointFixed->value(j->fixed);
     ui->jointOSC->value(j->osc);
     // TODO: check if tab switching is needed

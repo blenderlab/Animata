@@ -133,8 +133,8 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                 if (jointName[0] == 0)
                     continue;
                 if (strcmp(jointName, namePattern) == 0) {
-                    (*j)->x = x;
-                    (*j)->y = y;
+                    (*j)->position.x = x;
+                    (*j)->position.y = y;
                     found = 1;
                 }
             }
@@ -148,8 +148,8 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                     if (jointName[0] == 0)
                         continue;
                     if (patternMatch(jointName, namePattern)) {
-                        (*j)->x = x;
-                        (*j)->y = y;
+                        (*j)->position.x = x;
+                        (*j)->position.y = y;
                     }
                 }
             }
@@ -861,7 +861,7 @@ void OSCSender::threadTask(void)
                 (*ops) << osc::BeginBundleImmediate <<
                     osc::BeginMessage("/joint") <<
                     j->getName() <<
-                    j->x << j->y << osc::EndMessage <<
+                    j->position.x << j->position.y << osc::EndMessage <<
                     osc::EndBundle;
                 socket->Send(ops->Data(), ops->Size());
             }

@@ -24,6 +24,8 @@
 #ifndef __JOINT_H__
 #define __JOINT_H__
 
+#include "Vector2D.h"
+
 namespace Animata
 {
 
@@ -31,10 +33,8 @@ namespace Animata
 class Joint
 {
 public:
-    float x;        ///< x-coordinate
-    float y;        ///< y-coordinate
-    float vx;       ///< x view coordinate
-    float vy;       ///< y view coordinate
+    Vector2D position;
+    Vector2D viewPosition;
 
     bool fixed;     ///< fixed state
     bool selected;  ///< selection state
@@ -47,7 +47,7 @@ public:
      */
     int dragTS;
 
-    Joint(float x, float y);
+    Joint(Vector2D& v);
 
     const char *getName(void);
     void setName(const char *str);
@@ -56,7 +56,7 @@ public:
     void draw(int dragged = 0, int active = 1);
     void flipSelection(void);
 
-    void drag(float dx, float dy, int timeStamp = 0);
+    void drag(Vector2D& d, int timeStamp = 0);
 
 private:
     char name[16];
