@@ -78,7 +78,7 @@ enum ValueTypeSizes{
     OSC_SIZEOF_INT32 = 4,
     OSC_SIZEOF_UINT32 = 4,
     OSC_SIZEOF_INT64 = 8,
-    OSC_SIZEOF_UINT64 = 8,
+    OSC_SIZEOF_UINT64 = 8
 };
 
 
