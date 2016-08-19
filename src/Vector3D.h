@@ -31,29 +31,44 @@ class Matrix;
 
 class Vector3D
 {
-	public:
-		float x, y, z;
+public:
+    float x, y, z;
 
-		Vector3D();
-		Vector3D(float x, float y, float z);
-		Vector3D(Vector3D *p);
+    Vector3D();
+    Vector3D(float x, float y, float z);
+    Vector3D(Vector3D *p);
 
-		inline void set(float _x, float _y, float _z) { x = _x; y = _y; }
+    Vector3D& set(float _x, float _y, float _z);
+    Vector3D& setElement(float f, int index);
 
-		int operator == (Vector3D &p);
-		int operator != (Vector3D &p);
-		Vector3D& operator += (Vector3D&);
-		Vector3D& operator -= (Vector3D&);
+    bool operator == (Vector3D &p);
+    bool operator != (Vector3D &p);
 
-		Vector3D operator = (Vector3D&);
+    Vector3D& operator += (Vector3D&);
+    Vector3D& operator -= (Vector3D&);
 
-		Vector3D operator * (float m);
+    Vector3D& operator += (float f);
+    Vector3D& operator -= (float f);
+    Vector3D& operator *= (float f);
+    Vector3D& operator /= (float f);
 
-		Vector3D& transform(Matrix& m);
-		Vector3D& rotate(Matrix& m);
+    Vector3D operator = (Vector3D&);
 
-		void normalize(void);
-		float size(void);
+    Vector3D operator + (Vector3D& p);
+    Vector3D operator - (Vector3D& p);
+
+    Vector3D operator + (float f);
+    Vector3D operator - (float f);
+    Vector3D operator * (float f);
+    Vector3D operator / (float f);
+
+    Vector3D& rotate(Matrix& m);
+    Vector3D& transform(Matrix& m);
+
+    void normalize(void);
+    float size(void);
+
+    inline bool hasNaN() { return (x!=x) || (y!=y) || (z!=z); }
 };
 
 } /* namespace Animata */

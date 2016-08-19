@@ -29,86 +29,157 @@ using namespace Animata;
 
 Vector2D::Vector2D()
 {
-	x = y = 0.f;
+    x = y = 0.f;
 }
 
 Vector2D::Vector2D(float x, float y)
 {
-	this->x = x;
-	this->y = y;
+    this->x = x;
+    this->y = y;
 }
 
-int Vector2D::operator == (Vector2D &p)
+Vector2D& Vector2D::set(float _x, float _y)
 {
-	return (((x - p.x)*(x - p.x) + (y - p.y)*(y - p.y)) < FLT_EPSILON);
+    if (_x  == _x)
+        x = _x;
+    if (_y == _y)
+        y = _y;
+    return *this;
 }
 
-int Vector2D::operator != (Vector2D &p)
+Vector2D& Vector2D::setElement(float f, int index)
 {
-	return (((x - p.x)*(x - p.x) + (y - p.y)*(y - p.y)) >= FLT_EPSILON);
+    switch (index) {
+        case 0:
+            x = f;
+            break;
+        case 1:
+            y = f;
+            break;
+        default:
+            break;
+    }
+    return *this;
 }
 
-/*
-Vector2D& Vector2D::operator + (Vector2D& v)
+
+bool Vector2D::operator == (Vector2D &v) const
 {
-	return new Vector2D(x + v.x, y + v.y);
+    return (((x - v.x)*(x - v.x) + (y - v.y)*(y - v.y)) < FLT_EPSILON);
 }
 
-Vector2D& Vector2D::operator - (Vector2D& v)
+bool Vector2D::operator != (Vector2D &v) const
 {
-	return new Vector2D(x - v.x, y - v.y);
+    return (((x - v.x)*(x - v.x) + (y - v.y)*(y - v.y)) >= FLT_EPSILON);
 }
-*/
 
 Vector2D& Vector2D::operator += (Vector2D& v)
 {
-	x += v.x;
-	y += v.y;
-	return *this;
+    x += v.x;
+    y += v.y;
+    return *this;
 }
 
 Vector2D& Vector2D::operator -= (Vector2D& v)
 {
-	x -= v.x;
-	y -= v.y;
-	return *this;
+    x -= v.x;
+    y -= v.y;
+    return *this;
 }
 
-Vector2D Vector2D::operator = (Vector2D& v)
+Vector2D& Vector2D::operator += (float f)
 {
-	x = v.x;
-	y = v.y;
-	return Vector2D(x, y);
+    x += f;
+    y += f;
+    return *this;
 }
 
-Vector2D Vector2D::operator * (float m)
+Vector2D& Vector2D::operator -= (float f)
 {
-	return Vector2D(x * m, y * m);
+    x -= f;
+    y -= f;
+    return *this;
 }
 
-float Vector2D::cross(Vector2D& v1, Vector2D& v2)
+Vector2D& Vector2D::operator *= (float f)
 {
-	return v1.x*v2.x + v1.y*v2.y;
+    x *= f;
+    y *= f;
+    return *this;
 }
 
-float Vector2D::dot(Vector2D& v1, Vector2D& v2)
+Vector2D& Vector2D::operator /= (float f)
 {
-	return v1.x*v2.y - v1.y*v2.x;
+    x /= f;
+    y /= f;
+    return *this;
+}
+
+Vector2D& Vector2D::operator = (Vector2D& v)
+{
+    x = v.x;
+    y = v.y;
+    return *this;
+}
+
+Vector2D Vector2D::operator + (float f) const
+{
+    return Vector2D(x + f, y + f);
+}
+
+Vector2D Vector2D::operator - (float f) const
+{
+    return Vector2D(x - f, y - f);
+}
+
+Vector2D Vector2D::operator * (float f) const
+{
+    return Vector2D(x * f, y * f);
+}
+
+Vector2D Vector2D::operator / (float f) const
+{
+    f = 1.0f / f;
+    return Vector2D(x * f, y * f);
+}
+
+Vector2D Vector2D::operator + (Vector2D& v) const
+{
+    return Vector2D(x + v.x, y + v.y);
+}
+
+Vector2D Vector2D::operator - (Vector2D& v) const
+{
+    return Vector2D(x - v.x, y - v.y);
+}
+
+float Vector2D::cross(Vector2D& v1, Vector2D& v2) const
+{
+    return v1.x * v2.x + v1.y * v2.y;
+}
+
+float Vector2D::dot(Vector2D& v1, Vector2D& v2) const
+{
+    return v1.x * v2.y - v1.y * v2.x;
 }
 
 void Vector2D::normalize(void)
 {
-	float len = sqrt(x*x + y*y);
+    float len = sqrt(x * x + y * y);
 
-	if(len != 0.f)
-	{
-		x /= len;
-		y /= len;
-	}
+    if(len > FLT_EPSILON) {
+        x /= len;
+        y /= len;
+    }
 }
 
-float Vector2D::size(void)
+float Vector2D::size(void) const
 {
-	return sqrt(x*x + y*y);
+    return sqrt(x*x + y*y);
+}
+
+float Vector2D::atan2(void) const
+{
+    return ::atan2(y, x);
 }
 

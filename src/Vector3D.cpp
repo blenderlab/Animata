@@ -30,98 +30,184 @@ using namespace Animata;
 
 Vector3D::Vector3D()
 {
-	x = y = z = 0.f;
+    x = y = z = 0.f;
 }
 
 Vector3D::Vector3D(float x, float y, float z)
 {
-	this->x = x;
-	this->y = y;
-	this->z = z;
+    this->x = x;
+    this->y = y;
+    this->z = z;
 }
 
 Vector3D::Vector3D(Vector3D *p)
 {
-	this->x = p->x;
-	this->y = p->y;
-	this->z = p->z;
+    this->x = p->x;
+    this->y = p->y;
+    this->z = p->z;
 }
 
-int Vector3D::operator == (Vector3D &p)
+Vector3D& Vector3D::set(float _x, float _y, float _z)
 {
-	return (((x - p.x)*(x - p.x) + (y - p.y)*(y - p.y) + (z - p.z)*(z - p.z)) < FLT_EPSILON);
+    x = _x;
+    y = _y;
+    x = _z;
+    return *this;
 }
 
-int Vector3D::operator != (Vector3D &p)
+Vector3D& Vector3D::setElement(float f, int index)
 {
-	return (((x - p.x)*(x - p.x) + (y - p.y)*(y - p.y) + (z - p.z)*(z - p.z)) >= FLT_EPSILON);
+    switch (index) {
+        case 0:
+            x = f;
+            break;
+        case 1:
+            y = f;
+            break;
+        case 2:
+            z = f;
+            break;
+        default:
+            break;
+    }
+    return *this;
+}
+
+bool Vector3D::operator == (Vector3D &v)
+{
+    return (  ((x - v.x) * (x - v.x)
+             + (y - v.y) * (y - v.y)
+             + (z - v.z) * (z - v.z)) < FLT_EPSILON);
+}
+
+bool Vector3D::operator != (Vector3D &v)
+{
+    return (  ((x - v.x) * (x - v.x)
+             + (y - v.y) * (y - v.y)
+             + (z - v.z) * (z - v.z)) >= FLT_EPSILON);
 }
 
 Vector3D& Vector3D::operator += (Vector3D& v)
 {
-	x += v.x;
-	y += v.y;
-	z += v.z;
-	return *this;
+    x += v.x;
+    y += v.y;
+    z += v.z;
+    return *this;
 }
 
 Vector3D& Vector3D::operator -= (Vector3D& v)
 {
-	x -= v.x;
-	y -= v.y;
-	z -= v.z;
-	return *this;
+    x -= v.x;
+    y -= v.y;
+    z -= v.z;
+    return *this;
+}
+
+Vector3D& Vector3D::operator += (float f)
+{
+    x += f;
+    y += f;
+    z += f;
+    return *this;
+}
+
+Vector3D& Vector3D::operator -= (float f)
+{
+    x -= f;
+    y -= f;
+    z -= f;
+    return *this;
+}
+
+Vector3D& Vector3D::operator *= (float f)
+{
+    x *= f;
+    y *= f;
+    z *= f;
+    return *this;
+}
+
+Vector3D& Vector3D::operator /= (float f)
+{
+    x /= f;
+    y /= f;
+    z /= f;
+    return *this;
 }
 
 Vector3D Vector3D::operator = (Vector3D& v)
 {
-	x = v.x;
-	y = v.y;
-	z = v.z;
-	return Vector3D(x, y, z);
+    x = v.x;
+    y = v.y;
+    z = v.z;
+    return Vector3D(x, y, z);
 }
 
-Vector3D Vector3D::operator * (float m)
+Vector3D Vector3D::operator + (Vector3D& v)
 {
-	return Vector3D(x * m, y * m, z * m);
+    return Vector3D(x + v.x, y + v.y, z + v.z);
+}
+
+Vector3D Vector3D::operator - (Vector3D& v)
+{
+    return Vector3D(x - v.x, y - v.y, z - v.z);
+}
+
+Vector3D Vector3D::operator + (float f)
+{
+    return Vector3D(x + f, y + f, z + f);
+}
+
+Vector3D Vector3D::operator - (float f)
+{
+    return Vector3D(x - f, y - f, z - f);
+}
+
+Vector3D Vector3D::operator * (float f)
+{
+    return Vector3D(x * f, y * f, z * f);
+}
+
+Vector3D Vector3D::operator / (float f)
+{
+    f = 1.0f / f;
+    return Vector3D(x * f, y * f, z * f);
 }
 
 Vector3D& Vector3D::rotate(Matrix& m)
 {
-	Vector3D *rot = new Vector3D();
+    Vector3D *r = new Vector3D();
 
-	rot->x = x * m[0] + y * m[4] + z * m[8];
-	rot->y = x * m[1] + y * m[5] + z * m[9];
-	rot->z = x * m[2] + y * m[6] + z * m[10];
+    r->x = x * m[0] + y * m[4] + z * m[8];
+    r->y = x * m[1] + y * m[5] + z * m[9];
+    r->z = x * m[2] + y * m[6] + z * m[10];
 
-	return *rot;
+    return *r;
 }
 
 Vector3D& Vector3D::transform(Matrix& m)
 {
-	Vector3D *rot = new Vector3D();
+    Vector3D *t = new Vector3D();
 
-	rot->x = x * m[0] + y * m[4] + z * m[8] + m[12];
-	rot->y = x * m[1] + y * m[5] + z * m[9] + m[13];
-	rot->z = x * m[2] + y * m[6] + z * m[10] + m[14];
+    t->x = x * m[0] + y * m[4] + z * m[8] + m[12];
+    t->y = x * m[1] + y * m[5] + z * m[9] + m[13];
+    t->z = x * m[2] + y * m[6] + z * m[10] + m[14];
 
-	return *rot;
+    return *t;
 }
 
 void Vector3D::normalize(void)
 {
-	float len = sqrt(x*x + y*y + z*z);
-
-	if(len != 0.f)
-	{
-		x /= len;
-		y /= len;
-		z /= len;
-	}
+    float len = sqrt(x * x + y * y + z * z);
+    if(len > FLT_EPSILON) {
+        x /= len;
+        y /= len;
+        z /= len;
+    }
 }
 
 float Vector3D::size(void)
 {
-	return sqrt(x*x + y*y + z*z);
+    return sqrt(x*x + y*y + z*z);
 }
 
