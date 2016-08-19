@@ -38,161 +38,165 @@ namespace Animata
  **/
 class Layer
 {
-	private:
-		Layer		*parent;			///< pointer to the parent layer if its not the root
-		std::vector<Layer *> *layers;	///< vector storing the sublayers
+private:
+    Layer *parent;                  ///< pointer to the parent if not the root
+    std::vector<Layer *> *layers;   ///< vector storing the sublayers
 
-		Mesh		*mesh;				///< the mesh belonging to this layer
-		Skeleton	*skeleton;			///< the skeleton belonging to this layer
+    Mesh *mesh;                     ///< the mesh belonging to this layer
+    Skeleton *skeleton;             ///< the skeleton belonging to this layer
 
-		char name[16];					///< name of layer
-		float x, y, z;					///< position of the layer origin
-		float alpha;					///< layer alpha
-		float scale;					///< layer scale
-		float offsetX, offsetY;		 	///< layer scale and rotation offset
-		float theta;					///< layer rotation
-		bool visible;					///< visibility on/off
+    char name[16];                  ///< name of layer
+    float x, y, z;                  ///< position of the layer origin
+    float alpha;                    ///< layer alpha
+    float scale;                    ///< layer scale
+    float offsetX, offsetY;         ///< layer scale and rotation offset
+    float theta;                    ///< layer rotation
+    bool visible;                   ///< visibility on/off
 
-		/** Counts the created layers so far.
-		 *  Used for automatic naming of layers */
-		static int layerCount;
+    /** Counts the created layers so far. Used for automatic naming of layers */
+    static int layerCount;
 
-		/** transformation matrix returned by getTransformationMatrix() */
-		Matrix transformation;
+    /** transformation matrix returned by getTransformationMatrix() */
+    Matrix transformation;
 
-	public:
+public:
 
-		Layer(Layer *p = NULL);
-		~Layer();
+    Layer(Layer *p = NULL);
+    ~Layer();
 
-		void eraseLayers();
+    void eraseLayers();
 
-		/** Returns sublayers.
-		 * \return pointer to Layer * vector
-		 **/
-		inline std::vector<Layer *> *getLayers() { return layers; }
+    /** Returns sublayers.
+     * \return pointer to Layer * vector
+     **/
+    inline std::vector<Layer *> *getLayers() { return layers; }
 
-		/// overwrites sublayers
-		void setLayers(std::vector<Layer *> *newLayers);
+    /// overwrites sublayers
+    void setLayers(std::vector<Layer *> *newLayers);
 
-		void addSublayer(Layer *layers);
+    void addSublayer(Layer *layers);
 
-		void addSublayers(std::vector<Layer *> *layers);
+    void addSublayers(std::vector<Layer *> *layers);
 
-		int deleteSublayer(Layer *layer);
+    int deleteSublayer(Layer *layer);
 
-		void drawWithoutRecursion(int mode);
+    void drawWithoutRecursion(int mode);
 
-		void simulate(int times = 1);
+    void simulate(int times = 1);
 
-		/// makes a new layer
-		Layer *makeLayer();
+    /// makes a new layer
+    Layer *makeLayer();
 
-		/**
-		 * calculates the transformation matrix based on the transformations of this layer
-		 * also recalculates transformation matrices of the sublayers
-		 **/
-		void calcTransformationMatrix();
+    /**
+     * Calculates the transformation matrix based on the transformations of this
+     * layer. Also recalculates transformation matrices of the sublayers
+     **/
+    void calcTransformationMatrix();
 
-		/**
-		 * Returns the transformation matrix of this layer.
-		 * \return pointer to the transformation matrix which is held in a static
-		 * storage place by each layer. Subsequent calls overwrite the content where
-		 * the returned pointer points to.
-		 **/
-		inline Matrix *getTransformationMatrix() { return &transformation; }
+    /**
+     * Returns the transformation matrix of this layer.
+     * \return pointer to the transformation matrix which is held in a static
+     * storage place by each layer. Subsequent calls overwrite the content where
+     * the returned pointer points to.
+     **/
+    inline Matrix *getTransformationMatrix() { return &transformation; }
 
-		const char *getName(void);
-		void setName(const char *str);
+    const char *getName(void);
+    void setName(const char *str);
 
-		/// Returns mesh.
-		inline Mesh *getMesh() { return mesh; }
-		/// Returns skeleton.
-		inline Skeleton *getSkeleton() { return skeleton; }
+    /// Returns mesh.
+    inline Mesh *getMesh() { return mesh; }
+    /// Returns skeleton.
+    inline Skeleton *getSkeleton() { return skeleton; }
 
-		/// Returns parent of layer.
-		inline Layer *getParent() { return parent; }
-		/// Sets layer parent.
-		inline void setParent(Layer *p) { parent = p; }
+    /// Returns parent of layer.
+    inline Layer *getParent() { return parent; }
+    /// Sets layer parent.
+    inline void setParent(Layer *p) { parent = p; }
 
-		/// Returns x position.
-		inline float getX(void) const { return x; }
-		/// Returns y position.
-		inline float getY(void) const { return y; }
-		/// Returns z position.
-		inline float getZ(void) const { return z; }
-		/// Returns cummulated z position.
-		inline float getTotalDepth() const { return transformation.f[14]; }
-		/// Returns scale.
-		inline float getScale(void) const { return scale; }
-		/// Returns theta.
-		inline float getTheta(void) const { return theta; }
-		/// Returns alpha.
-		inline float getAlpha(void) const { return alpha; }
-		/// Returns x offset
-		inline float getOffsetX(void) const { return offsetX; }
-		/// Returns y offset
-		inline float getOffsetY(void) const { return offsetY; }
+    /// Returns x position.
+    inline float getX(void) const { return x; }
+    /// Returns y position.
+    inline float getY(void) const { return y; }
+    /// Returns z position.
+    inline float getZ(void) const { return z; }
+    /// Returns cummulated z position.
+    inline float getTotalDepth() const { return transformation.f[14]; }
+    /// Returns scale.
+    inline float getScale(void) const { return scale; }
+    /// Returns theta.
+    inline float getTheta(void) const { return theta; }
+    /// Returns alpha.
+    inline float getAlpha(void) const { return alpha; }
+    /// Returns x offset
+    inline float getOffsetX(void) const { return offsetX; }
+    /// Returns y offset
+    inline float getOffsetY(void) const { return offsetY; }
 
-		float getAccumulatedAlpha(void);
+    float getAccumulatedAlpha(void);
 
-		/// Returns visibility.
-		inline bool getVisibility() const { return visible; }
+    /// Returns visibility.
+    inline bool getVisibility() const { return visible; }
 
-		/// Sets x position.
-		inline void setX(float x) { this->x = x; /* calcTransformationMatrix(); */ }
-		/// Sets y position.
-		inline void setY(float y) { this->y = y; /* calcTransformationMatrix(); */ }
-		/// Sets z position.
-		inline void setZ(float z) { this->z = z; /* calcTransformationMatrix(); */ }
-		/// Sets scale.
-		inline void setScale(float scale) { this->scale = scale; calcTransformationMatrix(); }
-		/// Sets theta.
-		inline void setTheta(float theta) { this->theta = theta; calcTransformationMatrix(); }
-		/// Sets alpha.
-		inline void setAlpha(float alpha) { this->alpha = alpha; }
-		/// Sets x offset
-		inline void setOffsetX(float x) { this->offsetX = x; }
-		/// Sets y offset
-		inline void setOffsetY(float y) { this->offsetY = y; }
+    /// Sets x position.
+    inline void setX(float x)
+        { this->x = x; /* calcTransformationMatrix(); */ }
+    /// Sets y position.
+    inline void setY(float y)
+        { this->y = y; /* calcTransformationMatrix(); */ }
+    /// Sets z position.
+    inline void setZ(float z)
+        { this->z = z; /* calcTransformationMatrix(); */ }
+    /// Sets scale.
+    inline void setScale(float scale)
+        { this->scale = scale; calcTransformationMatrix(); }
+    /// Sets theta.
+    inline void setTheta(float theta)
+        { this->theta = theta; calcTransformationMatrix(); }
+    /// Sets alpha.
+    inline void setAlpha(float alpha)
+        { this->alpha = alpha; }
+    /// Sets x offset
+    inline void setOffsetX(float x)
+        { this->offsetX = x; }
+    /// Sets y offset
+    inline void setOffsetY(float y)
+        { this->offsetY = y; }
 
-		void setVisibility(bool v);
+    void setVisibility(bool v);
 
-		/**
-		 * Moves layer.
-		 * \param x x-distance to move by
-		 * \param y y-distance to move by
-		 **/
-		inline void move(float x, float y) { this->x += x; this->y += y; calcTransformationMatrix(); }
-		inline void setOffset(float x, float y)
-		{
-			this->offsetX = x;
-			this->offsetY = y;
-			calcTransformationMatrix();
-		}
-		/**
-		 * Resizes layer.
-		 * \param s value added to scale
-		 **/
-		inline void resize(float s) { this->scale += s; calcTransformationMatrix(); }
-		/**
-		 * Rotates layer.
-		 * \param s value added to theta
-		 **/
-		inline void rotate(float s) { this->theta += s; calcTransformationMatrix(); }
-		/**
-		 * Changes layer depth.
-		 * \param z value to add to the layer z-coordinate
-		 **/
-		inline void depth(float z) { this->z += z; calcTransformationMatrix(); }
+    /**
+     * Moves layer.
+     * \param x x-distance to move by
+     * \param y y-distance to move by
+     **/
+    inline void move(float x, float y)
+        { this->x += x; this->y += y; calcTransformationMatrix(); }
+    inline void setOffset(float x, float y)
+        { this->offsetX = x; this->offsetY = y; calcTransformationMatrix(); }
+    /**
+     * Resizes layer.
+     * \param s value added to scale
+     **/
+    inline void resize(float s) { this->scale += s; calcTransformationMatrix(); }
+    /**
+     * Rotates layer.
+     * \param s value added to theta
+     **/
+    inline void rotate(float s) { this->theta += s; calcTransformationMatrix(); }
+    /**
+     * Changes layer depth.
+     * \param z value to add to the layer z-coordinate
+     **/
+    inline void depth(float z) { this->z += z; calcTransformationMatrix(); }
 
-		void scaleAroundPoint(float s, float ox, float oy);
+    void scaleAroundPoint(float s, float ox, float oy);
 
-		void setup(float x, float y, float z, float alpha, float offsetX,
-				   float offsetY, float scale, float theta);
+    void setup(float x, float y, float z, float alpha, float offsetX,
+               float offsetY, float scale, float theta);
 
-		inline static bool zorder(const Layer *a, const Layer *b)
-			{ return a->getTotalDepth() > b->getTotalDepth(); }
+    inline static bool zorder(const Layer *a, const Layer *b)
+        { return a->getTotalDepth() > b->getTotalDepth(); }
 };
 
 } /* namespace Animata */

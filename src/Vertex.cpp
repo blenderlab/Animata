@@ -28,19 +28,11 @@ using namespace Animata;
 
 void Vertex::draw(int mouseOver, int active)
 {
-	Primitives::drawVertex(this, mouseOver, active);
-	/*
-	if (mouseOver)
-		drawVertexMouseOver(this);
-	else
-	if (selected)
-		drawVertexSelected(this);
-	else
-		drawVertex(this); */
+    Primitives::drawVertex(this, mouseOver, active);
 }
 
 void Vertex::flipSelection(void)
 {
-	selected = !selected;
+    selected = !selected;
 }
 

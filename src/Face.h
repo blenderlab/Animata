@@ -28,7 +28,7 @@
 #include "Texture.h"
 
 #ifndef NULL
-	#define NULL 0
+    #define NULL 0
 #endif
 
 namespace Animata
@@ -37,52 +37,52 @@ namespace Animata
 /// Building element of Mesh. Consists of three Vertex.
 class Face
 {
-	public:
-		Vertex	*v[3];	///< the vertices that build up the Face
+public:
+    Vertex *v[3];   ///< the vertices that build up the Face
 
-		/**
-		 * Default constructor.
-		 * Does nothing.
-		 */
-		Face() {}
+    /**
+     * Default constructor.
+     * Does nothing.
+     */
+    Face() {}
 
-		/**
-		 * Constructor that attaches the given vertices to the Face.
-		 * \param v1 The first Vertex.
-		 * \param v2 The second Vertex.
-		 * \param v3 The third Vertex.
-		 */
-		Face(Vertex	*v1 = NULL, Vertex *v2 = NULL, Vertex *v3 = NULL)
-			{ v[0] = v1; v[1] = v2; v[2] = v3; }
+    /**
+     * Constructor that attaches the given vertices to the Face.
+     * \param v1 The first Vertex.
+     * \param v2 The second Vertex.
+     * \param v3 The third Vertex.
+     */
+    Face(Vertex *v1 = NULL, Vertex *v2 = NULL, Vertex *v3 = NULL)
+        { v[0] = v1; v[1] = v2; v[2] = v3; }
 
-		/**
-		 * Moves the Face by the given distance.
-		 * This is done by moving the three Vertex of the Face.
-		 * \param	dx	Distance in the \e x coordinate.
-		 * \param	dy	Distance in the \e y coordinate.
-		 */
-		void move(float dx, float dy);
+    /**
+     * Moves the Face by the given distance.
+     * This is done by moving the three Vertex of the Face.
+     * \param dx    Distance in the \e x coordinate.
+     * \param dy    Distance in the \e y coordinate.
+     */
+    void move(float dx, float dy);
 
-		/**
-		 * Calculates the center of the Face.
-		 * \retval	Vector2D	The center of the Face.
-		 */
-		Vector2D center(void);
+    /**
+     * Calculates the center of the Face.
+     * \retval Vector2D The center of the Face.
+     */
+    Vector2D center(void);
 
-		/**
-		 * Attaches texturecoordinates to Vertex \a v[3].
-		 * The vertices get the underlying texture's texel coordinates.
-		 * \param	t	The texture which will be used for the computations.
-		 */
-		void attachTexture(Texture *t);
+    /**
+     * Attaches texturecoordinates to Vertex \a v[3].
+     * The vertices get the underlying texture's texel coordinates.
+     * \param t The texture which will be used for the computations.
+     */
+    void attachTexture(Texture *t);
 
-		/**
-		 * Sets the one of the Vertex to the given one.
-		 * <b>No range checking is done!</b>
-		 * \param	i		Number of the vertex to set (possible values are: 0-2).
-		 * \param	vert	The new vertex.
-		 */
-		inline void setVertex(unsigned char i, Vertex *vert) { v[i] = vert; }
+    /**
+     * Sets the one of the Vertex to the given one.
+     * <b>No range checking is done!</b>
+     * \param i     Number of the vertex to set (possible values are: 0-2).
+     * \param vert  The new vertex.
+     */
+    inline void setVertex(unsigned char i, Vertex *vert) { v[i] = vert; }
 };
 
 } /* namespace Animata */

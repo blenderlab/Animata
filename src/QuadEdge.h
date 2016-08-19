@@ -36,48 +36,50 @@ class QuadEdge;
 
 class Edge
 {
-	friend class QuadEdge;
-	friend void splice(Edge *a, Edge *b);
-	friend void delete_edge(Edge *e);
-	private:
-		int num;
-		Edge *next;
-		int data;	// point index
-	public:
-		Edge() { data = 0; };
-		Edge *rot(void);
-		Edge *invrot(void);
-		Edge *sym(void);
-		Edge *onext(void);
-		Edge *oprev(void);
-		Edge *dnext(void);
-		Edge *dprev(void);
-		Edge *lnext(void);
-		Edge *lprev(void);
-		Edge *rnext(void);
-		Edge *rprev(void);
-		int org(void);
-		int dest(void);
-		void endpoints(int orig, int dest);
+    friend class QuadEdge;
+    friend void splice(Edge *a, Edge *b);
+    friend void delete_edge(Edge *e);
 
-		static Edge *make_edge(void);
-		static void kill_edges(void);
-		static void splice(Edge *a, Edge *b);
-		static void delete_edge(Edge *e);
-		static Edge* connect_edge(Edge *a, Edge *b);
-		static void swap(Edge *e);
+private:
+    int num;
+    Edge *next;
+    int data;   // point index
+
+public:
+    Edge() { data = 0; };
+    Edge *rot(void);
+    Edge *invrot(void);
+    Edge *sym(void);
+    Edge *onext(void);
+    Edge *oprev(void);
+    Edge *dnext(void);
+    Edge *dprev(void);
+    Edge *lnext(void);
+    Edge *lprev(void);
+    Edge *rnext(void);
+    Edge *rprev(void);
+    int org(void);
+    int dest(void);
+    void endpoints(int orig, int dest);
+
+    static Edge *make_edge(void);
+    static void kill_edges(void);
+    static void splice(Edge *a, Edge *b);
+    static void delete_edge(Edge *e);
+    static Edge* connect_edge(Edge *a, Edge *b);
+    static void swap(Edge *e);
 };
 
 class QuadEdge
 {
-	friend class Edge;
-	friend class Subdivision;
+    friend class Edge;
+    friend class Subdivision;
 
-	private:
-		Edge e[4];
-		static vector<QuadEdge *> *qe_array;
-	public:
-		QuadEdge();
+private:
+    Edge e[4];
+    static vector<QuadEdge *> *qe_array;
+public:
+    QuadEdge();
 };
 
 } /* namespace Animata */

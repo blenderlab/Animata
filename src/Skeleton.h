@@ -40,63 +40,68 @@ namespace Animata
 /// Skeleton attached to the mesh
 class Skeleton : public Drawable
 {
-	public:
-		Skeleton();
-		~Skeleton();
+public:
+    Skeleton();
+    ~Skeleton();
 
-		Joint *addJoint(float x, float y);
-		Bone *addBone(Joint *j0, Joint *j1);
+    Joint *addJoint(float x, float y);
+    Bone *addBone(Joint *j0, Joint *j1);
 
-		int moveSelectedJoints(float dx, float dy);
-		int moveSelectedBones(float dx, float dy);
-		void endMoveSelectedJoints(void);
-		void endMoveSelectedBones(void);
+    int moveSelectedJoints(float dx, float dy);
+    int moveSelectedBones(float dx, float dy);
+    void endMoveSelectedJoints(void);
+    void endMoveSelectedBones(void);
 
-		void setSelectedJointParameters(enum ANIMATA_PREFERENCES prefParam,
-				void *value);
-		void setSelectedBoneParameters(const char *str = NULL,
-			float s = FLT_EPSILON, float lengthMultiply = -1, float aRad = FLT_MAX,
-			float falloff = FLT_MAX);
+    void setSelectedJointParameters(enum ANIMATA_PREFERENCES prefParam,
+                                    void *value);
 
-		void setSelectedBoneLengthMultMin(float p);
-		void setSelectedBoneLengthMultMax(float p);
-		void setSelectedBoneTempo(float p);
+    void setSelectedBoneParameters(const char *str = NULL,
+                                   float s = FLT_EPSILON,
+                                   float lengthMultiply = -1,
+                                   float aRad = FLT_MAX,
+                                   float falloff = FLT_MAX);
 
-		void deleteSelectedJoint(void);
-		void deleteSelectedBone(void);
+    void setSelectedBoneLengthMultMin(float p);
+    void setSelectedBoneLengthMultMax(float p);
+    void setSelectedBoneTempo(float p);
 
-		void clearSelection(void);
+    void deleteSelectedJoint(void);
+    void deleteSelectedBone(void);
 
-		void setJointViewCoords(float *coords, unsigned int size);
+    void clearSelection(void);
 
-		virtual void draw(int mode, int active = 1);
-		virtual void select(unsigned i, int type);
-		virtual void circleSelect(unsigned i, int type, int xc, int yc, float r);
+    void setJointViewCoords(float *coords, unsigned int size);
 
-		void simulate(int times = 1);
+    virtual void draw(int mode, int active = 1);
+    virtual void select(unsigned i, int type);
+    virtual void circleSelect(unsigned i, int type, int xc, int yc, float r);
 
-		void attachVertices(vector<Vertex *> *verts);
-		void disattachVertices(void);
-		void disattachSelectedVertex(Vertex *v);
+    void simulate(int times = 1);
 
-		void selectVerticesInRange(Mesh *mesh);
+    void attachVertices(vector<Vertex *> *verts);
+    void disattachVertices(void);
+    void disattachSelectedVertex(Vertex *v);
 
-		/// Returns the joint below the mouse cursor.
-		inline Joint *getPointedJoint(void) { return pJoint; }
-		/// Returns the bone below the mouse cursor.
-		inline Bone *getPointedBone(void) { return pBone; }
+    void selectVerticesInRange(Mesh *mesh);
 
-		/// Returns skeleton joints.
-		inline vector<Joint *> *getJoints(void) { return joints; }
-		/// Returns skeleton bones.
-		inline vector<Bone *> *getBones(void) { return bones; }
+    /// Returns the joint below the mouse cursor.
+    inline Joint *getPointedJoint(void) { return pJoint; }
 
-	private:
-		vector<Joint *> *joints;
-		vector<Bone *> *bones;
+    /// Returns the bone below the mouse cursor.
+    inline Bone *getPointedBone(void) { return pBone; }
 
-		Joint	*pJoint;	/**< joint below the cursor */
-		Bone	*pBone;		/**< bone below the cursor */
+    /// Returns skeleton joints.
+    inline vector<Joint *> *getJoints(void) { return joints; }
+
+    /// Returns skeleton bones.
+    inline vector<Bone *> *getBones(void) { return bones; }
+
+private:
+    vector<Joint *> *joints;
+    vector<Bone *> *bones;
+
+    Joint *pJoint;  /**< joint below the cursor */
+    Bone *pBone;    /**< bone below the cursor */
 };
 
 } /* namespace Animata */

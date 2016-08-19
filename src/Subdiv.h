@@ -36,37 +36,38 @@ typedef void (Mesh::*FACE_PROC)(int p0, int p1, int p2);
 
 class aLine
 {
-	public:
-		aLine(Vector2D *p0, Vector2D *p1);
-		float eval(Vector2D *p) const;
-	private:
-		float a, b, c;
+public:
+    aLine(Vector2D *p0, Vector2D *p1);
+    float eval(Vector2D *p) const;
+private:
+    float a, b, c;
 };
 
 /// Triangulates a set of points.
 class Subdivision
 {
-	private:
-		const float EPS;
+private:
+    const float EPS;
 
-		Edge *start_edge;
-		Edge *locate(Vector2D *p);
-		Vector2D *points;	// points to triangulate, space for p_count+3 points
-		int p_count;		// number of points
+    Edge *start_edge;
+    Edge *locate(Vector2D *p);
+    Vector2D *points;   // points to triangulate, space for p_count+3 points
+    int p_count;        // number of points
 
-		int right_of(const Vector2D *x, Edge *e);
-		int left_of(const Vector2D *x, Edge *e);
-		int on_edge(Vector2D *p, Edge *e);
-		int ccw(const Vector2D *a, const Vector2D *b, const Vector2D *c);
-		float triarea(const Vector2D *a, const Vector2D *b, const Vector2D *c);
-		int in_circle(const Vector2D *a, const Vector2D *b,
-				const Vector2D *c, const Vector2D *d);
-		static int *edge_length;	// length of edges stored for subdivision
-	public:
-		Subdivision(int p_count, Vector2D *points);
-		void insert_site(int i);
-		void kill(void);
-		void get_faces(FACE_PROC face_proc, Mesh *m);
+    int right_of(const Vector2D *x, Edge *e);
+    int left_of(const Vector2D *x, Edge *e);
+    int on_edge(Vector2D *p, Edge *e);
+    int ccw(const Vector2D *a, const Vector2D *b, const Vector2D *c);
+    float triarea(const Vector2D *a, const Vector2D *b, const Vector2D *c);
+    int in_circle(const Vector2D *a, const Vector2D *b,
+                  const Vector2D *c, const Vector2D *d);
+    static int *edge_length;    // length of edges stored for subdivision
+
+public:
+    Subdivision(int p_count, Vector2D *points);
+    void insert_site(int i);
+    void kill(void);
+    void get_faces(FACE_PROC face_proc, Mesh *m);
 };
 
 } /* namespace Animata */

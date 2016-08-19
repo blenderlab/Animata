@@ -25,11 +25,11 @@
 #define __PLAYBACK_H__
 
 #if defined(__APPLE__)
-	#include <OPENGL/gl.h>
-	#include <OPENGL/glu.h>
+    #include <OPENGL/gl.h>
+    #include <OPENGL/glu.h>
 #else
-	#include <GL/gl.h>
-	#include <GL/glu.h>
+    #include <GL/gl.h>
+    #include <GL/glu.h>
 #endif
 
 #include <FL/Fl.H>
@@ -48,46 +48,43 @@ namespace Animata
 /// but can display different primitive types as the actives in the main window.
 class Playback : public Fl_Gl_Window
 {
-	private:
+private:
 
-		Camera		*camera;				///< Camera which displays the playback window's picture. It's \a parent is set to AnimataWindow::camera.
-		/*
-		Layer		*rootLayer;				///< The root of all layers, same as AnimataWindow::rootLayer.
-		*/
-		std::vector<Layer *> *allLayers;	///< Every layer on the scene, same as AnimataWindow::allLayers.
+    ///< Camera which displays the playback window's picture. It's \a parent is set to AnimataWindow::camera.
+    Camera *camera;
 
-		bool		fullscreen;				///< fullscreen flag
-		int			ox, oy, ow, oh;			///< last position of the playback window before it has been but to fullscreen
+    ///< Every layer on the scene, same as AnimataWindow::allLayers.
+    std::vector<Layer *> *allLayers;
 
-		void		*glContext;				///< OpenGL context of this window
+    bool fullscreen;    ///< fullscreen flag
 
-	public:
+    ///< last position of the playback window before it has been but to fullscreen
+    int ox, oy, ow, oh;
 
-//		static const unsigned RENDER_PLAYBACK = RENDER_LAST;	///< Constant for drawing functions to render only the playback picture.
+    void *glContext;    ///< OpenGL context of this window
 
-		Playback(int x, int y, int w, int h, const char* l = NULL);
-		~Playback();
+public:
 
-		void draw();
-		int handle(int);
+    Playback(int x, int y, int w, int h, const char* l = NULL);
+    ~Playback();
 
-		void show();
-		void hide();
+    void draw();
+    int handle(int);
 
-		/**
-		 * Returns the camera of the playback window.
-		 * \retval	Camera*	A pointer to the camera object.
-		 */
-		inline Camera *getCamera() { return camera; }
+    void show();
+    void hide();
 
-		/**
-		 * Sets the \a rootLayer to the given one.
-		 * \param	r	The new rootLayer.
-		 */
-		/*
-		inline void setRootLayer(Layer *r) { rootLayer = r; }
-		*/
-		inline void setAllLayers(std::vector<Layer *> *l) { allLayers = l; }
+    /**
+     * Returns the camera of the playback window.
+     * \retval Camera*  A pointer to the camera object.
+     */
+    inline Camera *getCamera() { return camera; }
+
+    /**
+     * Sets the \a rootLayer to the given one.
+     * \param r The new rootLayer.
+     */
+    inline void setAllLayers(std::vector<Layer *> *l) { allLayers = l; }
 };
 
 } /* namespace Animata */

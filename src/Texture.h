@@ -40,88 +40,90 @@ namespace Animata
 /// Represent a texture that can be attached to a Mesh.
 class Texture
 {
-	private:
-		unsigned char	*data;			///< pixel values of the texture
-		int				depth;			///< color depth value
+private:
+    unsigned char *data;    ///< pixel values of the texture
+    int depth;              ///< color depth value
 
-		float			scale;			///< scale multiplier for the size
+    float scale;            ///< scale multiplier for the size
 
-		GLuint			glResource;		///< OpenGL resource of the texture
+    GLuint glResource;      ///< OpenGL resource of the texture
 
-		int				sWrap;			///< \c GL_TEXTURE_WRAP_S OpenGL parameter
-		int				tWrap;			///< \c GL_TEXTURE_WRAP_T OpenGL parameter
+    int sWrap;              ///< \c GL_TEXTURE_WRAP_S OpenGL parameter
+    int tWrap;              ///< \c GL_TEXTURE_WRAP_T OpenGL parameter
 
-		int				minFilter;		///< \c GL_TEXTURE_MIN_FILTER OpenGL parameter
-		int				magFilter;		///< \c GL_TEXTURE_MAG_FILTER OpenGL parameter
+    int minFilter;          ///< \c GL_TEXTURE_MIN_FILTER OpenGL parameter
+    int magFilter;          ///< \c GL_TEXTURE_MAG_FILTER OpenGL parameter
 
-		const char		*filename;		///< filename from which the texture is created
+    const char *filename;   ///< filename from which the texture is created
 
-		int getTexelAlpha(float x, float y);
+    int getTexelAlpha(float x, float y);
 
-	public:
+public:
 
-		static const int BORDER = 0;	///< size of the border around the texture when mouse over
+    ///< size of the border around the texture when mouse over
+    static const int BORDER = 0;
 
-		float		x;					///< \e x coordinate of the position in world coordinate-system
-		float		y;					///< \e y coordinate of the position in world coordinate-system
+    float x;    ///< \e x coordinate of the position in world coordinate-system
+    float y;    ///< \e y coordinate of the position in world coordinate-system
 
-		int			width;				///< width of the texture
-		int			height;				///< height of the texture
+    int width;  ///< width of the texture
+    int height; ///< height of the texture
 
-		Vector2D	viewTopLeft;
-		Vector2D	viewBottomRight;
+    Vector2D viewTopLeft;
+    Vector2D viewBottomRight;
 
 
-		Texture(const char *filename, int w, int h, int d, unsigned char* p, int reuseResource = 0);
-		~Texture();
+    Texture(const char *filename, int w, int h, int d, unsigned char* p,
+            int reuseResource = 0);
+    ~Texture();
 
-		void draw(int mouseOver = 0);
+    void draw(int mouseOver = 0);
 
-		int getTriangleAlpha(float x0, float y0, float x1, float y1,
-				float x2, float y2, int maxIter = 3, int iterLevel = 1);
+    int getTriangleAlpha(float x0, float y0, float x1, float y1,
+                         float x2, float y2, int maxIter = 3, int iterLevel = 1);
 
-		void scaleAroundPoint(float s, float ox, float oy);
+    void scaleAroundPoint(float s, float ox, float oy);
 
-		/**
-		 * Returns an array holding pixel values of the texture.
-		 * \retval	unsigned char*	Array of the pixel values.
-		 */
-		inline unsigned char* getData() { return data; }
+    /**
+     * Returns an array holding pixel values of the texture.
+     * \retval unsigned char* Array of the pixel values.
+     */
+    inline unsigned char* getData() { return data; }
 
-		/**
-		 * Returns scale multiplier of the texture.
-		 * \retval	float	Scale multiplier.
-		 */
-		inline float getScale(void) { return scale; }
-		/**
-		 * Sets scale multiplier value.
-		 * \param	s	New scale multiplier.
-		 */
-		inline void setScale(float s) { scale = s; }
+    /**
+     * Returns scale multiplier of the texture.
+     * \retval float Scale multiplier.
+     */
+    inline float getScale(void) { return scale; }
+    /**
+     * Sets scale multiplier value.
+     * \param s New scale multiplier.
+     */
+    inline void setScale(float s) { scale = s; }
 
-		/**
-		 * Returns width of the texture.
-		 * \retval	int	Width of the texture.
-		 */
-		inline int getWidth() { return width; }
-		/**
-		 * Returns height of the texture.
-		 * \retval	int	Height of the texture.
-		 */
-		inline int getHeight() { return height; }
-		/**
-		 * Returns the OpenGL resource which holds the texture.
-		 * \retval	GLuint	OpenGL resource that represent the texture.
-		 */
-		inline GLuint getGlResource() { return glResource; }
+    /**
+     * Returns width of the texture.
+     * \retval int Width of the texture.
+     */
+    inline int getWidth() { return width; }
+    /**
+     * Returns height of the texture.
+     * \retval int Height of the texture.
+     */
+    inline int getHeight() { return height; }
+    /**
+     * Returns the OpenGL resource which holds the texture.
+     * \retval GLuint OpenGL resource that represent the texture.
+     */
+    inline GLuint getGlResource() { return glResource; }
 
-		/**
-		 * Returns the filename from which the texture was created.
-		 * \retval const char* String of the filename.
-		 */
-		inline const char *getFilename(void) { return filename; }
+    /**
+     * Returns the filename from which the texture was created.
+     * \retval const char* String of the filename.
+     */
+    inline const char *getFilename(void) { return filename; }
 
-		Texture *clone();
+    Texture *clone();
 };
 
 } /* namespace Animata */

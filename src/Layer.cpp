@@ -42,27 +42,27 @@ int Layer::layerCount = 0;
  **/
 Layer::Layer(Layer *p)
 {
-	layers = new std::vector<Layer *>;
-	parent = p;
+    layers = new std::vector<Layer *>;
+    parent = p;
 
-	mesh = new Mesh();
-	skeleton = new Skeleton();
+    mesh = new Mesh();
+    skeleton = new Skeleton();
 
-	sprintf(name, "layer_%04d", Layer::layerCount);
-	Layer::layerCount++;
+    sprintf(name, "layer_%04d", Layer::layerCount);
+    Layer::layerCount++;
 
-	x = y = z = 0.f;
-	alpha = 1.0;
-	scale = 1.0;
+    x = y = z = 0.f;
+    alpha = 1.0;
+    scale = 1.0;
     theta = 0.0;
 
-	visible = true;
+    visible = true;
 
-	calcTransformationMatrix();
+    calcTransformationMatrix();
 
-	// add layer to vector of all layers
-	if (ui) // FIXME: ui should not be NULL ever!
-		ui->editorBox->addToAllLayers(this);
+    // add layer to vector of all layers
+    if (ui) // FIXME: ui should not be NULL ever!
+        ui->editorBox->addToAllLayers(this);
 }
 
 /**
@@ -70,18 +70,17 @@ Layer::Layer(Layer *p)
  **/
 Layer::~Layer()
 {
-	/* remove from all layers */
-	if (ui)
-	{
-		ui->editorBox->lock();
-		ui->editorBox->deleteFromAllLayers(this);
-		ui->editorBox->unlock();
-	}
+    /* remove from all layers */
+    if (ui) {
+        ui->editorBox->lock();
+        ui->editorBox->deleteFromAllLayers(this);
+        ui->editorBox->unlock();
+    }
 
-	delete mesh;
-	delete skeleton;
+    delete mesh;
+    delete skeleton;
 
-	eraseLayers();
+    eraseLayers();
 }
 
 /**
@@ -89,15 +88,14 @@ Layer::~Layer()
  **/
 void Layer::eraseLayers()
 {
-	if (layers)
-	{
-		std::vector<Layer *>::iterator l = layers->begin();
-		for (; l < layers->end(); l++)
-			delete *l;					// free layers from memory
-		layers->clear();				// clear all vector elements
-		delete layers;
-		layers = NULL;
-	}
+    if (layers) {
+        std::vector<Layer *>::iterator l = layers->begin();
+        for (; l < layers->end(); l++)
+            delete *l;          // free layers from memory
+        layers->clear();        // clear all vector elements
+        delete layers;
+        layers = NULL;
+    }
 }
 
 /**
@@ -107,12 +105,10 @@ void Layer::eraseLayers()
  **/
 void Layer::setLayers(std::vector<Layer *> *newLayers)
 {
-	if (newLayers)
-	{
-		eraseLayers();
-
-		layers = newLayers;
-	}
+    if (newLayers) {
+        eraseLayers();
+        layers = newLayers;
+    }
 }
 
 /**
@@ -121,7 +117,7 @@ void Layer::setLayers(std::vector<Layer *> *newLayers)
  **/
 const char *Layer::getName(void)
 {
-	return name;
+    return name;
 }
 
 /**
@@ -130,8 +126,8 @@ const char *Layer::getName(void)
  **/
 void Layer::setName(const char *str)
 {
-	strncpy(name, str, 15);
-	name[15] = 0;
+    strncpy(name, str, 15);
+    name[15] = 0;
 }
 
 /**
@@ -148,35 +144,35 @@ void Layer::setName(const char *str)
 void Layer::setup(float x, float y, float z, float alpha, float offsetX,
                   float offsetY, float scale, float theta)
 {
-	this->x = x;
-	this->y = y;
-	this->z = z;
-	this->alpha = alpha;
+    this->x = x;
+    this->y = y;
+    this->z = z;
+    this->alpha = alpha;
     this->offsetX = offsetX;
     this->offsetY = offsetY;
     this->scale = scale;
     this->theta = theta;
 
-	calcTransformationMatrix();
+    calcTransformationMatrix();
 }
 
 /**
- * Changes the layer's scale around a given point relative to the layer's transformation space.
- * \param	s	new value of the layer's scale
- * \param	ox	scale center's x coordinate inside the layer's coordinate system
- * \param	oy	scale center's y coordinate inside the layer's coordinate system
+ * Changes the layer's scale around a given point relative to the layer's
+ * transformation space.
+ * \param s     new value of the layer's scale
+ * \param ox    scale center's x coordinate inside the layer's coordinate system
+ * \param oy    scale center's y coordinate inside the layer's coordinate system
  **/
-// TODO: same as in Texture.cpp, if it's needed somewhere else, put it into a central place
+/* TODO: same as in Texture.cpp, if it's needed somewhere else, put it into a 
+ * central place */
 void Layer::scaleAroundPoint(float s, float ox, float oy)
 {
-	if (s > MIN_SCALE)
-	{
-		x -= ox * (s - scale);
-		y -= oy * (s - scale);
-
-		scale = s;
-	}
-	calcTransformationMatrix();
+    if (s > MIN_SCALE) {
+        x -= ox * (s - scale);
+        y -= oy * (s - scale);
+        scale = s;
+    }
+    calcTransformationMatrix();
 }
 
 
@@ -185,70 +181,69 @@ void Layer::scaleAroundPoint(float s, float ox, float oy)
  **/
 void Layer::drawWithoutRecursion(int mode)
 {
-	if (!visible)
-		return;
+    if (!visible)
+        return;
 
-	// get the boundaries of actual viewport
-	GLint viewport[4];
-	glGetIntegerv(GL_VIEWPORT, viewport);
+    // get the boundaries of actual viewport
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
 
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glMultMatrixf(transformation.f);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glMultMatrixf(transformation.f);
 
-	Camera *cam = ui->editorBox->getCamera();
-	float camZ = cam->getTarget()->z - cam->getDistance();
+    Camera *cam = ui->editorBox->getCamera();
+    float camZ = cam->getTarget()->z - cam->getDistance();
 
-	/* if we are in mesh editing mode only draw the current layer */
-	if ((((ui->settings.mode >= ANIMATA_MODE_CREATE_VERTEX) &&
-		(ui->settings.mode <= ANIMATA_MODE_MESH_DELETE) &&
-		(this == ui->editorBox->getCurrentLayer())) ||
-		/* draw current layer only in image mode */
-		((ui->settings.mode >= ANIMATA_MODE_TEXTURE_POSITION) &&
-		(ui->settings.mode <= ANIMATA_MODE_TEXTURE_SCALE) &&
-		(this == ui->editorBox->getCurrentLayer())) ||
-		/* draw the layer if not in mesh editing or image mode */
-		(((ui->settings.mode >= ANIMATA_MODE_CREATE_JOINT) &&
-		  (ui->settings.mode <= ANIMATA_MODE_SKELETON_DELETE)) ||
-		 ((ui->settings.mode >= ANIMATA_MODE_LAYER_MOVE) &&
-		  (ui->settings.mode <= ANIMATA_MODE_LAYER_ROTATE)) ||
-		 /* FIXME: camera & view have no ANIMATA_MODE set */
-		 (ui->settings.mode == ANIMATA_MODE_NONE)) ||
-		mode & RENDER_OUTPUT) &&
-		/* don't draw the layer if its behind the camera */
-		(transformation[14] > camZ))
-	{
-		mesh->setTextureAlpha(getAccumulatedAlpha());
+    bool isCurrentLayer = this == ui->editorBox->getCurrentLayer();
 
-		if (mode & RENDER_FEEDBACK)
-		{
-			// set the transformation matrices for setVertexViewCoords() and setJointViewCoords() in doFeedback
-			Transform::setMatrices();
+    /* don't draw the layer if its behind the camera */
+    if (transformation[14] < camZ) {
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+        return;
+    }
 
-			selector->doFeedback(this);
-		}
+    /* If we are in mesh or image/texture mode, only draw the current layer */
+    if ((isMeshMode(ui->settings.mode) || isTextureMode(ui->settings.mode))
+        && !isCurrentLayer && !(mode & RENDER_OUTPUT)) {
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+        return;
+    }
 
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		glOrtho(viewport[0], viewport[2] + viewport[0], viewport[1], viewport[3] + viewport[1], 0, 1);
+    mesh->setTextureAlpha(getAccumulatedAlpha());
 
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
+    if (mode & RENDER_FEEDBACK) {
+        /* set the transformation matrices for setVertexViewCoords() and
+         * setJointViewCoords() in doFeedback */
+        Transform::setMatrices();
+        selector->doFeedback(this);
+    }
 
-		mesh->draw(mode & ~RENDER_FEEDBACK, this == ui->editorBox->getCurrentLayer());
-		skeleton->draw(mode & ~RENDER_FEEDBACK, this == ui->editorBox->getCurrentLayer());
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(viewport[0], viewport[2] + viewport[0], viewport[1],
+            viewport[3] + viewport[1], 0, 1);
 
-		glMatrixMode(GL_MODELVIEW);
-		glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
 
-		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
-	}
+    mesh->draw(mode & ~RENDER_FEEDBACK,
+               this == ui->editorBox->getCurrentLayer());
+    skeleton->draw(mode & ~RENDER_FEEDBACK,
+                   this == ui->editorBox->getCurrentLayer());
 
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
 }
 
 /**
@@ -257,16 +252,16 @@ void Layer::drawWithoutRecursion(int mode)
  **/
 void Layer::simulate(int times)
 {
-	/* simulate only visible layers */
-	if (!visible)
-		return;
+    /* simulate only visible layers */
+    if (!visible)
+        return;
 
-	skeleton->simulate(times);
+    skeleton->simulate(times);
 
-	// simulate sublayers
-	std::vector<Layer *>::iterator l = layers->begin();
-	for (; l < layers->end(); l++)
-		(*l)->simulate(times);
+    // simulate sublayers
+    std::vector<Layer *>::iterator l = layers->begin();
+    for (; l < layers->end(); l++)
+        (*l)->simulate(times);
 }
 
 /**
@@ -276,29 +271,29 @@ void Layer::simulate(int times)
  **/
 void Layer::calcTransformationMatrix()
 {
-	transformation.loadIdentity();
+    transformation.loadIdentity();
     transformation.translate(-offsetX, -offsetY, 0.0f);
-	transformation.scale(scale, scale, 1.0f);
+    transformation.scale(scale, scale, 1.0f);
     transformation.rotate(theta);
-	transformation.translate(x + offsetX, y + offsetY, z);
+    transformation.translate(x + offsetX, y + offsetY, z);
 
-	Layer *actLayer = this;
-	while(actLayer->getParent())
-	{
-		actLayer = actLayer->getParent();
-        transformation.translate(-actLayer->getOffsetX(), -actLayer->getOffsetY(), 0.0f);
-		transformation.scale(actLayer->getScale(), actLayer->getScale(), 1.0f);
+    Layer *actLayer = this;
+    while (actLayer->getParent()) {
+        actLayer = actLayer->getParent();
+        transformation.translate(-actLayer->getOffsetX(),
+                                 -actLayer->getOffsetY(), 0.0f);
+        transformation.scale(actLayer->getScale(), actLayer->getScale(), 1.0f);
         transformation.rotate(actLayer->getTheta());
-		transformation.translate(actLayer->getX() + actLayer->getOffsetX(),
+        transformation.translate(actLayer->getX() + actLayer->getOffsetX(),
                                  actLayer->getY() + actLayer->getOffsetY(),
                                  actLayer->getZ());
-	}
+    }
 
-	// transformation matrix of this layer changed
-	// also recalculate transformation matrices of the sublayers
-	std::vector<Layer *>::iterator l = layers->begin();
-	for (; l < layers->end(); l++)
-		(*l)->calcTransformationMatrix();
+    // transformation matrix of this layer changed
+    // also recalculate transformation matrices of the sublayers
+    std::vector<Layer *>::iterator l = layers->begin();
+    for (; l < layers->end(); l++)
+        (*l)->calcTransformationMatrix();
 }
 
 
@@ -309,14 +304,14 @@ void Layer::calcTransformationMatrix()
  **/
 Layer *Layer::makeLayer()
 {
-	Layer *l = new Layer(this);
+    Layer *l = new Layer(this);
 
-	if (!layers)
-		layers = new std::vector<Layer *>;
+    if (!layers)
+        layers = new std::vector<Layer *>;
 
-	layers->push_back(l);
+    layers->push_back(l);
 
-	return l;
+    return l;
 }
 
 /**
@@ -325,8 +320,8 @@ Layer *Layer::makeLayer()
  **/
 void Layer::addSublayer(Layer *sublayer)
 {
-	layers->push_back(sublayer);
-	sublayer->setParent(this);
+    layers->push_back(sublayer);
+    sublayer->setParent(this);
 }
 
 /**
@@ -335,11 +330,10 @@ void Layer::addSublayer(Layer *sublayer)
  **/
 void Layer::addSublayers(std::vector<Layer *> *sublayers)
 {
-	std::vector<Layer *>::iterator l = sublayers->begin();
-	for (; l < sublayers->end(); l++)
-	{
-		layers->push_back(*l);
-	}
+    std::vector<Layer *>::iterator l = sublayers->begin();
+    for (; l < sublayers->end(); l++) {
+        layers->push_back(*l);
+    }
 }
 
 /**
@@ -349,17 +343,17 @@ void Layer::addSublayers(std::vector<Layer *> *sublayers)
  **/
 int Layer::deleteSublayer(Layer *layer)
 {
-	std::vector<Layer *>::iterator pos;
+    std::vector<Layer *>::iterator pos;
 
-	// find position of layer in vector
-	pos = find(layers->begin(), layers->end(), layer);
-	if (pos == layers->end()) // not a member
-		return -1;
+    // find position of layer in vector
+    pos = find(layers->begin(), layers->end(), layer);
+    if (pos == layers->end()) // not a member
+        return -1;
 
-	layers->erase(pos);
-	delete layer;
+    layers->erase(pos);
+    delete layer;
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -369,14 +363,12 @@ int Layer::deleteSublayer(Layer *layer)
  **/
 float Layer::getAccumulatedAlpha(void)
 {
-	if (parent == NULL)
-	{
-		return alpha;
-	}
-	else
-	{
-		return alpha * parent->getAccumulatedAlpha();
-	}
+    if (parent == NULL) {
+        return alpha;
+    }
+    else {
+        return alpha * parent->getAccumulatedAlpha();
+    }
 }
 
 /**
@@ -385,10 +377,10 @@ float Layer::getAccumulatedAlpha(void)
  **/
 void Layer::setVisibility(bool v)
 {
-	visible = v;
+    visible = v;
 
-	vector<Layer *>::iterator l = layers->begin();
-	for (; l < layers->end(); l++)
-		(*l)->setVisibility(v);
+    vector<Layer *>::iterator l = layers->begin();
+    for (; l < layers->end(); l++)
+        (*l)->setVisibility(v);
 }
 

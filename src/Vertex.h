@@ -32,29 +32,30 @@ namespace Animata
 /// A point that builds up a Face.
 class Vertex
 {
-	public:
-		Vector2D	coord;			///< 2D position of the Vertex in the world
-		Vector2D	texCoord;		///< texture coordinate used at this point
-		Vector2D	view;			///< the position of the Vertex on the screen
+public:
+    Vector2D    coord;          ///< 2D position of the Vertex in the world
+    Vector2D    texCoord;       ///< texture coordinate used at this point
+    Vector2D    view;           ///< the position of the Vertex on the screen
 
-		bool		selected;		///< selection state
+    bool        selected;       ///< selection state
 
-		/**
-		 * Creates a new Vertex at a given position.
-		 * \param c The position where to place the new Vertex.
-		 * \param tc Texture coordinate assigned to the Vertex.
-		 */
-		Vertex(Vector2D c, Vector2D tc = Vector2D()) { coord = c; texCoord = tc; selected = false; }
+    /**
+     * Creates a new Vertex at a given position.
+     * \param c The position where to place the new Vertex.
+     * \param tc Texture coordinate assigned to the Vertex.
+     */
+    Vertex(Vector2D c, Vector2D tc = Vector2D())
+        { coord = c; texCoord = tc; selected = false; }
 
-		/**
-		 * Draws the Vertex onscreen.
-		 * \param mouseOver Indicates if the mouseOver state should be drawn.
-		 * \param active Indicates if the active state should be drawn.
-		 */
-		void draw(int mouseOver = 0, int active = 1);
+    /**
+     * Draws the Vertex onscreen.
+     * \param mouseOver Indicates if the mouseOver state should be drawn.
+     * \param active Indicates if the active state should be drawn.
+     */
+    void draw(int mouseOver = 0, int active = 1);
 
-		/// Inverts the selection state of the Vertex.
-		void flipSelection(void);
+    /// Inverts the selection state of the Vertex.
+    void flipSelection(void);
 };
 
 } /* namespace Animata */

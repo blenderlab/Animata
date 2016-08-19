@@ -30,7 +30,7 @@
 #include "Texture.h"
 
 #ifndef PATH_MAX
-	#define PATH_MAX 4096
+    #define PATH_MAX 4096
 #endif
 
 namespace Animata
@@ -38,25 +38,25 @@ namespace Animata
 
 class ImageBox : public Fl_Box
 {
-		Fl_Image* origImage;
-		Fl_Image* boxImage;
+    Fl_Image* origImage;
+    Fl_Image* boxImage;
 
-		int handle(int);
-		void handleRelease(void);
+    int handle(int);
+    void handleRelease(void);
 
-		char filename[PATH_MAX+1];
+    char filename[PATH_MAX+1];
 
-	public:
-		ImageBox(const char *filename, Fl_Image* i, int x, int y, int w,
-				int h = 0, const char* label = 0);
+public:
+    ImageBox(const char *filename, Fl_Image* i, int x, int y, int w,
+             int h = 0, const char* label = 0);
 
-		/// adds texture to texture manager
-		void addTexture(void);
+    /// adds texture to texture manager
+    void addTexture(void);
 
-		/// returns a newly allocated texture object based on the image stored in this box
-		Texture *allocateTexture();
+    /// returns a newly allocated texture object based on the image stored in this box
+    Texture *allocateTexture();
 
-		inline char *getFilename() { return filename; }
+    inline char *getFilename() { return filename; }
 };
 
 } /* namespace Animata */

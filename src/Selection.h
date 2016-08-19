@@ -25,11 +25,11 @@
 #define __SELECTION_H__
 
 #if defined(__APPLE__)
-	#include <OPENGL/gl.h>
-	#include <OPENGL/glu.h>
+    #include <OPENGL/gl.h>
+    #include <OPENGL/glu.h>
 #else
-	#include <GL/gl.h>
-	#include <GL/glu.h>
+    #include <GL/gl.h>
+    #include <GL/glu.h>
 #endif
 
 #include "animata.h"
@@ -45,93 +45,106 @@ namespace Animata
 /// Describes a picked primitive under the mouse cursor with its type and name.
 struct SelectItem
 {
-	unsigned int type;	///< type of the selected primitive
-	unsigned int name;	///< name of the selected primitive
+    unsigned int type;    ///< type of the selected primitive
+    unsigned int name;    ///< name of the selected primitive
 };
 
 /**
- * Uses various alternative OpenGL rendermodes to implement basic picking, selection and feedback mechanisms.
- * Has an own \a selected buffer to store which objects are found on a 2d coordinate or range during a pick or selection call.
+ * Uses various alternative OpenGL rendermodes to implement basic picking,
+ * selection and feedback mechanisms.
+ * Has an own \a selected buffer to store which objects are found on a 2d
+ * coordinate or range during a pick or selection call.
  */
 class Selection
 {
-		static const int radius = 5;		///< searching radius used during picking to find out what's under the mouse cursor
+    ///< searching radius used during picking to find out what's under the mouse cursor
+    static const int radius = 5;
 
-		static const int MAXHIT_INIT = 8;	///< default length of \a selected array
+    ///< default length of \a selected array
+    static const int MAXHIT_INIT = 8;
 
-		SelectItem *selected;				///< list of the various primitives under mouse cursor
-		unsigned selectedLength;			///< actual lenght of the \a selected array
-		unsigned hitCount;					///< number of primitives under the mouse cursor after doPick()
+    SelectItem *selected;       ///< list of the various primitives under mouse cursor
+    unsigned selectedLength;    ///< actual lenght of the \a selected array
 
-		float *points;						///< holds vertices' position after calling doFeedback(), every vertex stores three value: name, x, y coordinate
-		unsigned pointsLength;				///< actual length of the \a points array
+    ///< number of primitives under the mouse cursor after doPick()
+    unsigned hitCount;
 
-		Layer *pickLayer;					///< layer where on the picking happens
+    ///< holds vertices' position after calling doFeedback(), every vertex stores three value: name, x, y coordinate
+    float *points;
+    unsigned pointsLength;  ///< actual length of the \a points array
 
-		static const int BUFSIZE = 65536;	///< size of the OpenGL buffer during selection and feedback modes
-		GLuint *selectBuffer;				///< internal selection buffer for OpenGL
-		float *feedBuffer;					///< internal feedback buffer for OpenGL
+    Layer *pickLayer;       ///< layer where on the picking happens
 
-		/// Processes selection buffer.
-		void processHits(unsigned hits, GLuint buffer[]);
-		/// Processes feedback buffer.
-		int processFeedback(int size, float buffer[], float points[]);
+    ///< size of the OpenGL buffer during selection and feedback modes
+    static const int BUFSIZE = 65536;
 
-	public:
+    GLuint *selectBuffer;   ///< internal selection buffer for OpenGL
+    float *feedBuffer;      ///< internal feedback buffer for OpenGL
 
-		/**
-		 * Primitves types that can be selected.
-		 */
-		enum {
-			SELECT_VERTEX = 0,
-			SELECT_JOINT,
-			SELECT_TRIANGLE,
-			SELECT_BONE,
-			SELECT_TEXTURE
-		};
+    /// Processes selection buffer.
+    void processHits(unsigned hits, GLuint buffer[]);
+    /// Processes feedback buffer.
+    int processFeedback(int size, float buffer[], float points[]);
 
-		static const int OUT_OF_SCREEN = 0xABCD;	///< value for coordinates that are out of screen
+public:
 
-		Selection();
-		~Selection();
+    /**
+     * Primitves types that can be selected.
+     */
+    enum {
+        SELECT_VERTEX = 0,
+        SELECT_JOINT,
+        SELECT_TRIANGLE,
+        SELECT_BONE,
+        SELECT_TEXTURE
+    };
 
-		void doPick(Camera *camera, Layer *layer, TextureManager *textureManager, int x, int y);
+    ///< value for coordinates that are out of screen
+    static const int OUT_OF_SCREEN = 0xABCD;
 
-		void doSelect(Drawable *node, unsigned type, float x, float y, float w, float h);
-		void doCircleSelect(Drawable *node, unsigned type, int x, int y, int r);
+    Selection();
+    ~Selection();
 
-		void doFeedback(Layer *layer);
+    void doPick(Camera *camera, Layer *layer, TextureManager *textureManager,
+                int x, int y);
 
-		/**
-		 * Returns the \a selected array, which holds the primitives that are under the mouse cursor.
-		 * Subsequent calls of doPick() actualizes the array.
-		 * Get the size of the array by calling getHitCount().
-		 * \retval SelectItem* A pointer to the first element of \a selected array.
-		 */
-		inline SelectItem* getSelected(void) { return selected; }
-		/**
-		 * Returns the number of primitives under the mouse cursor after calling doPick().
-		 * \retval int The number of the picked primitives.
-		 */
-		inline int getHitCount(void) { return hitCount; }
-		/**
-		 * Virtually clears the \a selected array by setting the size of it to 0.
-		 */
-		inline void clearSelection(void) { hitCount = 0; }
+    void doSelect(Drawable *node, unsigned type, float x, float y,
+                  float w, float h);
+    void doCircleSelect(Drawable *node, unsigned type, int x, int y, int r);
 
-		/**
-		 * Returns the Layer which was the argument for the last doPick() call.
-		 */
-		inline Layer *getPickLayer() { return pickLayer; }
-		/**
-		 * Sets \a pickLayer to the given one.
-		 * \param	l	The new pick layer.
-		 */
-		inline void setPickLayer(Layer *l) { pickLayer = l; }
-		/**
-		 * Invalidates pick layer, necessary when loading or starting a new file.
-		 */
-		inline void cancelPickLayer() { pickLayer = NULL; }
+    void doFeedback(Layer *layer);
+
+    /**
+     * Returns the \a selected array, which holds the primitives that are under
+     * the mouse cursor.
+     * Subsequent calls of doPick() actualizes the array.
+     * Get the size of the array by calling getHitCount().
+     * \retval SelectItem* A pointer to the first element of \a selected array.
+     */
+    inline SelectItem* getSelected(void) { return selected; }
+    /**
+     * Returns the number of primitives under the mouse cursor after calling doPick().
+     * \retval int The number of the picked primitives.
+     */
+    inline int getHitCount(void) { return hitCount; }
+    /**
+     * Virtually clears the \a selected array by setting the size of it to 0.
+     */
+    inline void clearSelection(void) { hitCount = 0; }
+
+    /**
+     * Returns the Layer which was the argument for the last doPick() call.
+     */
+    inline Layer *getPickLayer() { return pickLayer; }
+    /**
+     * Sets \a pickLayer to the given one.
+     * \param    l    The new pick layer.
+     */
+    inline void setPickLayer(Layer *l) { pickLayer = l; }
+    /**
+     * Invalidates pick layer, necessary when loading or starting a new file.
+     */
+    inline void cancelPickLayer() { pickLayer = NULL; }
 };
 
 } /* namespace Animata */

@@ -36,47 +36,49 @@ namespace Animata
 /// Holds and manages textures.
 class TextureManager
 {
-	private:
+private:
 
-		vector<Texture*>* textures;	///< textures vector holding all the textures
+    vector<Texture*>* textures; ///< textures vector holding all the textures
 
-		Texture *pTexture;					///< texture below the mouse cursor
-		Texture *activeTexture;				///< texture attached to the mesh on currently active layer
+    Texture *pTexture;          ///< texture below the mouse cursor
+    Texture *activeTexture;     ///< texture attached to the mesh on currently active layer
 
-		/// Adds an already allocated texture to the manager.
-		void addTexture(Texture* t);
+    /// Adds an already allocated texture to the manager.
+    void addTexture(Texture* t);
 
-	public:
+public:
 
-		TextureManager();
-		~TextureManager();
+    TextureManager();
+    ~TextureManager();
 
-		/// allocates a new texture if neccessary, and adds it to the TextureManager
-		Texture *createTexture(ImageBox *box);
+    /// allocates a new texture if neccessary, and adds it to the TextureManager
+    Texture *createTexture(ImageBox *box);
 
-		/// remove a texture
-		void removeTexture(Texture* t);
+    /// remove a texture
+    void removeTexture(Texture* t);
 
-		/// get texture with given name
-		Texture *getTexture(const char *name);
+    /// get texture with given name
+    Texture *getTexture(const char *name);
 
-		void draw(int mode);
+    void draw(int mode);
 
-		/**
-		 * Returns the \a textures vector holding all the textures uploaded to the manager.
-		 * \retval	std::vector<Texture*>* Texture vector.
-		 */
-		inline vector<Texture*>* getTextures() { return textures; }
-		/**
-		 * Returns texture currently under the mouse cursor.
-		 * \retval Texture* Texture below the mouse cursor.
-		 */
-		inline Texture *getPointedTexture() { return pTexture; }
-		/**
-		 * Returns texture attached to the mesh on the currently active layer.
-		 * \retval Texture* Texture attached to the mesh on the active layer.
-		 */
-		inline Texture *getActiveTexture() { return activeTexture; }
+    /**
+     * Returns the \a textures vector holding all the textures uploaded to the manager.
+     * \retval std::vector<Texture*>* Texture vector.
+     */
+    inline vector<Texture*>* getTextures() { return textures; }
+
+    /**
+     * Returns texture currently under the mouse cursor.
+     * \retval Texture* Texture below the mouse cursor.
+     */
+    inline Texture *getPointedTexture() { return pTexture; }
+
+    /**
+     * Returns texture attached to the mesh on the currently active layer.
+     * \retval Texture* Texture attached to the mesh on the active layer.
+     */
+    inline Texture *getActiveTexture() { return activeTexture; }
 };
 
 } /* namespace Animata */

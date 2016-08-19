@@ -48,44 +48,44 @@ namespace Animata
 /// Handles OSC messages.
 class OSCListener : public osc::OscPacketListener
 {
-	protected:
+protected:
 
-		/// Processes OSC messages.
-		virtual void ProcessMessage(const osc::ReceivedMessage& m,
-				const IpEndpointName& remoteEndpoint);
-	private:
+    /// Processes OSC messages.
+    virtual void ProcessMessage(const osc::ReceivedMessage& m,
+            const IpEndpointName& remoteEndpoint);
+private:
 
-		/// Helper function to call class method threadTask() from a thread.
-		static void *threadFunc(void *p);
+    /// Helper function to call class method threadTask() from a thread.
+    static void *threadFunc(void *p);
 
-		/// Threads function running an OSC listener forever.
-		void threadTask(void);
+    /// Threads function running an OSC listener forever.
+    void threadTask(void);
 
-		pthread_t thread;
-		pthread_mutex_t mutex;
-		UdpListeningReceiveSocket *ulrs;
+    pthread_t thread;
+    pthread_mutex_t mutex;
+    UdpListeningReceiveSocket *ulrs;
 
-		Layer *rootLayer;	///< root of the layers
+    Layer *rootLayer;   ///< root of the layers
 
-		int patternMatch(const char *str, const char *p);
+    int patternMatch(const char *str, const char *p);
 
-	public:
+public:
 
-		OSCListener();
-		~OSCListener();
+    OSCListener();
+    ~OSCListener();
 
-		/// Starts OSC listener in a new thread.
-		void start(void);
-		/// Stops OSC listener.
-		void stop(void);
+    /// Starts OSC listener in a new thread.
+    void start(void);
+    /// Stops OSC listener.
+    void stop(void);
 
-		/// Protects access to a shared data resources.
-		void lock(void);
-		/// Unlocks mutex, allowing access to shared data.
-		void unlock(void);
+    /// Protects access to a shared data resources.
+    void lock(void);
+    /// Unlocks mutex, allowing access to shared data.
+    void unlock(void);
 
-		/// Sets root layers to be able to control the behaviour of layer data.
-		void setRootLayer(Layer *root);
+    /// Sets root layers to be able to control the behaviour of layer data.
+    void setRootLayer(Layer *root);
 
 };
 
@@ -94,37 +94,37 @@ class OSCListener : public osc::OscPacketListener
 /// Sends OSC messages.
 class OSCSender
 {
-	private:
+private:
 
-		/// Helper function to call class method threadTask() from a thread.
-		static void *threadFunc(void *p);
+    /// Helper function to call class method threadTask() from a thread.
+    static void *threadFunc(void *p);
 
-		/// Threads function running an OSC sender forever.
-		void threadTask(void);
+    /// Threads function running an OSC sender forever.
+    void threadTask(void);
 
-		pthread_t thread;
-		pthread_mutex_t mutex;
+    pthread_t thread;
+    pthread_mutex_t mutex;
 
-		bool threadRunning; //< true if the thread is running
+    bool threadRunning; //< true if the thread is running
 
-		char buffer[IP_MTU_SIZE];
-		osc::OutboundPacketStream *ops;
-		UdpTransmitSocket *socket;
+    char buffer[IP_MTU_SIZE];
+    osc::OutboundPacketStream *ops;
+    UdpTransmitSocket *socket;
 
-	public:
+public:
 
-		OSCSender(const char *host);
-		~OSCSender();
+    OSCSender(const char *host);
+    ~OSCSender();
 
-		/// Starts OSC sender in a new thread.
-		void start(void);
-		/// Stops OSC sender.
-		void stop(void);
+    /// Starts OSC sender in a new thread.
+    void start(void);
+    /// Stops OSC sender.
+    void stop(void);
 
-		/// Protects access to a shared data resources.
-		void lock(void);
-		/// Unlocks mutex, allowing access to shared data.
-		void unlock(void);
+    /// Protects access to a shared data resources.
+    void lock(void);
+    /// Unlocks mutex, allowing access to shared data.
+    void unlock(void);
 
 };
 

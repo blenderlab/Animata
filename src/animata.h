@@ -64,281 +64,306 @@ namespace Animata
  **/
 enum ANIMATA_MODES
 {
-	ANIMATA_MODE_NONE = 0,
-	/* mesh */
-	ANIMATA_MODE_CREATE_VERTEX,
-	ANIMATA_MODE_CREATE_TRIANGLE,
-	ANIMATA_MODE_TEXTURIZE,
-	ANIMATA_MODE_MESH_SELECT,
-	ANIMATA_MODE_MESH_DELETE,
-	/* skeleton */
-	ANIMATA_MODE_CREATE_JOINT,
-	ANIMATA_MODE_CREATE_BONE,
-	ANIMATA_MODE_ATTACH_VERTICES,
-	ANIMATA_MODE_SKELETON_SELECT,
-	ANIMATA_MODE_SKELETON_DELETE,
-	/* texture */
-	ANIMATA_MODE_TEXTURE_POSITION,
-	ANIMATA_MODE_TEXTURE_SCALE,
-	/* layer */
-	ANIMATA_MODE_LAYER_MOVE,
+    ANIMATA_MODE_NONE = 0,
+    /* mesh */
+    ANIMATA_MODE_CREATE_VERTEX,
+    ANIMATA_MODE_CREATE_TRIANGLE,
+    ANIMATA_MODE_TEXTURIZE,
+    ANIMATA_MODE_MESH_SELECT,
+    ANIMATA_MODE_MESH_DELETE,
+    /* skeleton */
+    ANIMATA_MODE_CREATE_JOINT,
+    ANIMATA_MODE_CREATE_BONE,
+    ANIMATA_MODE_ATTACH_VERTICES,
+    ANIMATA_MODE_SKELETON_SELECT,
+    ANIMATA_MODE_SKELETON_DELETE,
+    /* texture */
+    ANIMATA_MODE_TEXTURE_POSITION,
+    ANIMATA_MODE_TEXTURE_SCALE,
+    /* layer */
+    ANIMATA_MODE_LAYER_MOVE,
     ANIMATA_MODE_LAYER_OFFSET,
-	ANIMATA_MODE_LAYER_SCALE,
-	ANIMATA_MODE_LAYER_DEPTH,
+    ANIMATA_MODE_LAYER_SCALE,
+    ANIMATA_MODE_LAYER_DEPTH,
     ANIMATA_MODE_LAYER_ROTATE
 };
 
+inline bool isMeshMode(int mode)
+{
+    return (   mode >= ANIMATA_MODE_CREATE_VERTEX
+            && mode <= ANIMATA_MODE_MESH_DELETE);
+}
+
+inline bool isSkeletonMode(int mode)
+{
+    return (   mode >= ANIMATA_MODE_CREATE_JOINT
+            && mode <= ANIMATA_MODE_SKELETON_DELETE);
+}
+
+inline bool isTextureMode(int mode)
+{
+    return (   mode >= ANIMATA_MODE_TEXTURE_POSITION
+            && mode <= ANIMATA_MODE_TEXTURE_SCALE);
+}
+
+inline bool isLayerMode(int mode)
+{
+    return (   mode >= ANIMATA_MODE_LAYER_MOVE
+            && mode <= ANIMATA_MODE_LAYER_ROTATE);
+}
+
 enum ANIMATA_DISPLAY_ELEMENTS
 {
-	DISPLAY_EDITOR_VERTEX = 0x01,
-	DISPLAY_EDITOR_TRIANGLE = 0x02,
-	DISPLAY_EDITOR_JOINT = 0x04,
-	DISPLAY_EDITOR_BONE = 0x08,
-	DISPLAY_EDITOR_TEXTURE = 0x10,
-	DISPLAY_OUTPUT_VERTEX = 0x10000,
-	DISPLAY_OUTPUT_TRIANGLE = 0x20000,
-	DISPLAY_OUTPUT_JOINT = 0x40000,
-	DISPLAY_OUTPUT_BONE = 0x80000,
-	DISPLAY_OUTPUT_TEXTURE = 0x100000
+    DISPLAY_EDITOR_VERTEX = 0x01,
+    DISPLAY_EDITOR_TRIANGLE = 0x02,
+    DISPLAY_EDITOR_JOINT = 0x04,
+    DISPLAY_EDITOR_BONE = 0x08,
+    DISPLAY_EDITOR_TEXTURE = 0x10,
+    DISPLAY_OUTPUT_VERTEX = 0x10000,
+    DISPLAY_OUTPUT_TRIANGLE = 0x20000,
+    DISPLAY_OUTPUT_JOINT = 0x40000,
+    DISPLAY_OUTPUT_BONE = 0x80000,
+    DISPLAY_OUTPUT_TEXTURE = 0x100000
 };
 
 enum ANIMATA_RENDER_MODE
 {
-	RENDER_FEEDBACK = 0x01,
-	RENDER_SELECTION = 0x02,
-	RENDER_OUTPUT = 0x04,
-	RENDER_TEXTURE = 0x10,
-	RENDER_WIREFRAME = 0x20
+    RENDER_FEEDBACK = 0x01,
+    RENDER_SELECTION = 0x02,
+    RENDER_OUTPUT = 0x04,
+    RENDER_TEXTURE = 0x10,
+    RENDER_WIREFRAME = 0x20
 };
 
 /// Various settings coming from the GUI.
 class AnimataSettings
 {
-	public:
-		enum ANIMATA_MODES mode; /**< current operational mode */
-		enum ANIMATA_MODES prevMode; /**< previous operational mode */
+public:
+    enum ANIMATA_MODES mode; /**< current operational mode */
+    enum ANIMATA_MODES prevMode; /**< previous operational mode */
 
-		int playSimulation; /**< whether to run simulation or not */
-		int gravity; /**< use gravity force */
-		float gravityForce; /**< strength of gravity */
-		float gravityX; /**< x component of the gravity direction vector */
-		float gravityY; /**< y component of the gravity direction vector */
+    int playSimulation; /**< whether to run simulation or not */
+    int gravity; /**< use gravity force */
+    float gravityForce; /**< strength of gravity */
+    float gravityX; /**< x component of the gravity direction vector */
+    float gravityY; /**< y component of the gravity direction vector */
 
-		int iteration; /**< number of times to run the simulation */
-		int fps; /**< frames per second */
-		int display_elements; /**< flags to display elements in windows */
+    int iteration; /**< number of times to run the simulation */
+    int fps; /**< frames per second */
+    int display_elements; /**< flags to display elements in windows */
 
-		int triangulateAlphaThreshold; /**< triangulation threshold */
+    int triangulateAlphaThreshold; /**< triangulation threshold */
 
-		AnimataSettings();
+    AnimataSettings();
 };
 
 /// Main application window class.
 class AnimataWindow : public Fl_Gl_Window
 {
-	private:
-		/** mouse coordinates */
-		int mouseX, mouseY;
-		/** previous mouse coordinates to measure mouse movement */
-		int prevMouseX, prevMouseY;
-		/** mouse coordinates where the dragging started */
-		int dragMouseX, dragMouseY;
-		bool dragging; /**< set to true while dragging the mouse */
+private:
+    /** mouse coordinates */
+    int mouseX, mouseY;
+    /** previous mouse coordinates to measure mouse movement */
+    int prevMouseX, prevMouseY;
+    /** mouse coordinates where the dragging started */
+    int dragMouseX, dragMouseY;
+    bool dragging; /**< set to true while dragging the mouse */
 
-		/** transformed mouse coordinates, based on current layers transformation */
-		Vector2D	transMouse;
-		/** transformed mouse coordinates where dragging sarted, based on current layers transformation */
-		Vector2D	transDragMouse;
+    /** transformed mouse coordinates, based on current layers transformation */
+    Vector2D        transMouse;
+    /** transformed mouse coordinates where dragging sarted, based on current layers transformation */
+    Vector2D        transDragMouse;
 
-		Vertex			*pointedVertex;
-		Vertex			*pointedPrevVertex;
-		Vertex			*pointedPrevPrevVertex;
+    Vertex          *pointedVertex;
+    Vertex          *pointedPrevVertex;
+    Vertex          *pointedPrevPrevVertex;
 
-		Face			*pointedFace;
+    Face            *pointedFace;
 
-		Joint			*pointedJoint;
-		Joint			*pointedPrevJoint;
+    Joint           *pointedJoint;
+    Joint           *pointedPrevJoint;
 
-		Bone			*pointedBone;
+    Bone            *pointedBone;
 
-		Texture			*selectedTexture;
+    Texture         *selectedTexture;
 
-		TextureManager	*textureManager;
-		Layer			*rootLayer; /**< the root of all the layers */
+    TextureManager  *textureManager;
+    Layer           *rootLayer; /**< the root of all the layers */
 
-		vector<Layer *> selectedLayers;
+    vector<Layer *> selectedLayers;
 
-		/* FIXME: use multimap instead of vectors and store only named elements */
-		/* the following vectors are needed to reach the elements quickly
-		 * without traversing the whole hierarcy recursively */
-		/** vector of all layers without the hierarchical structure */
-		vector<Layer *> *allLayers;
-		/** vector of all bones without the hierarchical structure */
-		vector<Bone *> *allBones;
-		/** vector of all joints without the hierarchical structure */
-		vector<Joint *> *allJoints;
+    /* FIXME: use multimap instead of vectors and store only named elements */
+    /* the following vectors are needed to reach the elements quickly
+     * without traversing the whole hierarcy recursively */
+    /** vector of all layers without the hierarchical structure */
+    vector<Layer *> *allLayers;
+    /** vector of all bones without the hierarchical structure */
+    vector<Bone *> *allBones;
+    /** vector of all joints without the hierarchical structure */
+    vector<Joint *> *allJoints;
 
-		/** vector of all joints needed to be send via OSC */
-		vector<Joint *> *oscJoints;
+    /** vector of all joints needed to be send via OSC */
+    vector<Joint *> *oscJoints;
 
-		Layer			*cLayer; /**< current layer */
-		Mesh			*cMesh;	 /**< mesh of current layer */
-		Skeleton		*cSkeleton; /**< skeleton of current layer */
-		Matrix			*cMatrix; /**< transformation matrix for the current layer */
+    Layer           *cLayer;    /**< current layer */
+    Mesh            *cMesh;     /**< mesh of current layer */
+    Skeleton        *cSkeleton; /**< skeleton of current layer */
+    Matrix          *cMatrix;   /**< transformation matrix for the current layer */
 
-		IO				*io; /**< handles scene saving/loading */
+    IO              *io;        /**< handles scene saving/loading */
 
-		OSCListener		*oscListener; /**< handles osc messages */
-		OSCSender		*oscSender; /**< transmits osc messages */
+    OSCListener     *oscListener;   /**< handles osc messages */
+    OSCSender       *oscSender;     /**< transmits osc messages */
 
-		Camera			*camera;
+    Camera          *camera;
 
-		pthread_mutex_t mutex;
+    pthread_mutex_t mutex;
 
-		void handleLeftMousePress(void);
-		void handleRightMousePress(void);
-		void handleLeftMouseRelease(void);
-		void handleRightMouseRelease(void);
-		void handleMouseMotion(void);
-		void handleMouseDrag(void);
-		void handleMouseWheel(void);
+    void handleLeftMousePress(void);
+    void handleRightMousePress(void);
+    void handleLeftMouseRelease(void);
+    void handleRightMouseRelease(void);
+    void handleMouseMotion(void);
+    void handleMouseDrag(void);
+    void handleMouseWheel(void);
 
-		/// Erases scene and initialises values.
-		void cleanup(void);
+    /// Erases scene and initialises values.
+    void cleanup(void);
 
-		void drawScene(void);
+    void drawScene(void);
 
-		void setJointUIPrefs(Joint *j);
-		void setBoneUIPrefs(Bone *b);
+    void setJointUIPrefs(Joint *j);
+    void setBoneUIPrefs(Bone *b);
 
-		/// Handles vertex selection.
-		void selectVertices(void);
+    /// Handles vertex selection.
+    void selectVertices(void);
 
-		/// Transforms a screen coordinate to world coordinate.
-		Vector2D transformMouseToWorld(int x, int y);
+    /// Transforms a screen coordinate to world coordinate.
+    Vector2D transformMouseToWorld(int x, int y);
 
-		char filename[PATH_MAX+1]; ///< filename of scene
+    char filename[PATH_MAX+1]; ///< filename of scene
 
-	public:
-		AnimataWindow(int x, int y, int w, int h, const char* l);
-		~AnimataWindow();
+public:
+    AnimataWindow(int x, int y, int w, int h, const char* l);
+    ~AnimataWindow();
 
-		void startup(void);
+    void startup(void);
 
-		/// Returns the filename of the scene.
-		inline const char *getFilename(void) { return filename; }
-		/// Sets the scene filename.
-		void setFilename(const char *filename);
+    /// Returns the filename of the scene.
+    inline const char *getFilename(void) { return filename; }
+    /// Sets the scene filename.
+    void setFilename(const char *filename);
 
-		/// Saves scene under the specified filename.
-		void saveScene(const char *filename);
-		/// Loads scene from the file specified by filename.
-		void loadScene(const char *filename);
-		/// Imports scene from the file specified by filename.
-		void importScene(const char *filename);
+    /// Saves scene under the specified filename.
+    void saveScene(const char *filename);
+    /// Loads scene from the file specified by filename.
+    void loadScene(const char *filename);
+    /// Imports scene from the file specified by filename.
+    void importScene(const char *filename);
 
-		void newScene(void); ///< Starts a new scene.
+    void newScene(void); ///< Starts a new scene.
 
-		/// Initializes opengl parameters.
-		static void setupOpenGL();
+    /// Initializes opengl parameters.
+    static void setupOpenGL();
 
-		void draw(void);
-		void triangulate(void);
+    void draw(void);
+    void triangulate(void);
 
-		void attachVertices(void);
-		void disattachVertices(void);
+    void attachVertices(void);
+    void disattachVertices(void);
 
-		int handle(int);
+    int handle(int);
 
-		void setBonePrefsFromUI(const char *name = NULL, float stiffness = 0, float length = 1);
-		void setJointPrefsFromUI(enum ANIMATA_PREFERENCES prefParam, void *value);
-		void setAttachPrefsFromUI(float area = FLT_MAX, float falloff = FLT_MAX);
-		void setAttachUIPrefs(Bone *b);
+    void setBonePrefsFromUI(const char *name = NULL, float stiffness = 0,
+                            float length = 1);
+    void setJointPrefsFromUI(enum ANIMATA_PREFERENCES prefParam, void *value);
+    void setAttachPrefsFromUI(float area = FLT_MAX, float falloff = FLT_MAX);
+    void setAttachUIPrefs(Bone *b);
 
-		void setLayerPrefsFromUI(enum ANIMATA_PREFERENCES prefType, void *value);
+    void setLayerPrefsFromUI(enum ANIMATA_PREFERENCES prefType, void *value);
 
-		void setLayerUIPrefs(Layer *l);
+    void setLayerUIPrefs(Layer *l);
 
-		void setBoneLengthMultMin(float p);
-		void setBoneLengthMultMax(float p);
-		void setBoneTempo(float p);
+    void setBoneLengthMultMin(float p);
+    void setBoneLengthMultMax(float p);
+    void setBoneTempo(float p);
 
-		/**
-		 * Returns texture manager.
-		 * \return pointer to texture manager
-		 **/
-		inline TextureManager* getTextureManager(void) { return textureManager; }
-		/**
-		 * Returns camera.
-		 * \return pointer to camera
-		 **/
-		inline Camera *getCamera() { return camera; }
-		/**
-		 * Returns current mesh.
-		 * \return pointer to mesh
-		 **/
-		inline Mesh *getMesh() { return cMesh; }
-		/**
-		 * Returns current skeleton.
-		 * \return pointer to skeleton
-		 **/
-		inline Skeleton *getSkeleton() { return cSkeleton; }
+    /**
+     * Returns texture manager.
+     * \return pointer to texture manager
+     **/
+    inline TextureManager* getTextureManager(void) { return textureManager; }
+    /**
+     * Returns camera.
+     * \return pointer to camera
+     **/
+    inline Camera *getCamera() { return camera; }
+    /**
+     * Returns current mesh.
+     * \return pointer to mesh
+     **/
+    inline Mesh *getMesh() { return cMesh; }
+    /**
+     * Returns current skeleton.
+     * \return pointer to skeleton
+     **/
+    inline Skeleton *getSkeleton() { return cSkeleton; }
 
-		/** Gets current layer.
-		 * \return pointer to current layer
-		 **/
-		inline Layer *getCurrentLayer() { return cLayer; }
-		/** Sets current (active) layer.
-		 * \param l layer to be the current
-		 **/
-		void setCurrentLayer(Layer *l);
-		void setSelectedLayers(Layer *l, int num);
+    /** Gets current layer.
+     * \return pointer to current layer
+     **/
+    inline Layer *getCurrentLayer() { return cLayer; }
+    /** Sets current (active) layer.
+     * \param l layer to be the current
+     **/
+    void setCurrentLayer(Layer *l);
+    void setSelectedLayers(Layer *l, int num);
 
-		void createAttachedTexture(ImageBox *box);
+    void createAttachedTexture(ImageBox *box);
 
-		/**
-		 * Returns root layer
-		 * \return pointer to root layer
-		 **/
-		inline Layer *getRootLayer() { return rootLayer; }
+    /**
+     * Returns root layer
+     * \return pointer to root layer
+     **/
+    inline Layer *getRootLayer() { return rootLayer; }
 
-		/**
-		 * Adds layer to vector of all layers.
-		 * \param l layer pointer to add
-		 **/
-		void addToAllLayers(Layer *l);
-		void deleteFromAllLayers(Layer *layer);
-		/// Returns the vector storing all layers.
-		inline vector<Layer *> *getAllLayers() { return allLayers; }
+    /**
+     * Adds layer to vector of all layers.
+     * \param l layer pointer to add
+     **/
+    void addToAllLayers(Layer *l);
+    void deleteFromAllLayers(Layer *layer);
+    /// Returns the vector storing all layers.
+    inline vector<Layer *> *getAllLayers() { return allLayers; }
 
-		/** Adds bone to vector of all bones.
-		 * \param b bone pointer to add
-		 **/
-		inline void addToAllBones(Bone *b) { allBones->push_back(b); }
-		void deleteFromAllBones(Bone *bone);
-		/// Returns the vector storing all bones.
-		inline vector<Bone *> *getAllBones() { return allBones; }
+    /** Adds bone to vector of all bones.
+     * \param b bone pointer to add
+     **/
+    inline void addToAllBones(Bone *b) { allBones->push_back(b); }
+    void deleteFromAllBones(Bone *bone);
+    /// Returns the vector storing all bones.
+    inline vector<Bone *> *getAllBones() { return allBones; }
 
-		/** Adds joint to vector of all joints.
-		 * \param j joint pointer to add
-		 **/
-		inline void addToAllJoints(Joint *j) { allJoints->push_back(j); }
-		/// Deletes joint from the vector of all joints.
-		void deleteFromAllJoints(Joint *joint);
-		/// Returns the vector storing all joints.
-		inline vector<Joint *> *getAllJoints() { return allJoints; }
+    /** Adds joint to vector of all joints.
+     * \param j joint pointer to add
+     **/
+    inline void addToAllJoints(Joint *j) { allJoints->push_back(j); }
+    /// Deletes joint from the vector of all joints.
+    void deleteFromAllJoints(Joint *joint);
+    /// Returns the vector storing all joints.
+    inline vector<Joint *> *getAllJoints() { return allJoints; }
 
-		/** Adds joint to vector of OSC joints.
-		 * \param j joint pointer to add
-		 **/
-		inline void addToOSCJoints(Joint *j) { oscJoints->push_back(j); }
-		/// Deletes joint from the vector of OSC joints.
-		void deleteFromOSCJoints(Joint *joint);
-		/// Returns the vector storing OSC joints.
-		inline vector<Joint *> *getOSCJoints() { return oscJoints; }
+    /** Adds joint to vector of OSC joints.
+     * \param j joint pointer to add
+     **/
+    inline void addToOSCJoints(Joint *j) { oscJoints->push_back(j); }
+    /// Deletes joint from the vector of OSC joints.
+    void deleteFromOSCJoints(Joint *joint);
+    /// Returns the vector storing OSC joints.
+    inline vector<Joint *> *getOSCJoints() { return oscJoints; }
 
-		void lock(void);
-		void unlock(void);
+    void lock(void);
+    void unlock(void);
 };
 
 class Selection;
@@ -386,7 +411,7 @@ extern AnimataUI* ui;
  *
  * Animata requires:
  *
- * fltk (1.1.x)	http://www.fltk.org/
+ * fltk (1.1.x) http://www.fltk.org/
  *
  *
  * To build Animata, type:

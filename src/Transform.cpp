@@ -30,13 +30,14 @@ double Transform::projection[16];
 GLint Transform::viewport[4];
 
 /**
- * Reads and stores the actual opengl modelview and projection matrices, and viewport parameters.
+ * Reads and stores the actual opengl modelview and projection matrices, and
+ * viewport parameters.
  */
 void Transform::setMatrices()
 {
-	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-	glGetDoublev(GL_PROJECTION_MATRIX, projection);
-	glGetIntegerv(GL_VIEWPORT, viewport);
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+    glGetDoublev(GL_PROJECTION_MATRIX, projection);
+    glGetIntegerv(GL_VIEWPORT, viewport);
 }
 
 /**
@@ -49,11 +50,11 @@ void Transform::setMatrices()
  */
 Vector3D Transform::project(float x, float y, float z)
 {
-	double wx, wy, wz;
+    double wx, wy, wz;
 
-	gluProject(x, y, z, modelview, projection, viewport, &wx, &wy, &wz);
+    gluProject(x, y, z, modelview, projection, viewport, &wx, &wy, &wz);
 
-	return Vector3D(wx, wy, wz);
+    return Vector3D(wx, wy, wz);
 }
 
 /**
@@ -66,11 +67,12 @@ Vector3D Transform::project(float x, float y, float z)
  */
 Vector3D Transform::unproject(float x, float y, float z)
 {
-	double vx, vy, vz;
+    double vx, vy, vz;
 
-	gluUnProject((double)x, (double)viewport[3] - (double)y, (double)z, modelview, projection, viewport, &vx, &vy, &vz);
+    gluUnProject((double)x, (double)viewport[3] - (double)y, (double)z,
+                 modelview, projection, viewport, &vx, &vy, &vz);
 
-	return Vector3D(vx, vy, vz);
+    return Vector3D(vx, vy, vz);
 }
 
 /**
@@ -81,10 +83,11 @@ Vector3D Transform::unproject(float x, float y, float z)
  */
 float Transform::getDepth(float x, float y)
 {
-	float depth;
+    float depth;
 
-	glReadPixels((GLint)x, (GLint)(viewport[3] - y), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+    glReadPixels((GLint)x, (GLint)(viewport[3] - y), 1, 1, GL_DEPTH_COMPONENT,
+                 GL_FLOAT, &depth);
 
-	return depth;
+    return depth;
 }
 

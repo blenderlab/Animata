@@ -36,11 +36,11 @@ using namespace Animata;
  **/
 Skeleton::Skeleton()
 {
-	joints = new vector<Joint*>;
-	pJoint = NULL;
+    joints = new vector<Joint*>;
+    pJoint = NULL;
 
-	bones = new vector<Bone *>;
-	pBone = NULL;
+    bones = new vector<Bone *>;
+    pBone = NULL;
 }
 
 /**
@@ -48,23 +48,21 @@ Skeleton::Skeleton()
  **/
 Skeleton::~Skeleton()
 {
-	if (joints)
-	{
-		vector<Joint *>::iterator j = joints->begin();
-		for (; j < joints->end(); j++)
-			delete *j;	/* free joints from memory */
-		joints->clear(); /* clear all vector elements */
-		delete joints;
-	}
+    if (joints) {
+        vector<Joint *>::iterator j = joints->begin();
+        for (; j < joints->end(); j++)
+            delete *j;      /* free joints from memory */
+        joints->clear();    /* clear all vector elements */
+        delete joints;
+    }
 
-	if (bones)
-	{
-		vector<Bone *>::iterator b = bones->begin();
-		for (; b < bones->end(); b++)
-			delete *b;	/* free bones from memory */
-		bones->clear(); /* clear all vector elements */
-		delete bones;
-	}
+    if (bones) {
+        vector<Bone *>::iterator b = bones->begin();
+        for (; b < bones->end(); b++)
+            delete *b;  /* free bones from memory */
+        bones->clear(); /* clear all vector elements */
+        delete bones;
+    }
 }
 
 /**
@@ -75,13 +73,13 @@ Skeleton::~Skeleton()
  **/
 Joint *Skeleton::addJoint(float x, float y)
 {
-	Joint *j = new Joint(x, y);
-	joints->push_back(j);
+    Joint *j = new Joint(x, y);
+    joints->push_back(j);
 
-	/* add to vector of all joints */
-	if (ui) // FIXME: ui should not be NULL!
-		ui->editorBox->addToAllJoints(j);
-	return j;
+    /* add to vector of all joints */
+    if (ui) // FIXME: ui should not be NULL!
+        ui->editorBox->addToAllJoints(j);
+    return j;
 }
 
 /**
@@ -92,28 +90,26 @@ Joint *Skeleton::addJoint(float x, float y)
  **/
 Bone *Skeleton::addBone(Joint *j0, Joint *j1)
 {
-	if (j0 == j1)
-		return NULL;
+    if (j0 == j1)
+        return NULL;
 
-	/* check if a previous bone exists between these two joints */
-	for (unsigned i = 0; i < bones->size(); i++)
-	{
-		Bone *bone = (*bones)[i];
-		if (((bone->j0 == j0) && (bone->j1 == j1)) ||
-			((bone->j0 == j1) && (bone->j1 == j0)))
-		{
-			return NULL;
-		}
-	}
+    /* check if a previous bone exists between these two joints */
+    for (unsigned i = 0; i < bones->size(); i++) {
+        Bone *bone = (*bones)[i];
+        if (((bone->j0 == j0) && (bone->j1 == j1)) ||
+            ((bone->j0 == j1) && (bone->j1 == j0))) {
+            return NULL;
+        }
+    }
 
-	/* make a new bone */
-	Bone *b = new Bone(j0, j1);
-	bones->push_back(b);
+    /* make a new bone */
+    Bone *b = new Bone(j0, j1);
+    bones->push_back(b);
 
-	/* add to vector of all bones */
-	if (ui) // FIXME: ui should not be NULL!
-		ui->editorBox->addToAllBones(b);
-	return b;
+    /* add to vector of all bones */
+    if (ui) // FIXME: ui should not be NULL!
+        ui->editorBox->addToAllBones(b);
+    return b;
 }
 
 /**
@@ -124,20 +120,18 @@ Bone *Skeleton::addBone(Joint *j0, Joint *j1)
  **/
 int Skeleton::moveSelectedJoints(float dx, float dy)
 {
-	int movedJoints = 0;
+    int movedJoints = 0;
 
-	for (unsigned i = 0; i < joints->size(); i++)
-	{
-		Joint *j = (*joints)[i];
+    for (unsigned i = 0; i < joints->size(); i++) {
+        Joint *j = (*joints)[i];
 
-		if (j->selected)
-		{
-			j->drag(dx, dy);
-			movedJoints++;
-		}
-	}
-	/* return the number of joints moved */
-	return movedJoints;
+        if (j->selected) {
+            j->drag(dx, dy);
+            movedJoints++;
+        }
+    }
+    /* return the number of joints moved */
+    return movedJoints;
 }
 
 /**
@@ -145,8 +139,8 @@ int Skeleton::moveSelectedJoints(float dx, float dy)
  **/
 void Skeleton::endMoveSelectedJoints(void)
 {
-	for (unsigned i = 0; i < joints->size(); i++)
-		(*joints)[i]->dragged = false;
+    for (unsigned i = 0; i < joints->size(); i++)
+        (*joints)[i]->dragged = false;
 }
 
 /**
@@ -157,26 +151,24 @@ void Skeleton::endMoveSelectedJoints(void)
  **/
 int Skeleton::moveSelectedBones(float dx, float dy)
 {
-	int movedBones = 0;
+    int movedBones = 0;
 
-	/* timeStamp to prevent joints moved twice if they belong to
-	 * multiple bones */
-	static int timeStamp = 0;
+    /* timeStamp to prevent joints moved twice if they belong to
+     * multiple bones */
+    static int timeStamp = 0;
 
-	for (unsigned i = 0; i < bones->size(); i++)
-	{
-		Bone *b = (*bones)[i];
+    for (unsigned i = 0; i < bones->size(); i++) {
+        Bone *b = (*bones)[i];
 
-		if (b->selected)
-		{
-			b->drag(dx, dy, timeStamp);
-			movedBones++;
-		}
-	}
+        if (b->selected) {
+            b->drag(dx, dy, timeStamp);
+            movedBones++;
+        }
+    }
 
-	timeStamp++;
-	/* return the number of bones moved */
-	return movedBones;
+    timeStamp++;
+    /* return the number of bones moved */
+    return movedBones;
 }
 
 /**
@@ -184,8 +176,8 @@ int Skeleton::moveSelectedBones(float dx, float dy)
  **/
 void Skeleton::endMoveSelectedBones(void)
 {
-	for (unsigned i = 0; i < bones->size(); i++)
-		(*bones)[i]->release();
+    for (unsigned i = 0; i < bones->size(); i++)
+        (*bones)[i]->release();
 }
 
 /**
@@ -193,49 +185,44 @@ void Skeleton::endMoveSelectedBones(void)
  * \param prefParam parameter to set
  * \param value parameter value cast to (void *)
  **/
-void Skeleton::setSelectedJointParameters(enum ANIMATA_PREFERENCES prefParam, void *value)
+void Skeleton::setSelectedJointParameters(enum ANIMATA_PREFERENCES prefParam,
+                                          void *value)
 {
-	for (unsigned i = 0; i < joints->size(); i++)
-	{
-		Joint *j = (*joints)[i];
+    for (unsigned i = 0; i < joints->size(); i++) {
+        Joint *j = (*joints)[i];
 
-		if (j->selected)
-		{
-			switch (prefParam)
-			{
-				case PREFS_JOINT_NAME:
-					j->setName(*((const char **)value));
-					break;
-				case PREFS_JOINT_X:
-					j->x = *((float *)value);
-					break;
-				case PREFS_JOINT_Y:
-					j->y = *((float *)value);
-					break;
-				case PREFS_JOINT_FIXED:
-					j->fixed = *((int *)value);
-					break;
-				case PREFS_JOINT_OSC:
-					{
-						int osc = *((int *)value);
-						j->osc = osc;
-						// add or remove the joint from the vector of joints
-						// needed to be sent via OSC
-						if (osc)
-						{
-							ui->editorBox->addToOSCJoints(j);
-						}
-						else
-						{
-							ui->editorBox->deleteFromOSCJoints(j);
-						}
-						break;
-					}
-				default:
-					break;
-			}
-		}
-	}
+        if (j->selected) {
+            switch (prefParam) {
+                case PREFS_JOINT_NAME:
+                    j->setName(*((const char **)value));
+                    break;
+                case PREFS_JOINT_X:
+                    j->x = *((float *)value);
+                    break;
+                case PREFS_JOINT_Y:
+                    j->y = *((float *)value);
+                    break;
+                case PREFS_JOINT_FIXED:
+                    j->fixed = *((int *)value);
+                    break;
+                case PREFS_JOINT_OSC: {
+                    int osc = *((int *)value);
+                    j->osc = osc;
+                    // add or remove the joint from the vector of joints
+                    // needed to be sent via OSC
+                    if (osc) {
+                        ui->editorBox->addToOSCJoints(j);
+                    }
+                    else {
+                        ui->editorBox->deleteFromOSCJoints(j);
+                    }
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    }
 }
 
 /**
@@ -246,33 +233,29 @@ void Skeleton::setSelectedJointParameters(enum ANIMATA_PREFERENCES prefParam, vo
  * \param aRad set vertex attachment radius if it is not FLT_MAX
  * \param falloff set falloff if it is not FLT_MAX
  **/
-void Skeleton::setSelectedBoneParameters(const char *str, float s, float lm, float aRad,
-		float falloff)
+void Skeleton::setSelectedBoneParameters(const char *str, float s, float lm,
+                                         float aRad, float falloff)
 {
-	for (unsigned i = 0; i < bones->size(); i++)
-	{
-		Bone *b = (*bones)[i];
-
-		if (b->selected)
-		{
-			if (s > FLT_EPSILON)
-				b->damp = s;
-			if (str)
-				b->setName(str);
-			if (lm >= 0)
-				b->setLengthMult(lm);
-			if (aRad >= 0 && aRad < FLT_MAX)
-				b->setRadiusMult(aRad);
-			if (falloff >= 0 && falloff < FLT_MAX)
-			{
-				b->setFalloff(falloff); // set new falloff value
-				// calculate new weights of attached vertices
-				// FIXME: should be calculated when the attach
-				// button is pressed
-				b->recalculateWeights();
-			}
-		}
-	}
+    for (unsigned i = 0; i < bones->size(); i++) {
+        Bone *b = (*bones)[i];
+        if (b->selected) {
+            if (s > FLT_EPSILON)
+                b->damp = s;
+            if (str)
+                b->setName(str);
+            if (lm >= 0)
+                b->setLengthMult(lm);
+            if (aRad >= 0 && aRad < FLT_MAX)
+                b->setRadiusMult(aRad);
+            if (falloff >= 0 && falloff < FLT_MAX) {
+                b->setFalloff(falloff); // set new falloff value
+                // calculate new weights of attached vertices
+                // FIXME: should be calculated when the attach
+                // button is pressed
+                b->recalculateWeights();
+            }
+        }
+    }
 }
 
 /**
@@ -281,15 +264,12 @@ void Skeleton::setSelectedBoneParameters(const char *str, float s, float lm, flo
  **/
 void Skeleton::setSelectedBoneLengthMultMin(float p)
 {
-	for (unsigned i = 0; i < bones->size(); i++)
-	{
-		Bone *b = (*bones)[i];
-
-		if (b->selected)
-		{
-			b->setLengthMultMin(p);
-		}
-	}
+    for (unsigned i = 0; i < bones->size(); i++) {
+        Bone *b = (*bones)[i];
+        if (b->selected) {
+            b->setLengthMultMin(p);
+        }
+    }
 }
 
 /**
@@ -298,15 +278,12 @@ void Skeleton::setSelectedBoneLengthMultMin(float p)
  **/
 void Skeleton::setSelectedBoneLengthMultMax(float p)
 {
-	for (unsigned i = 0; i < bones->size(); i++)
-	{
-		Bone *b = (*bones)[i];
-
-		if (b->selected)
-		{
-			b->setLengthMultMax(p);
-		}
-	}
+    for (unsigned i = 0; i < bones->size(); i++) {
+        Bone *b = (*bones)[i];
+        if (b->selected) {
+            b->setLengthMultMax(p);
+        }
+    }
 }
 
 /**
@@ -315,15 +292,12 @@ void Skeleton::setSelectedBoneLengthMultMax(float p)
  **/
 void Skeleton::setSelectedBoneTempo(float p)
 {
-	for (unsigned i = 0; i < bones->size(); i++)
-	{
-		Bone *b = (*bones)[i];
-
-		if (b->selected)
-		{
-			b->setTempo(p);
-		}
-	}
+    for (unsigned i = 0; i < bones->size(); i++) {
+        Bone *b = (*bones)[i];
+        if (b->selected) {
+            b->setTempo(p);
+        }
+    }
 }
 
 /**
@@ -331,48 +305,43 @@ void Skeleton::setSelectedBoneTempo(float p)
  **/
 void Skeleton::deleteSelectedJoint(void)
 {
-	unsigned char hit = selector->getHitCount();
-	SelectItem *selected = selector->getSelected();
+    unsigned char hit = selector->getHitCount();
+    SelectItem *selected = selector->getSelected();
 
-	/* select the joint from the selection buffer */
-	Joint *selJoint = NULL;
-	for (unsigned int i = 0; i < hit; i++)
-	{
-		if (selected->type == Selection::SELECT_JOINT)
-		{
-			selJoint = (*joints)[selected->name];
-			break;
-		}
-		selected++;
-	}
+    /* select the joint from the selection buffer */
+    Joint *selJoint = NULL;
+    for (unsigned int i = 0; i < hit; i++) {
+        if (selected->type == Selection::SELECT_JOINT) {
+            selJoint = (*joints)[selected->name];
+            break;
+        }
+        selected++;
+    }
 
-	if (selJoint == NULL) /* no joint below the cursor */
-		return;
+    if (selJoint == NULL) /* no joint below the cursor */
+        return;
 
-	/* if the selected joint is part of a bone, delete it -
-	 * checking vector elements backwards to be able to iterate and erase
-	 * at the same time */
-	for (int i = bones->size() - 1; i >= 0; i--)
-	{
-		Bone *bone = (*bones)[i];
-		if ((bone->j0 == selJoint) ||
-			(bone->j1 == selJoint))
-		{
-			vector<Bone *>::iterator boneIter = bones->begin() + i;
-			delete bone;
-			bones->erase(boneIter);
-		}
-	}
+    /* if the selected joint is part of a bone, delete it -
+     * checking vector elements backwards to be able to iterate and erase
+     * at the same time */
+    for (int i = bones->size() - 1; i >= 0; i--) {
+        Bone *bone = (*bones)[i];
+        if ((bone->j0 == selJoint) || (bone->j1 == selJoint)) {
+            vector<Bone *>::iterator boneIter = bones->begin() + i;
+            delete bone;
+            bones->erase(boneIter);
+        }
+    }
 
-	/* delete the joint */
-	vector<Joint *>::iterator iter = joints->begin() + selected->name;
-	/* delete the joint from vector of all joints */
-	if (ui) // FIXME: ui should not be NULL
-		ui->editorBox->deleteFromAllJoints(*iter);
-	delete *iter; /* delete object */
-	joints->erase(iter); /* remove it from the vector */
-	/* current selection points to the next joint after the deleted one */
-	selector->clearSelection();
+    /* delete the joint */
+    vector<Joint *>::iterator iter = joints->begin() + selected->name;
+    /* delete the joint from vector of all joints */
+    if (ui) // FIXME: ui should not be NULL
+        ui->editorBox->deleteFromAllJoints(*iter);
+    delete *iter; /* delete object */
+    joints->erase(iter); /* remove it from the vector */
+    /* current selection points to the next joint after the deleted one */
+    selector->clearSelection();
 }
 
 /**
@@ -380,33 +349,31 @@ void Skeleton::deleteSelectedJoint(void)
  **/
 void Skeleton::deleteSelectedBone(void)
 {
-	unsigned hit = selector->getHitCount();
-	SelectItem *selected = selector->getSelected();
+    unsigned hit = selector->getHitCount();
+    SelectItem *selected = selector->getSelected();
 
-	/* select the bone from the selection buffer */
-	Bone *selBone = NULL;
-	for (unsigned int i = 0; i < hit; i++)
-	{
-		if (selected->type == Selection::SELECT_BONE)
-		{
-			selBone = (*bones)[selected->name];
-			break;
-		}
-		selected++;
-	}
+    /* select the bone from the selection buffer */
+    Bone *selBone = NULL;
+    for (unsigned int i = 0; i < hit; i++) {
+        if (selected->type == Selection::SELECT_BONE) {
+            selBone = (*bones)[selected->name];
+            break;
+        }
+        selected++;
+    }
 
-	if (selBone == NULL) /* no bone below the cursor */
-		return;
+    if (selBone == NULL) /* no bone below the cursor */
+        return;
 
-	/* delete the bone and references to it*/
-	vector<Bone *>::iterator iter = bones->begin() + selected->name;
-	/* delete the bone from vector of all bones */
-	if (ui) // FIXME: ui should not be NULL
-		ui->editorBox->deleteFromAllBones(*iter);
-	delete *iter; /* delete object */
-	bones->erase(iter); /* remove it from the vector */
-	/* clear selection, because it contains a non-existing object */
-	selector->clearSelection();
+    /* delete the bone and references to it*/
+    vector<Bone *>::iterator iter = bones->begin() + selected->name;
+    /* delete the bone from vector of all bones */
+    if (ui) // FIXME: ui should not be NULL
+        ui->editorBox->deleteFromAllBones(*iter);
+    delete *iter; /* delete object */
+    bones->erase(iter); /* remove it from the vector */
+    /* clear selection, because it contains a non-existing object */
+    selector->clearSelection();
 
 }
 
@@ -415,15 +382,13 @@ void Skeleton::deleteSelectedBone(void)
  **/
 void Skeleton::clearSelection(void)
 {
-	for (unsigned i = 0; i < joints->size(); i++)
-	{
-		(*joints)[i]->selected = false;
-	}
+    for (unsigned i = 0; i < joints->size(); i++) {
+        (*joints)[i]->selected = false;
+    }
 
-	for (unsigned i = 0; i < bones->size(); i++)
-	{
-		(*bones)[i]->selected = false;
-	}
+    for (unsigned i = 0; i < bones->size(); i++) {
+        (*bones)[i]->selected = false;
+    }
 }
 
 /**
@@ -433,23 +398,20 @@ void Skeleton::clearSelection(void)
  **/
 void Skeleton::attachVertices(vector<Vertex *> *verts)
 {
-	Bone *selectedBone = NULL;
+    Bone *selectedBone = NULL;
 
-	int s = 0;
-	for (unsigned i = 0; i < bones->size(); i++)
-	{
-		if ((*bones)[i]->selected)
-		{
-			selectedBone = (*bones)[i];
-			s++;
-		}
-	}
+    int s = 0;
+    for (unsigned i = 0; i < bones->size(); i++) {
+        if ((*bones)[i]->selected) {
+            selectedBone = (*bones)[i];
+            s++;
+        }
+    }
 
-	if (s == 1)
-	{
-		selectedBone->attachVertices(verts);
-		delete verts;
-	}
+    if (s == 1) {
+        selectedBone->attachVertices(verts);
+        delete verts;
+    }
 }
 
 /**
@@ -460,31 +422,28 @@ void Skeleton::attachVertices(vector<Vertex *> *verts)
  **/
 void Skeleton::selectVerticesInRange(Mesh *mesh)
 {
-	mesh->clearSelection();
-	for (unsigned i = 0; i < bones->size(); i++)
-	{
-		Bone *b = (*bones)[i];
+    mesh->clearSelection();
+    for (unsigned i = 0; i < bones->size(); i++) {
+        Bone *b = (*bones)[i];
 
-		/* select vertices in selection circle only if there are no vertices
-		 * attached */
-		if (b->selected)
-		{
-			if (b->getAttachedVerticesCount() == 0)
-			{
-				// selection happens in screen coordinate system, just like the drawSelectionBox in animata.cpp
-				// so get the view radius as in Bone.draw()
-				Vector2D v = b->getCenter();
-				// float r = b->getRadius();
-				float r = b->getViewRadius();
-				selector->doCircleSelect(mesh, Selection::SELECT_VERTEX,
-						(int)v.x, (int)v.y, (int)r);
-			}
-			else
-			{
-				b->selectAttachedVertices();
-			}
-		}
-	}
+        /* select vertices in selection circle only if there are no vertices
+         * attached */
+        if (b->selected) {
+            if (b->getAttachedVerticesCount() == 0) {
+                /* selection happens in screen coordinate system, just like the
+                 * drawSelectionBox in animata.cpp */
+                // so get the view radius as in Bone.draw()
+                Vector2D v = b->getCenter();
+                // float r = b->getRadius();
+                float r = b->getViewRadius();
+                selector->doCircleSelect(mesh, Selection::SELECT_VERTEX,
+                        (int)v.x, (int)v.y, (int)r);
+            }
+            else {
+                b->selectAttachedVertices();
+            }
+        }
+    }
 }
 
 /**
@@ -492,15 +451,13 @@ void Skeleton::selectVerticesInRange(Mesh *mesh)
  **/
 void Skeleton::disattachVertices(void)
 {
-	for (unsigned i = 0; i < bones->size(); i++)
-	{
-		Bone *b = (*bones)[i];
-		if (b->selected)
-		{
-			b->selectAttachedVertices(false); // clear selection
-			b->disattachVertices();
-		}
-	}
+    for (unsigned i = 0; i < bones->size(); i++) {
+        Bone *b = (*bones)[i];
+        if (b->selected) {
+            b->selectAttachedVertices(false); // clear selection
+            b->disattachVertices();
+        }
+    }
 }
 
 /**
@@ -509,141 +466,134 @@ void Skeleton::disattachVertices(void)
  **/
 void Skeleton::disattachSelectedVertex(Vertex *v)
 {
-	if (v == NULL) /* no vertex below the cursor */
-		return;
+    if (v == NULL) /* no vertex below the cursor */
+        return;
 
-	for (unsigned i = 0; i < bones->size(); i++)
-	{
-		(*bones)[i]->disattachVertex(v);
-	}
+    for (unsigned i = 0; i < bones->size(); i++) {
+        (*bones)[i]->disattachVertex(v);
+    }
 }
 
 /**
  * Sets the view coordinates of the joints of this skeleton.
- * Setting the transformation matrices by Transform::setMatrices() is neccesary before calling this,
+ * Setting the transformation matrices by Transform::setMatrices() is neccesary
+ * before calling this,
  * because Transform::project() is used for non visible primitives.
  **/
 void Skeleton::setJointViewCoords(float *coords, unsigned int size)
 {
-	for(unsigned i = 0; i < size; i+=3)
-	{
-		unsigned n = (unsigned)coords[i];
-		Joint *j = (*joints)[n];
+    for (unsigned i = 0; i < size; i+=3) {
+        unsigned n = (unsigned)coords[i];
+        Joint *j = (*joints)[n];
 
-		// joint is out of screen lets do projection here
-		if(i + 1 < size && coords[i + 1] == Selection::OUT_OF_SCREEN)
-		{
-			Vector3D view = Transform::project(j->x, j->y, 0);
+        // joint is out of screen lets do projection here
+        if (i + 1 < size && coords[i + 1] == Selection::OUT_OF_SCREEN) {
+            Vector3D view = Transform::project(j->x, j->y, 0);
 
-			j->vx = view.x;
-			j->vy = view.y;
-		}
-		else
-		{
-			j->vx = coords[i + 1];
-			j->vy = coords[i + 2];
-		}
-	}
+            j->vx = view.x;
+            j->vy = view.y;
+        }
+        else {
+            j->vx = coords[i + 1];
+            j->vy = coords[i + 2];
+        }
+    }
 }
 
 /**
  * Draws the skeleton.
- * \param mode bitmask of RENDER_WIREFRAME, RENDER_FEEDBACK or RENDER_OUTPUT, determines
- *		how the primitives are drawn.
+ * \param mode  bitmask of RENDER_WIREFRAME, RENDER_FEEDBACK or RENDER_OUTPUT,
+ *              determines how the primitives are drawn.
  * \param active active state
  **/
 void Skeleton::draw(int mode, int active)
 {
-	unsigned hit = 0;
-	SelectItem *selected = NULL;
+    unsigned hit = 0;
+    SelectItem *selected = NULL;
 
-	if(selector->getPickLayer() && selector->getPickLayer()->getSkeleton() == this)
-	{
-		hit = selector->getHitCount();
-		selected = selector->getSelected();
-	}
+    if (selector->getPickLayer()
+        && selector->getPickLayer()->getSkeleton() == this) {
+        hit = selector->getHitCount();
+        selected = selector->getSelected();
+    }
 
-	// select objects from the selection buffer
-	pJoint = NULL;
-	pBone = NULL;
-	for (unsigned int i = 0; i < hit; i++)
-	{
-		if (selected->type == Selection::SELECT_JOINT &&
-			((ui->settings.mode == ANIMATA_MODE_CREATE_JOINT) ||
-			 (ui->settings.mode == ANIMATA_MODE_SKELETON_SELECT) ||
-			 (ui->settings.mode == ANIMATA_MODE_SKELETON_DELETE) ||
-			 (ui->settings.mode == ANIMATA_MODE_CREATE_BONE)))
-		{
-			/* joints are prefered to bones if they overlap */
-			pJoint = (*joints)[selected->name];
-			pBone = NULL;
-			break;
-		}
-		else
-		if (selected->type == Selection::SELECT_BONE &&
-				(ui->settings.mode != ANIMATA_MODE_CREATE_BONE))
-		{
-			pBone = (*bones)[selected->name];
-		}
+    // select objects from the selection buffer
+    pJoint = NULL;
+    pBone = NULL;
+    for (unsigned int i = 0; i < hit; i++) {
+        if (selected->type == Selection::SELECT_JOINT &&
+            ((ui->settings.mode == ANIMATA_MODE_CREATE_JOINT) ||
+             (ui->settings.mode == ANIMATA_MODE_SKELETON_SELECT) ||
+             (ui->settings.mode == ANIMATA_MODE_SKELETON_DELETE) ||
+             (ui->settings.mode == ANIMATA_MODE_CREATE_BONE))) {
+            /* joints are prefered to bones if they overlap */
+            pJoint = (*joints)[selected->name];
+            pBone = NULL;
+            break;
+        }
+        else if (selected->type == Selection::SELECT_BONE &&
+                 (ui->settings.mode != ANIMATA_MODE_CREATE_BONE)) {
+            pBone = (*bones)[selected->name];
+        }
 
-		selected++;
-	}
+        selected++;
+    }
 
-	if ((mode & RENDER_WIREFRAME) &&
-		((!(mode & RENDER_OUTPUT) && ui->settings.display_elements & DISPLAY_EDITOR_BONE) ||
-		((mode & RENDER_OUTPUT) && ui->settings.display_elements & DISPLAY_OUTPUT_BONE)))
-	{
-		glLoadName(Selection::SELECT_BONE);	/* type of primitive */
-		glPushName(0);						/* id of primitive */
+    if ((mode & RENDER_WIREFRAME)
+        && ((!(mode & RENDER_OUTPUT)
+             && ui->settings.display_elements & DISPLAY_EDITOR_BONE)
+            || ((mode & RENDER_OUTPUT)
+                && ui->settings.display_elements & DISPLAY_OUTPUT_BONE)))
+    {
+        glLoadName(Selection::SELECT_BONE);    /* type of primitive */
+        glPushName(0);                        /* id of primitive */
 
-		for (unsigned i = 0; i < bones->size(); i++)
-		{
-			Bone *bone = (*bones)[i];
+        for (unsigned i = 0; i < bones->size(); i++) {
+            Bone *bone = (*bones)[i];
 
-			glLoadName(i);
+            glLoadName(i);
 
-			if(mode & RENDER_OUTPUT)
-				bone->draw(false);
-			else
-				bone->draw(bone == pBone, active);
-		}
+            if (mode & RENDER_OUTPUT)
+                bone->draw(false);
+            else
+                bone->draw(bone == pBone, active);
+        }
 
-		glPopName();
-	}
+        glPopName();
+    }
 
-	if(mode & RENDER_FEEDBACK)
-	{
-		for (unsigned i = 0; i < joints->size(); i++)
-		{
-			Joint *joint = (*joints)[i];
+    if (mode & RENDER_FEEDBACK) {
+        for (unsigned i = 0; i < joints->size(); i++) {
+            Joint *joint = (*joints)[i];
 
-			glPassThrough(i);
-			glBegin(GL_POINTS);
-				glVertex2f(joint->x, joint->y);
-			glEnd();
-		}
-	}
-	else if ((mode & RENDER_WIREFRAME) &&
-			 ((!(mode & RENDER_OUTPUT) && ui->settings.display_elements & DISPLAY_EDITOR_JOINT) ||
-			 ((mode & RENDER_OUTPUT) && ui->settings.display_elements & DISPLAY_OUTPUT_JOINT)))
-	{
-		glLoadName(Selection::SELECT_JOINT);	/* type of primitive */
-		glPushName(0);							/* id of primitive */
+            glPassThrough(i);
+            glBegin(GL_POINTS);
+                glVertex2f(joint->x, joint->y);
+            glEnd();
+        }
+    }
+    else if ((mode & RENDER_WIREFRAME) &&
+             ((!(mode & RENDER_OUTPUT)
+               && ui->settings.display_elements & DISPLAY_EDITOR_JOINT) ||
+             ((mode & RENDER_OUTPUT)
+              && ui->settings.display_elements & DISPLAY_OUTPUT_JOINT)))
+    {
+        glLoadName(Selection::SELECT_JOINT);    /* type of primitive */
+        glPushName(0);                            /* id of primitive */
 
-		for (unsigned i = 0; i < joints->size(); i++)
-		{
-			Joint *joint = (*joints)[i];
+        for (unsigned i = 0; i < joints->size(); i++) {
+            Joint *joint = (*joints)[i];
 
-			glLoadName(i);
+            glLoadName(i);
 
-			if(mode & RENDER_OUTPUT)
-				joint->draw(false);
-			else
-				joint->draw(joint == pJoint, active);
-		}
+            if (mode & RENDER_OUTPUT)
+                joint->draw(false);
+            else
+                joint->draw(joint == pJoint, active);
+        }
 
-		glPopName();
-	}
+        glPopName();
+    }
 }
 
 /**
@@ -653,15 +603,13 @@ void Skeleton::draw(int mode, int active)
  **/
 void Skeleton::select(unsigned i, int type)
 {
-	switch (type)
-	{
-		case Selection::SELECT_JOINT:
-			if (i < joints->size())
-			{
-				(*joints)[i]->selected = true;
-			}
-			break;
-	}
+    switch (type) {
+        case Selection::SELECT_JOINT:
+            if (i < joints->size()) {
+                (*joints)[i]->selected = true;
+            }
+            break;
+    }
 }
 
 /**
@@ -677,17 +625,14 @@ void Skeleton::circleSelect(unsigned i, int type, int xc, int yc, float r)
  **/
 void Skeleton::simulate(int times /* = 1 */)
 {
-	for (int t = 0; t < times; t++)
-	{
-		for (unsigned i = 0; i < joints->size(); i++)
-		{
-			((*joints)[i])->simulate();
-		}
-		for (unsigned i = 0; i < bones->size(); i++)
-		{
-			((*bones)[i])->simulate();
-			((*bones)[i])->translateVertices();
-		}
-	}
+    for (int t = 0; t < times; t++) {
+        for (unsigned i = 0; i < joints->size(); i++) {
+            ((*joints)[i])->simulate();
+        }
+        for (unsigned i = 0; i < bones->size(); i++) {
+            ((*bones)[i])->simulate();
+            ((*bones)[i])->translateVertices();
+        }
+    }
 }
 

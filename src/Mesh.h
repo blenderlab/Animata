@@ -40,98 +40,104 @@ namespace Animata
 /// Represents an image which can be manipulated by a Skeleton.
 class Mesh : public Drawable
 {
-	private:
+private:
 
-		vector<Vertex*>	*vertices;					///< vertices building up the mesh
-		vector<Face*>		*faces;						///< faces formed from vertices, representing the texture
+    ///< vertices building up the mesh
+    vector<Vertex*> *vertices;
 
-		Texture					*attachedTexture;			///< texture attached to the mesh
+    ///< faces formed from vertices, representing the texture
+    vector<Face*> *faces;
 
-		Vertex					*pVertex;					///< vertex below the mouse cursor
-		Face					*pFace;						///< face below the mouse cursor
+    Texture *attachedTexture;   ///< texture attached to the mesh
 
-		float					textureAlpha;				///< texture alpha for drawing
-		int						*selectedPointIndices;		///< helper array for triangulateSelected()
+    Vertex *pVertex;            ///< vertex below the mouse cursor
+    Face *pFace;                ///< face below the mouse cursor
 
-		int getSelectedVerticesCount(void);
-		void triangulateSelected(void);
-		void triangulateAll(void);
+    float textureAlpha;         ///< texture alpha for drawing
+    int *selectedPointIndices;  ///< helper array for triangulateSelected()
 
-		void sortFaces(void);
-		void sortFaces(vector<Face *>::iterator begin,
-						vector<Face *>::iterator end);
-	public:
+    int getSelectedVerticesCount(void);
+    void triangulateSelected(void);
+    void triangulateAll(void);
 
-		Mesh();
-		virtual ~Mesh();
+    void sortFaces(void);
+    void sortFaces(vector<Face *>::iterator begin, vector<Face *>::iterator end);
 
-		Vertex *addVertex(float x, float y);
+public:
 
-		void deleteSelectedVertex(void);
-		void deleteSelectedFace(Face *f);
+    Mesh();
+    virtual ~Mesh();
 
-		int moveSelectedVertices(float dx, float dy);
-		void clearSelection(void);
-		vector<Vertex *> *getSelectedVertices();
+    Vertex *addVertex(float x, float y);
 
-		void setVertexViewCoords(float *coords, unsigned int size);
+    void deleteSelectedVertex(void);
+    void deleteSelectedFace(Face *f);
 
-		/**
-		 * Returns the vertex below the mouse cursor.
-		 * \retval Vertex* The vertex below the mouse cursor.
-		 */
-		inline Vertex *getPointedVertex(void) { return pVertex; }
-		/**
-		 * Returns the face below the mouse cursor.
-		 * \retval Face* The face below the mouse cursor.
-		 */
-		inline Face *getPointedFace(void) { return pFace; }
+    int moveSelectedVertices(float dx, float dy);
+    void clearSelection(void);
+    vector<Vertex *> *getSelectedVertices();
 
-		/**
-		 * Returns the vertices of the mesh.
-		 * \retval std::vector<Vertex *> Vertices of the mesh.
-		 */
-		inline vector<Vertex *> *getVertices(void) { return vertices; }
-		/**
-		 * Returns the faces of the mesh.
-		 * \retval std::vector<Face *> Faces of the mesh.
-		 */
-		inline vector<Face *> *getFaces(void) { return faces; }
+    void setVertexViewCoords(float *coords, unsigned int size);
 
-		vector<Vertex *>::iterator getSelectedVertex(Vertex **ppv = NULL);
+    /**
+     * Returns the vertex below the mouse cursor.
+     * \retval Vertex* The vertex below the mouse cursor.
+     */
+    inline Vertex *getPointedVertex(void) { return pVertex; }
 
-		void addFace(Vertex *v0, Vertex *v1, Vertex *v2);
-		void clearFaces(void);
+    /**
+     * Returns the face below the mouse cursor.
+     * \retval Face* The face below the mouse cursor.
+     */
+    inline Face *getPointedFace(void) { return pFace; }
 
-		void triangulate(void);
-		void triangulateFaceProc(int p0, int p1, int p2);
-		void triangulateFaceProcSelected(int p0, int p1, int p2);
+    /**
+     * Returns the vertices of the mesh.
+     * \retval std::vector<Vertex *> Vertices of the mesh.
+     */
+    inline vector<Vertex *> *getVertices(void) { return vertices; }
 
-		/// attach texture and calculate texture coordinates for vertices
-		void attachTexture(Texture *t);
+    /**
+     * Returns the faces of the mesh.
+     * \retval std::vector<Face *> Faces of the mesh.
+     */
+    inline vector<Face *> *getFaces(void) { return faces; }
 
-		/**
-		 * Attaches a texture to the mesh.
-		 * Doesn't calculat new texturecoordinates.
-		 * \param	t	The new texture to attach.
-		 * \sa attachTexture()
-		 */
-		inline void setAttachedTexture(Texture *t) { attachedTexture = t; }
-		/**
-		 * Returns the texture attached to the mesh.
-		 * \retval	Texture*	The attached texture.
-		*/
-		inline Texture *getAttachedTexture(void) { return attachedTexture; }
+    vector<Vertex *>::iterator getSelectedVertex(Vertex **ppv = NULL);
 
-		/**
-		 * Sets texture alpha for drawing.
-		 * \param	alpha	The new texture alpha.
-		 */
-		inline void setTextureAlpha(float alpha) { textureAlpha = alpha; }
+    void addFace(Vertex *v0, Vertex *v1, Vertex *v2);
+    void clearFaces(void);
 
-		virtual void draw(int mode, int active = 1);
-		virtual void select(unsigned i, int type);
-		virtual void circleSelect(unsigned i, int type, int xc, int yc, float r);
+    void triangulate(void);
+    void triangulateFaceProc(int p0, int p1, int p2);
+    void triangulateFaceProcSelected(int p0, int p1, int p2);
+
+    /// attach texture and calculate texture coordinates for vertices
+    void attachTexture(Texture *t);
+
+    /**
+     * Attaches a texture to the mesh.
+     * Doesn't calculate new texturecoordinates.
+     * \param t The new texture to attach.
+     * \sa attachTexture()
+     */
+    inline void setAttachedTexture(Texture *t) { attachedTexture = t; }
+
+    /**
+     * Returns the texture attached to the mesh.
+     * \retval Texture* The attached texture.
+    */
+    inline Texture *getAttachedTexture(void) { return attachedTexture; }
+
+    /**
+     * Sets texture alpha for drawing.
+     * \param alpha The new texture alpha.
+     */
+    inline void setTextureAlpha(float alpha) { textureAlpha = alpha; }
+
+    virtual void draw(int mode, int active = 1);
+    virtual void select(unsigned i, int type);
+    virtual void circleSelect(unsigned i, int type, int xc, int yc, float r);
 };
 
 } /* namespace Animata */

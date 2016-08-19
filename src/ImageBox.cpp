@@ -31,50 +31,49 @@
 using namespace Animata;
 
 ImageBox::ImageBox(const char *filename, Fl_Image* i, int x, int y, int w,
-		int h, const char* label) :
-	Fl_Box(x, y, w, h, label)
+                   int h, const char* label)
+    : Fl_Box(x, y, w, h, label)
 {
-	double aspect = (double)i->h() / (double)i->w();
-	int width = w;
-	int height = (int)(aspect * width);
+    double aspect = (double)i->h() / (double)i->w();
+    int width = w;
+    int height = (int)(aspect * width);
 
-	strncpy(this->filename, filename, PATH_MAX);
+    strncpy(this->filename, filename, PATH_MAX);
 
-	origImage = i;
-	boxImage = i->copy(width, height);
-	this->w(width);
-	this->h(height);
-	this->image(boxImage);
+    origImage = i;
+    boxImage = i->copy(width, height);
+    this->w(width);
+    this->h(height);
+    this->image(boxImage);
 }
 
 int ImageBox::handle(int event)
 {
-	switch(event)
-	{
-		case FL_PUSH:
-			return 1;
-		case FL_RELEASE:
-			handleRelease();
-			return 1;
-		default:
-			return Fl_Box::handle(event);
-	}
+    switch(event) {
+        case FL_PUSH:
+            return 1;
+        case FL_RELEASE:
+            handleRelease();
+            return 1;
+        default:
+            return Fl_Box::handle(event);
+    }
 }
 
 Texture *ImageBox::allocateTexture()
 {
-	return new Texture(filename,
-				origImage->w(), origImage->h(), origImage->d(),
-				(unsigned char*)origImage->data()[0]);
+    return new Texture(filename,
+                origImage->w(), origImage->h(), origImage->d(),
+                (unsigned char*)origImage->data()[0]);
 }
 
 void ImageBox::addTexture(void)
 {
-	ui->editorBox->createAttachedTexture(this);
+    ui->editorBox->createAttachedTexture(this);
 }
 
 void ImageBox::handleRelease()
 {
-	addTexture();
+    addTexture();
 }
 

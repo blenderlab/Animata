@@ -33,262 +33,233 @@ using namespace Animata;
 
 OSCListener::OSCListener()
 {
-	thread = 0;
-	rootLayer = NULL;
+    thread = 0;
+    rootLayer = NULL;
 }
 
 OSCListener::~OSCListener()
 {
-	stop();
+    stop();
 }
 
 void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
-		const IpEndpointName& remoteEndpoint)
+        const IpEndpointName& remoteEndpoint)
 {
-	if (!rootLayer)
-	{
-		return;
-	}
+    if (!rootLayer) {
+        return;
+    }
 
-	if (!ui) // FIXME: this should not happen but it does
-		return;
+    if (!ui) // FIXME: this should not happen but it does
+        return;
 
-	try
-	{
-		// TODO: write one function for each object type and call it
-		// with a function pointer on each message
-		if (strcmp(m.AddressPattern(), "/anibone") == 0)
-		{
-			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
-			const char *namePattern;
-			float val;
-			args >> namePattern >> val >> osc::EndMessage;
+    try {
+        // TODO: write one function for each object type and call it
+        // with a function pointer on each message
+        if (strcmp(m.AddressPattern(), "/anibone") == 0) {
+            osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
+            const char *namePattern;
+            float val;
+            args >> namePattern >> val >> osc::EndMessage;
 
             // filter out NaNs
             if (val != val)
                 return;
 
-			// FIXME: locking?, bones should not be deleted while this is
-			// running
-			lock();
-			vector<Bone *> *bones = ui->editorBox->getAllBones();
+            // FIXME: locking?, bones should not be deleted while this is
+            // running
+            lock();
+            vector<Bone *> *bones = ui->editorBox->getAllBones();
 
-			int found = 0;
-			// try to find exact match for bone names first
-			vector<Bone *>::iterator b = bones->begin();
-			for (; b < bones->end(); b++)
-			{
-				const char *boneName = (*b)->getName();
-				// skip unnamed bones
-				if (boneName[0] == 0)
-					continue;
-				if (strcmp(boneName, namePattern) == 0)
-				{
-					(*b)->animateBone(val);
-					found = 1;
-				}
-			}
+            int found = 0;
+            // try to find exact match for bone names first
+            vector<Bone *>::iterator b = bones->begin();
+            for (; b < bones->end(); b++) {
+                const char *boneName = (*b)->getName();
+                // skip unnamed bones
+                if (boneName[0] == 0)
+                    continue;
+                if (strcmp(boneName, namePattern) == 0) {
+                    (*b)->animateBone(val);
+                    found = 1;
+                }
+            }
 
-			// if exact match is not found try regular expression match
-			if (!found)
-			{
-				vector<Bone *>::iterator b = bones->begin();
-				for (; b < bones->end(); b++)
-				{
-					const char *boneName = (*b)->getName();
-					// skip unnamed bones
-					if (boneName[0] == 0)
-						continue;
-					if (patternMatch(boneName, namePattern))
-					{
-						(*b)->animateBone(val);
-					}
-				}
-			}
+            // if exact match is not found try regular expression match
+            if (!found) {
+                vector<Bone *>::iterator b = bones->begin();
+                for (; b < bones->end(); b++) {
+                    const char *boneName = (*b)->getName();
+                    // skip unnamed bones
+                    if (boneName[0] == 0)
+                        continue;
+                    if (patternMatch(boneName, namePattern)) {
+                        (*b)->animateBone(val);
+                    }
+                }
+            }
 
-			unlock();
-		}
-		else if (strcmp(m.AddressPattern(), "/joint") == 0)
-		{
-			const char *namePattern;
-			float x, y;
-			osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
-			namePattern = (arg++)->AsString();
-			/* parameters can be float or int */
-			if (arg->IsInt32())
-				x = (arg++)->AsInt32();
-			else
-				x = (arg++)->AsFloat();
-			if (arg->IsInt32())
-				y = (arg++)->AsInt32();
-			else
-				y = (arg++)->AsFloat();
-			if (arg != m.ArgumentsEnd())
-				throw osc::ExcessArgumentException();
+            unlock();
+        }
+        else if (strcmp(m.AddressPattern(), "/joint") == 0) {
+            const char *namePattern;
+            float x, y;
+            osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
+            namePattern = (arg++)->AsString();
+            /* parameters can be float or int */
+            if (arg->IsInt32())
+                x = (arg++)->AsInt32();
+            else
+                x = (arg++)->AsFloat();
+            if (arg->IsInt32())
+                y = (arg++)->AsInt32();
+            else
+                y = (arg++)->AsFloat();
+            if (arg != m.ArgumentsEnd())
+                throw osc::ExcessArgumentException();
 
             // filter out NaNs
             if (x != x || y != y)
                 return;
 
-			lock();
-			vector<Joint *> *joints = ui->editorBox->getAllJoints();
+            lock();
+            vector<Joint *> *joints = ui->editorBox->getAllJoints();
 
-			int found = 0;
-			// try to find exact match for joint names first
-			vector<Joint *>::iterator j = joints->begin();
-			for (; j < joints->end(); j++)
-			{
-				const char *jointName = (*j)->getName();
-				// skip unnamed joints
-				if (jointName[0] == 0)
-					continue;
-				if (strcmp(jointName, namePattern) == 0)
-				{
-					(*j)->x = x;
-					(*j)->y = y;
-					found = 1;
-				}
-			}
+            int found = 0;
+            // try to find exact match for joint names first
+            vector<Joint *>::iterator j = joints->begin();
+            for (; j < joints->end(); j++) {
+                const char *jointName = (*j)->getName();
+                // skip unnamed joints
+                if (jointName[0] == 0)
+                    continue;
+                if (strcmp(jointName, namePattern) == 0) {
+                    (*j)->x = x;
+                    (*j)->y = y;
+                    found = 1;
+                }
+            }
 
-			// if exact match is not found try regular expression match
-			if (!found)
-			{
-				vector<Joint *>::iterator j = joints->begin();
-				for (; j < joints->end(); j++)
-				{
-					const char *jointName = (*j)->getName();
-					// skip unnamed joints
-					if (jointName[0] == 0)
-						continue;
-					if (patternMatch(jointName, namePattern))
-					{
-						(*j)->x = x;
-						(*j)->y = y;
-					}
-				}
-			}
+            // if exact match is not found try regular expression match
+            if (!found) {
+                vector<Joint *>::iterator j = joints->begin();
+                for (; j < joints->end(); j++) {
+                    const char *jointName = (*j)->getName();
+                    // skip unnamed joints
+                    if (jointName[0] == 0)
+                        continue;
+                    if (patternMatch(jointName, namePattern)) {
+                        (*j)->x = x;
+                        (*j)->y = y;
+                    }
+                }
+            }
 
-			unlock();
-		}
-		else if (strcmp(m.AddressPattern(), "/layervis") == 0)
-		{
-			const char *namePattern;
-			bool val;
+            unlock();
+        }
+        else if (strcmp(m.AddressPattern(), "/layervis") == 0) {
+            const char *namePattern;
+            bool val;
 
-			osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
-			namePattern = (arg++)->AsString();
-			/* parameter can be boolean or int */
-			if (arg->IsBool())
-				val = (arg++)->AsBool();
-			else
-				val = (1 == (arg++)->AsInt32());
-			if (arg != m.ArgumentsEnd())
-				throw osc::ExcessArgumentException();
+            osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
+            namePattern = (arg++)->AsString();
+            /* parameter can be boolean or int */
+            if (arg->IsBool())
+                val = (arg++)->AsBool();
+            else
+                val = (1 == (arg++)->AsInt32());
+            if (arg != m.ArgumentsEnd())
+                throw osc::ExcessArgumentException();
 
-			// get all layers
-			lock();
-			vector<Layer *> *layers = ui->editorBox->getAllLayers();
+            // get all layers
+            lock();
+            vector<Layer *> *layers = ui->editorBox->getAllLayers();
 
-			int found = 0;
-			// try to find exact match for layer names first
-			vector<Layer *>::iterator l = layers->begin();
-			for (; l < layers->end(); l++)
-			{
-				const char *layerName = (*l)->getName();
-				// skip unnamed layers
-				if (layerName[0] == 0)
-					continue;
+            int found = 0;
+            // try to find exact match for layer names first
+            vector<Layer *>::iterator l = layers->begin();
+            for (; l < layers->end(); l++) {
+                const char *layerName = (*l)->getName();
+                // skip unnamed layers
+                if (layerName[0] == 0)
+                    continue;
 
-				if (strcmp(layerName, namePattern) == 0)
-				{
-					(*l)->setVisibility(val);
-					found = 1;
-				}
-			}
+                if (strcmp(layerName, namePattern) == 0) {
+                    (*l)->setVisibility(val);
+                    found = 1;
+                }
+            }
 
-			// if exact match is not found try regular expression match
-			if (!found)
-			{
-				vector<Layer *>::iterator l = layers->begin();
-				for (; l < layers->end(); l++)
-				{
-					const char *layerName = (*l)->getName();
-					// skip unnamed layers
-					if (layerName[0] == 0)
-						continue;
-					if (patternMatch(layerName, namePattern))
-					{
-						(*l)->setVisibility(val);
-						found = 1;
-					}
-				}
-			}
+            // if exact match is not found try regular expression match
+            if (!found) {
+                vector<Layer *>::iterator l = layers->begin();
+                for (; l < layers->end(); l++) {
+                    const char *layerName = (*l)->getName();
+                    // skip unnamed layers
+                    if (layerName[0] == 0)
+                        continue;
+                    if (patternMatch(layerName, namePattern)) {
+                        (*l)->setVisibility(val);
+                        found = 1;
+                    }
+                }
+            }
 
-			if (!found)
-			{
-				cerr << "OSC error: " << m.AddressPattern() << ": "
-					<< "layer is not found" << "\n";
-			}
-			unlock();
-		}
-		else if (strcmp(m.AddressPattern(), "/layeralpha") == 0)
-		{
-			osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
-			const char *namePattern;
-			float val;
-			args >> namePattern >> val >> osc::EndMessage;
+            if (!found) {
+                cerr << "OSC error: " << m.AddressPattern() << ": "
+                    << "layer is not found" << "\n";
+            }
+            unlock();
+        }
+        else if (strcmp(m.AddressPattern(), "/layeralpha") == 0) {
+            osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
+            const char *namePattern;
+            float val;
+            args >> namePattern >> val >> osc::EndMessage;
 
             // filter out NaNs
             if (val != val)
                 return;
 
-			// get all layers
-			lock();
-			vector<Layer *> *layers = ui->editorBox->getAllLayers();
+            // get all layers
+            lock();
+            vector<Layer *> *layers = ui->editorBox->getAllLayers();
 
-			int found = 0;
-			// try to find exact match for layer names first
-			vector<Layer *>::iterator l = layers->begin();
-			for (; l < layers->end(); l++)
-			{
-				const char *layerName = (*l)->getName();
-				// skip unnamed layers
-				if (layerName[0] == 0)
-					continue;
-				if (strcmp(layerName, namePattern) == 0)
-				{
-					(*l)->setAlpha(val);
-					found = 1;
-				}
-			}
+            int found = 0;
+            // try to find exact match for layer names first
+            vector<Layer *>::iterator l = layers->begin();
+            for (; l < layers->end(); l++) {
+                const char *layerName = (*l)->getName();
+                // skip unnamed layers
+                if (layerName[0] == 0)
+                    continue;
+                if (strcmp(layerName, namePattern) == 0) {
+                    (*l)->setAlpha(val);
+                    found = 1;
+                }
+            }
 
-			// if exact match is not found try regular expression match
-			if (!found)
-			{
-				vector<Layer *>::iterator l = layers->begin();
-				for (; l < layers->end(); l++)
-				{
-					const char *layerName = (*l)->getName();
-					// skip unnamed layers
-					if (layerName[0] == 0)
-						continue;
-					if (patternMatch(layerName, namePattern))
-					{
-						(*l)->setAlpha(val);
-						found = 1;
-					}
-				}
-			}
+            // if exact match is not found try regular expression match
+            if (!found) {
+                vector<Layer *>::iterator l = layers->begin();
+                for (; l < layers->end(); l++) {
+                    const char *layerName = (*l)->getName();
+                    // skip unnamed layers
+                    if (layerName[0] == 0)
+                        continue;
+                    if (patternMatch(layerName, namePattern)) {
+                        (*l)->setAlpha(val);
+                        found = 1;
+                    }
+                }
+            }
 
-			if (!found)
-			{
-				cerr << "OSC error: " << m.AddressPattern() << ": "
-					<< "layer is not found" << "\n";
-			}
-			unlock();
-		}
-        else if (strcmp(m.AddressPattern(), "/layer/offset") == 0)
-        {
+            if (!found) {
+                cerr << "OSC error: " << m.AddressPattern() << ": "
+                    << "layer is not found" << "\n";
+            }
+            unlock();
+        }
+        else if (strcmp(m.AddressPattern(), "/layer/offset") == 0) {
             const char *namePattern;
             float x, y;
             osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
@@ -316,14 +287,12 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
             int found = 0;
             // try to find exact match for layer names first
             vector<Layer *>::iterator l = layers->begin();
-            for (; l < layers->end(); l++)
-            {
+            for (; l < layers->end(); l++) {
                 const char *layerName = (*l)->getName();
                 // skip unnamed layers
                 if (layerName[0] == 0)
                     continue;
-                if (strcmp(layerName, namePattern) == 0)
-                {
+                if (strcmp(layerName, namePattern) == 0) {
                     (*l)->setOffsetX(x);
                     (*l)->setOffsetY(y);
                     found = 1;
@@ -331,17 +300,14 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
             }
 
             // if exact match is not found try regular expression match
-            if (!found)
-            {
+            if (!found) {
                 vector<Layer *>::iterator l = layers->begin();
-                for (; l < layers->end(); l++)
-                {
+                for (; l < layers->end(); l++) {
                     const char *layerName = (*l)->getName();
                     // skip unnamed layers
                     if (layerName[0] == 0)
                         continue;
-                    if (patternMatch(layerName, namePattern))
-                    {
+                    if (patternMatch(layerName, namePattern)) {
                         (*l)->setOffsetX(x);
                         (*l)->setOffsetY(y);
                         found = 1;
@@ -349,93 +315,83 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                 }
             }
 
-            if (!found)
-            {
+            if (!found) {
                 cerr << "OSC error: " << m.AddressPattern() << ": "
                 << "layer " << namePattern << " is not found" << "\n";
             }
             unlock();
         }
-		else if (strcmp(m.AddressPattern(), "/layerpos") == 0)
-		{
-			const char *namePattern;
-			float x, y, z;
-			osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
-			namePattern = (arg++)->AsString();
-			/* parameters can be float or int */
-			if (arg->IsInt32())
-				x = (arg++)->AsInt32();
-			else
-				x = (arg++)->AsFloat();
-			if (arg->IsInt32())
-				y = (arg++)->AsInt32();
-			else
-				y = (arg++)->AsFloat();
-			if (m.ArgumentCount() == 4)
-			{
-				if (arg->IsInt32())
-					z = (arg++)->AsInt32();
-				else
-					z = (arg++)->AsFloat();
-			}
-			if (arg != m.ArgumentsEnd())
-				throw osc::ExcessArgumentException();
+        else if (strcmp(m.AddressPattern(), "/layerpos") == 0) {
+            const char *namePattern;
+            float x, y, z;
+            osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
+            namePattern = (arg++)->AsString();
+            /* parameters can be float or int */
+            if (arg->IsInt32())
+                x = (arg++)->AsInt32();
+            else
+                x = (arg++)->AsFloat();
+            if (arg->IsInt32())
+                y = (arg++)->AsInt32();
+            else
+                y = (arg++)->AsFloat();
+            if (m.ArgumentCount() == 4) {
+                if (arg->IsInt32())
+                    z = (arg++)->AsInt32();
+                else
+                    z = (arg++)->AsFloat();
+            }
+            if (arg != m.ArgumentsEnd())
+                throw osc::ExcessArgumentException();
 
             // filter out NaNs
             if (x != x || y != y || z != z)
                 return;
 
-			// get all layers
-			lock();
-			vector<Layer *> *layers = ui->editorBox->getAllLayers();
+            // get all layers
+            lock();
+            vector<Layer *> *layers = ui->editorBox->getAllLayers();
 
-			int found = 0;
-			// try to find exact match for layer names first
-			vector<Layer *>::iterator l = layers->begin();
-			for (; l < layers->end(); l++)
-			{
-				const char *layerName = (*l)->getName();
-				// skip unnamed layers
-				if (layerName[0] == 0)
-					continue;
-				if (strcmp(layerName, namePattern) == 0)
-				{
-					(*l)->setX(x);
-					(*l)->setY(y);
-					if (m.ArgumentCount() == 4)
-						(*l)->setZ(z);
-					found = 1;
-				}
-			}
+            int found = 0;
+            // try to find exact match for layer names first
+            vector<Layer *>::iterator l = layers->begin();
+            for (; l < layers->end(); l++) {
+                const char *layerName = (*l)->getName();
+                // skip unnamed layers
+                if (layerName[0] == 0)
+                    continue;
+                if (strcmp(layerName, namePattern) == 0) {
+                    (*l)->setX(x);
+                    (*l)->setY(y);
+                    if (m.ArgumentCount() == 4)
+                        (*l)->setZ(z);
+                    found = 1;
+                }
+            }
 
-			// if exact match is not found try regular expression match
-			if (!found)
-			{
-				vector<Layer *>::iterator l = layers->begin();
-				for (; l < layers->end(); l++)
-				{
-					const char *layerName = (*l)->getName();
-					// skip unnamed layers
-					if (layerName[0] == 0)
-						continue;
-					if (patternMatch(layerName, namePattern))
-					{
-						(*l)->setX(x);
-						(*l)->setY(y);
-						found = 1;
-					}
-				}
-			}
+            // if exact match is not found try regular expression match
+            if (!found) {
+                vector<Layer *>::iterator l = layers->begin();
+                for (; l < layers->end(); l++) {
+                    const char *layerName = (*l)->getName();
+                    // skip unnamed layers
+                    if (layerName[0] == 0)
+                        continue;
+                    if (patternMatch(layerName, namePattern)) {
+                        (*l)->setX(x);
+                        (*l)->setY(y);
+                        found = 1;
+                    }
+                }
+            }
 
-			if (!found)
-			{
-				cerr << "OSC error: " << m.AddressPattern() << ": "
-					<< "layer " << namePattern << " is not found" << "\n";
-			}
-			unlock();
-		}
-        else if (strcmp(m.AddressPattern(), "/layer/rotation") == 0)
-        {
+            if (!found) {
+                cerr << "OSC error: " << m.AddressPattern() << ": "
+                    << "layer " << namePattern << " is not found" << "\n";
+            }
+            unlock();
+        }
+        else if (strcmp(m.AddressPattern(), "/layer/rotation") == 0) {
             const char *namePattern;
             float theta;
             osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
@@ -459,174 +415,158 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
             int found = 0;
             // try to find exact match for layer names first
             vector<Layer *>::iterator l = layers->begin();
-            for (; l < layers->end(); l++)
-            {
+            for (; l < layers->end(); l++) {
                 const char *layerName = (*l)->getName();
                 // skip unnamed layers
                 if (layerName[0] == 0)
                     continue;
-                if (strcmp(layerName, namePattern) == 0)
-                {
+                if (strcmp(layerName, namePattern) == 0) {
                     (*l)->setTheta(theta);
                     found = 1;
                 }
             }
 
             // if exact match is not found try regular expression match
-            if (!found)
-            {
+            if (!found) {
                 vector<Layer *>::iterator l = layers->begin();
-                for (; l < layers->end(); l++)
-                {
+                for (; l < layers->end(); l++) {
                     const char *layerName = (*l)->getName();
                     // skip unnamed layers
                     if (layerName[0] == 0)
                         continue;
-                    if (patternMatch(layerName, namePattern))
-                    {
+                    if (patternMatch(layerName, namePattern)) {
                         (*l)->setTheta(theta);
                         found = 1;
                     }
                 }
             }
 
-            if (!found)
-            {
+            if (!found) {
                 cerr << "OSC error: " << m.AddressPattern() << ": "
                 << "layer " << namePattern << " is not found" << "\n";
             }
             unlock();
         }
-		else if (strcmp(m.AddressPattern(), "/layerdeltapos") == 0)
-		{
-			const char *namePattern;
-			float x, y;
-			osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
-			namePattern = (arg++)->AsString();
-			/* parameters can be float or int */
-			if (arg->IsInt32())
-				x = (arg++)->AsInt32();
-			else
-				x = (arg++)->AsFloat();
-			if (arg->IsInt32())
-				y = (arg++)->AsInt32();
-			else
-				y = (arg++)->AsFloat();
-			if (arg != m.ArgumentsEnd())
-				throw osc::ExcessArgumentException();
+        else if (strcmp(m.AddressPattern(), "/layerdeltapos") == 0) {
+            const char *namePattern;
+            float x, y;
+            osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
+            namePattern = (arg++)->AsString();
+            /* parameters can be float or int */
+            if (arg->IsInt32())
+                x = (arg++)->AsInt32();
+            else
+                x = (arg++)->AsFloat();
+            if (arg->IsInt32())
+                y = (arg++)->AsInt32();
+            else
+                y = (arg++)->AsFloat();
+            if (arg != m.ArgumentsEnd())
+                throw osc::ExcessArgumentException();
 
             // filter out NaNs
             if (x != x || y != y)
                 return;
 
-			// get all layers
-			lock();
-			vector<Layer *> *layers = ui->editorBox->getAllLayers();
+            // get all layers
+            lock();
+            vector<Layer *> *layers = ui->editorBox->getAllLayers();
 
-			int found = 0;
-			// try to find exact match for layer names first
-			vector<Layer *>::iterator l = layers->begin();
-			for (; l < layers->end(); l++)
-			{
-				const char *layerName = (*l)->getName();
-				// skip unnamed layers
-				if (layerName[0] == 0)
-					continue;
-				if (strcmp(layerName, namePattern) == 0)
-				{
-					(*l)->move(x, y);
-					found = 1;
-				}
-			}
+            int found = 0;
+            // try to find exact match for layer names first
+            vector<Layer *>::iterator l = layers->begin();
+            for (; l < layers->end(); l++) {
+                const char *layerName = (*l)->getName();
+                // skip unnamed layers
+                if (layerName[0] == 0)
+                    continue;
+                if (strcmp(layerName, namePattern) == 0) {
+                    (*l)->move(x, y);
+                    found = 1;
+                }
+            }
 
-			// if exact match is not found try regular expression match
-			if (!found)
-			{
-				vector<Layer *>::iterator l = layers->begin();
-				for (; l < layers->end(); l++)
-				{
-					const char *layerName = (*l)->getName();
-					// skip unnamed layers
-					if (layerName[0] == 0)
-						continue;
-					if (patternMatch(layerName, namePattern))
-					{
-						(*l)->move(x, y);
-						found = 1;
-					}
-				}
-			}
+            // if exact match is not found try regular expression match
+            if (!found) {
+                vector<Layer *>::iterator l = layers->begin();
+                for (; l < layers->end(); l++) {
+                    const char *layerName = (*l)->getName();
+                    // skip unnamed layers
+                    if (layerName[0] == 0)
+                        continue;
+                    if (patternMatch(layerName, namePattern)) {
+                        (*l)->move(x, y);
+                        found = 1;
+                    }
+                }
+            }
 
-			if (!found)
-			{
-				cerr << "OSC error: " << m.AddressPattern() << ": "
-					<< "layer is not found" << "\n";
-			}
-			unlock();
-		}
-	}
-	catch (osc::Exception& e)
-	{
-		// any parsing errors get thrown as exceptions
-		cerr << "OSC error: " << m.AddressPattern() << ": " << e.what() << "\n";
-	}
+            if (!found) {
+                cerr << "OSC error: " << m.AddressPattern() << ": "
+                    << "layer is not found" << "\n";
+            }
+            unlock();
+        }
+    }
+    catch (osc::Exception& e) {
+        // any parsing errors get thrown as exceptions
+        cerr << "OSC error: " << m.AddressPattern() << ": " << e.what() << "\n";
+    }
 }
 
 void *OSCListener::threadFunc(void *p)
 {
-	static_cast<OSCListener *>(p)->threadTask();
-	return 0;
+    static_cast<OSCListener *>(p)->threadTask();
+    return 0;
 }
 
 void OSCListener::start(void)
 {
-	if (thread == 0)
-	{
-		pthread_create(&thread, NULL, &threadFunc, this);
-		pthread_mutex_init(&mutex, NULL);
-	}
+    if (thread == 0) {
+        pthread_create(&thread, NULL, &threadFunc, this);
+        pthread_mutex_init(&mutex, NULL);
+    }
 }
 
 void OSCListener::stop(void)
 {
-	if (thread)
-	{
-		// send a break to make the listener exit from its Run() state
-		ulrs->AsynchronousBreak();
-		pthread_join(thread, NULL);	// wait until the thread is complete
-		pthread_mutex_destroy(&mutex);
-		delete ulrs;
-		thread = 0;
-	}
+    if (thread) {
+        // send a break to make the listener exit from its Run() state
+        ulrs->AsynchronousBreak();
+        pthread_join(thread, NULL);    // wait until the thread is complete
+        pthread_mutex_destroy(&mutex);
+        delete ulrs;
+        thread = 0;
+    }
 }
 
 void OSCListener::threadTask(void)
 {
     ulrs = new UdpListeningReceiveSocket(
-			IpEndpointName(IpEndpointName::ANY_ADDRESS, OSC_RECEIVE_PORT),
+            IpEndpointName(IpEndpointName::ANY_ADDRESS, OSC_RECEIVE_PORT),
             this);
 
-	// run until a break is sent from the other thread
+    // run until a break is sent from the other thread
     ulrs->Run();
 }
 
 
 void OSCListener::lock(void)
 {
-	pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mutex);
 }
 
 void OSCListener::unlock(void)
 {
-	pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mutex);
 }
 
 /* FIXME: is this needed? */
 void OSCListener::setRootLayer(Layer *root)
 {
-	lock();
-	rootLayer = root;
-	unlock();
+    lock();
+    rootLayer = root;
+    unlock();
 }
 
 /*
@@ -690,261 +630,256 @@ void OSCListener::setRootLayer(Layer *root)
  **/
 int OSCListener::patternMatch(const char *str, const char *p)
 {
-	int negate;
-	int match;
-	char c;
+    int negate;
+    int match;
+    char c;
 
-	while (*p)
-	{
-		if (!*str && *p != '*')
-			return false;
+    while (*p)
+    {
+        if (!*str && *p != '*')
+            return false;
 
-		switch (c = *p++)
-		{
-			case '*':
-				while (*p == '*')
-					p++;
+        switch (c = *p++)
+        {
+            case '*':
+                while (*p == '*')
+                    p++;
 
-				if (!*p)
-					return true;
+                if (!*p)
+                    return true;
 
-				// if (*p != '?' && *p != '[' && *p != '\\')
-				if (*p != '?' && *p != '[' && *p != '{')
-					while (*str && *p != *str)
-						str++;
+                // if (*p != '?' && *p != '[' && *p != '\\')
+                if (*p != '?' && *p != '[' && *p != '{')
+                    while (*str && *p != *str)
+                        str++;
 
-				while (*str)
-				{
-					if (patternMatch(str, p))
-						return true;
-					str++;
-				}
-				return false;
+                while (*str)
+                {
+                    if (patternMatch(str, p))
+                        return true;
+                    str++;
+                }
+                return false;
 
-			case '?':
-				if (*str)
-					break;
-				return false;
-			/*
-			 * set specification is inclusive, that is [a-z] is a, z and
-			 * everything in between. this means [z-a] may be interpreted
-			 * as a set that contains z, a and nothing in between.
-			 */
-			case '[':
-				if (*p != NEGATE)
-					negate = false;
-				else
-				{
-					negate = true;
-					p++;
-				}
+            case '?':
+                if (*str)
+                    break;
+                return false;
+            /*
+             * set specification is inclusive, that is [a-z] is a, z and
+             * everything in between. this means [z-a] may be interpreted
+             * as a set that contains z, a and nothing in between.
+             */
+            case '[':
+                if (*p != NEGATE)
+                    negate = false;
+                else
+                {
+                    negate = true;
+                    p++;
+                }
 
-				match = false;
+                match = false;
 
-				while (!match && (c = *p++))
-				{
-					if (!*p)
-						return false;
-					if (*p == '-')
-					{    /* c-c */
-						if (!*++p)
-							return false;
-						if (*p != ']')
-						{
-							if (*str == c || *str == *p ||
-									(*str > c && *str < *p))
-								match = true;
-						}
-						else
-						{      /* c-] */
-							if (*str >= c)
-								match = true;
-							break;
-						}
-					}
-					else
-					{          /* cc or c] */
-						if (c == *str)
-							match = true;
-						if (*p != ']')
-						{
-							if (*p == *str)
-								match = true;
-						}
-						else
-							break;
-					}
-				}
+                while (!match && (c = *p++))
+                {
+                    if (!*p)
+                        return false;
+                    if (*p == '-')
+                    {    /* c-c */
+                        if (!*++p)
+                            return false;
+                        if (*p != ']')
+                        {
+                            if (*str == c || *str == *p ||
+                                    (*str > c && *str < *p))
+                                match = true;
+                        }
+                        else
+                        {      /* c-] */
+                            if (*str >= c)
+                                match = true;
+                            break;
+                        }
+                    }
+                    else
+                    {          /* cc or c] */
+                        if (c == *str)
+                            match = true;
+                        if (*p != ']')
+                        {
+                            if (*p == *str)
+                                match = true;
+                        }
+                        else
+                            break;
+                    }
+                }
 
-				if (negate == match)
-					return false;
-				/*
-				 * if there is a match, skip past the cset and continue on
-				 */
-				while (*p && *p != ']')
-					p++;
-				if (!*p++)  /* oops! */
-					return false;
-				break;
+                if (negate == match)
+                    return false;
+                /*
+                 * if there is a match, skip past the cset and continue on
+                 */
+                while (*p && *p != ']')
+                    p++;
+                if (!*p++)  /* oops! */
+                    return false;
+                break;
 
-			/*
-			 * {astring,bstring,cstring}
-			 */
-			case '{':
-				{
-					// *p is now first character in the {brace list}
-					const char *place = str;    // to backtrack
-					const char *remainder = p;  // to forwardtrack
+            /*
+             * {astring,bstring,cstring}
+             */
+            case '{':
+                {
+                    // *p is now first character in the {brace list}
+                    const char *place = str;    // to backtrack
+                    const char *remainder = p;  // to forwardtrack
 
-					// find the end of the brace list
-					while (*remainder && *remainder != '}')
-						remainder++;
-					if (!*remainder++)  /* oops! */
-						return false;
+                    // find the end of the brace list
+                    while (*remainder && *remainder != '}')
+                        remainder++;
+                    if (!*remainder++)  /* oops! */
+                        return false;
 
-					c = *p++;
+                    c = *p++;
 
-					while (*p)
-					{
-						if (c == ',')
-						{
-							if (patternMatch(str, remainder))
-							{
-								return true;
-							}
-							else
-							{
-								// backtrack on test string
-								str = place;
-								// continue testing,
-								// skip comma
-								if (!*p++)  // oops
-									return false;
-							}
-						}
-						else if (c == '}')
-						{
-							// continue normal pattern matching
-							if(!*p++)
-								return false;
-							break;
-						}
-						else if (c == *str)
-						{
-							str++;
-							if (!*str && *remainder)
-								return false;
-							// p++;
-						}
-						else
-						{ // skip to next comma
-							str = place;
-							while (*p != ',' && *p != '}' && *p)
-								p++;
-							if (*p == ',')
-								p++;
-						}
-						c = *p++;
-					}
-				}
+                    while (*p)
+                    {
+                        if (c == ',')
+                        {
+                            if (patternMatch(str, remainder))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                // backtrack on test string
+                                str = place;
+                                // continue testing,
+                                // skip comma
+                                if (!*p++)  // oops
+                                    return false;
+                            }
+                        }
+                        else if (c == '}')
+                        {
+                            // continue normal pattern matching
+                            if(!*p++)
+                                return false;
+                            break;
+                        }
+                        else if (c == *str)
+                        {
+                            str++;
+                            if (!*str && *remainder)
+                                return false;
+                            // p++;
+                        }
+                        else
+                        { // skip to next comma
+                            str = place;
+                            while (*p != ',' && *p != '}' && *p)
+                                p++;
+                            if (*p == ',')
+                                p++;
+                        }
+                        c = *p++;
+                    }
+                }
 
-				break;
+                break;
 
-				/* Not part of OSC pattern matching
-				   case '\\':
-				   if (*p)
-				   c = *p++;
-				   */
+                /* Not part of OSC pattern matching
+                   case '\\':
+                   if (*p)
+                   c = *p++;
+                   */
 
-			default:
-				if (c != *str)
-					return false;
-				break;
+            default:
+                if (c != *str)
+                    return false;
+                break;
 
-		}
-		str++;
-	}
+        }
+        str++;
+    }
 
-	return !*str;
+    return !*str;
 }
 
 
 OSCSender::OSCSender(const char *hostName)
 {
-	thread = 0;
-	IpEndpointName host(hostName, OSC_SEND_PORT);
+    thread = 0;
+    IpEndpointName host(hostName, OSC_SEND_PORT);
 
-	ops = new osc::OutboundPacketStream(buffer, IP_MTU_SIZE);
-	socket = new UdpTransmitSocket(host);
+    ops = new osc::OutboundPacketStream(buffer, IP_MTU_SIZE);
+    socket = new UdpTransmitSocket(host);
 }
 
 OSCSender::~OSCSender()
 {
-	stop();
+    stop();
 }
 
 void *OSCSender::threadFunc(void *p)
 {
-	static_cast<OSCSender *>(p)->threadTask();
-	return 0;
+    static_cast<OSCSender *>(p)->threadTask();
+    return 0;
 }
 
 void OSCSender::start(void)
 {
-	if (thread == 0)
-	{
-		threadRunning = true;
-		pthread_create(&thread, NULL, &threadFunc, this);
-		pthread_mutex_init(&mutex, NULL);
-	}
+    if (thread == 0) {
+        threadRunning = true;
+        pthread_create(&thread, NULL, &threadFunc, this);
+        pthread_mutex_init(&mutex, NULL);
+    }
 }
 
 void OSCSender::stop(void)
 {
-	if (thread)
-	{
-		// send a break to make the sender exit
-		threadRunning = false;
-		pthread_join(thread, NULL);	// wait until the thread is complete
-		pthread_mutex_destroy(&mutex);
-		thread = 0;
-	}
+    if (thread) {
+        // send a break to make the sender exit
+        threadRunning = false;
+        pthread_join(thread, NULL);    // wait until the thread is complete
+        pthread_mutex_destroy(&mutex);
+        thread = 0;
+    }
 }
 
 void OSCSender::threadTask(void)
 {
-	while (threadRunning && (ui != NULL))
-	{
-		vector<Joint *> *oscJoints = ui->editorBox->getOSCJoints();
-		if (oscJoints != NULL)
-		{
-			vector<Joint *>::iterator ji = oscJoints->begin();
-			for (; ji < oscJoints->end(); ji++)
-			{
-				Joint *j = *ji;
-				ops->Clear();
-				(*ops) << osc::BeginBundleImmediate <<
-					osc::BeginMessage("/joint") <<
-					j->getName() <<
-					j->x << j->y << osc::EndMessage <<
-					osc::EndBundle;
-				socket->Send(ops->Data(), ops->Size());
-			}
-		}
+    while (threadRunning && (ui != NULL)) {
+        vector<Joint *> *oscJoints = ui->editorBox->getOSCJoints();
+        if (oscJoints != NULL) {
+            vector<Joint *>::iterator ji = oscJoints->begin();
+            for (; ji < oscJoints->end(); ji++) {
+                Joint *j = *ji;
+                ops->Clear();
+                (*ops) << osc::BeginBundleImmediate <<
+                    osc::BeginMessage("/joint") <<
+                    j->getName() <<
+                    j->x << j->y << osc::EndMessage <<
+                    osc::EndBundle;
+                socket->Send(ops->Data(), ops->Size());
+            }
+        }
 
-		// send messages 25 times per second approximately
-		usleep(40000);
-	}
+        // send messages 25 times per second approximately
+        usleep(40000);
+    }
 }
 
 
 void OSCSender::lock(void)
 {
-	pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mutex);
 }
 
 void OSCSender::unlock(void)
 {
-	pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mutex);
 }
 

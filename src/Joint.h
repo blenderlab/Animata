@@ -30,36 +30,36 @@ namespace Animata
 /// Endpoints of Bone.
 class Joint
 {
-	public:
-		float x; ///< x-coordinate
-		float y; ///< y-coordinate
-		float vx; ///< x view coordinate
-		float vy; ///< y view coordinate
+public:
+    float x;        ///< x-coordinate
+    float y;        ///< y-coordinate
+    float vx;       ///< x view coordinate
+    float vy;       ///< y view coordinate
 
-		bool fixed; ///< fixed state
-		bool selected; ///< selection state
-		bool dragged; ///< set to true if the joint is dragged
+    bool fixed;     ///< fixed state
+    bool selected;  ///< selection state
+    bool dragged;   ///< set to true if the joint is dragged
 
-		bool osc; ///< joint parameters are transmitted via osc if true
+    bool osc;       ///< joint parameters are transmitted via osc if true
 
-		/** timestamp of last drag, needed when joints are moved as part of a
-		 * bone to move joints only once per frame
-		 */
-		int dragTS;
+    /** timestamp of last drag, needed when joints are moved as part of a
+     * bone to move joints only once per frame
+     */
+    int dragTS;
 
-		Joint(float x, float y);
+    Joint(float x, float y);
 
-		const char *getName(void);
-		void setName(const char *str);
+    const char *getName(void);
+    void setName(const char *str);
 
-		void simulate(void);
-		void draw(int dragged = 0, int active = 1);
-		void flipSelection(void);
+    void simulate(void);
+    void draw(int dragged = 0, int active = 1);
+    void flipSelection(void);
 
-		void drag(float dx, float dy, int timeStamp = 0);
+    void drag(float dx, float dy, int timeStamp = 0);
 
-	private:
-		char name[16];
+private:
+    char name[16];
 };
 
 } /* namespace Animata */

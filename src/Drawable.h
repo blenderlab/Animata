@@ -30,34 +30,38 @@ namespace Animata
 /// This class gets inherited by primitives which can be selected by Selection::doSelection()
 class Drawable
 {
-	public:
+public:
 
-		virtual ~Drawable() {}
+    virtual ~Drawable() {}
 
-		/**
-		 * Pure virtual function for drawing the primitive.
-		 * \param	mode	Various rendering modes implemented by children classes.
-		 * \param	active	Shows if the primitive is on the active layer, so it can be drawn in a different way if not active.
-		 *					Default value is 1.
-		 */
-		virtual void draw(int mode, int active = 1) = 0;
+    /**
+     * Pure virtual function for drawing the primitive.
+     * \param mode      Various rendering modes implemented by children classes.
+     * \param active    Shows if the primitive is on the active layer, so it can
+     *                  be drawn in a different way if not active.
+     *                  Default value is 1.
+     */
+    virtual void draw(int mode, int active = 1) = 0;
 
-		/**
-		 * Selects the i-th subelement of the primitive with the given type.
-		 * \param	i		The number of the subelement in it's array.
-		 * \param	type	Type of the subelement. This helps when the primitive has more subelement.
-		 */
-		virtual void select(unsigned i, int type) = 0;
+    /**
+     * Selects the i-th sub-element of the primitive with the given type.
+     * \param i     The number of the sub-element in it's array.
+     * \param type  Type of the sub-element. This helps when the primitive has
+     *              more sub-element.
+     */
+    virtual void select(unsigned i, int type) = 0;
 
-		/**
-		 * Selects the i-th subelement of the primitive with the given type in the given circle.
-		 * \param	i		The number of the subelement in it's array.
-		 * \param	type	Type of the subelement. This helps when the primitive has more subelement.
-		 * \param	xc		\e x coordinate of the selection circle's center.
-		 * \param	yc		\e y coordinate of the selection circle's center.
-		 * \param	r		Radius of the selection circle's center.
-		 */
-		virtual void circleSelect(unsigned i, int type, int xc, int yc, float r) = 0;
+    /**
+     * Selects the i-th sub-element of the primitive with the given type in the
+     * given circle.
+     * \param i     The number of the sub-element in it's array.
+     * \param type  Type of the sub-element. This helps when the primitive has
+     *              more sub-element.
+     * \param xc    \e x coordinate of the selection circle's center.
+     * \param yc    \e y coordinate of the selection circle's center.
+     * \param r     Radius of the selection circle's center.
+     */
+    virtual void circleSelect(unsigned i, int type, int xc, int yc, float r) = 0;
 };
 
 } /* namespace Animata */

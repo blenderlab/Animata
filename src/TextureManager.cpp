@@ -32,13 +32,13 @@
 using namespace Animata;
 
 /**
- * Creates a new TextureManager object and allocates memory for holding textures in the \a textures vector.
+ * Creates a new TextureManager object and allocates memory for holding textures
+ * in the \a textures vector.
  */
 TextureManager::TextureManager()
 {
-	textures = new std::vector<Texture*>;
-
-	pTexture = NULL;
+    textures = new std::vector<Texture*>;
+    pTexture = NULL;
 }
 
 /**
@@ -46,14 +46,18 @@ TextureManager::TextureManager()
  */
 TextureManager::~TextureManager()
 {
-	if (textures)
-	{
-		std::vector<Texture *>::iterator t = textures->begin();
-		for (; t < textures->end(); t++)
-			delete *t;					// free textures from memory
-		textures->clear();				// clear all vector elements
-		delete textures;
-	}
+    if (textures) {
+        std::vector<Texture *>::iterator t = textures->begin();
+
+        // free textures from memory
+        for (; t < textures->end(); t++) {
+            delete *t;
+        }
+
+        // clear all vector elements
+        textures->clear();
+        delete textures;
+    }
 }
 
 /**
@@ -63,13 +67,12 @@ TextureManager::~TextureManager()
  **/
 Texture *TextureManager::getTexture(const char *filename)
 {
-	std::vector<Texture *>::iterator t = textures->begin();
-	for (; t < textures->end(); t++)
-	{
-		if (strcmp((*t)->getFilename(), filename) == 0)
-			return (*t);
-	}
-	return NULL;
+    std::vector<Texture *>::iterator t = textures->begin();
+    for (; t < textures->end(); t++) {
+        if (strcmp((*t)->getFilename(), filename) == 0)
+            return (*t);
+    }
+    return NULL;
 }
 
 /**
@@ -78,7 +81,7 @@ Texture *TextureManager::getTexture(const char *filename)
  **/
 void TextureManager::addTexture(Texture* t)
 {
-	textures->push_back(t);
+    textures->push_back(t);
 }
 
 /**
@@ -87,141 +90,134 @@ void TextureManager::addTexture(Texture* t)
  **/
 void TextureManager::removeTexture(Texture* t)
 {
-	std::vector<Texture *>::iterator textureIter = textures->begin();
-	for(; textureIter < textures->end(); textureIter++)
-	{
-		if(*textureIter == t)
-		{
-			// TODO: do not delete the texture if there is any other, which uses its gl resource
-			delete *textureIter;
-			textures->erase(textureIter);
-		}
-	}
+    std::vector<Texture *>::iterator textureIter = textures->begin();
+    for (; textureIter < textures->end(); textureIter++) {
+        if (*textureIter == t) {
+            /* TODO: do not delete the texture if there is any other,
+             * which uses its gl resource */
+            delete *textureIter;
+            textures->erase(textureIter);
+        }
+    }
 }
 
 /**
- * Allocates a new texture based on the given ImageBox if neccessary, and adds it to the TextureManager.
- * \todo If there is already a texture with the same image as the one in the ImageBox, use its glResource.
+ * Allocates a new texture based on the given ImageBox if neccessary, and adds
+ * it to the TextureManager.
+ * \todo If there is already a texture with the same image as the one in the
+ *       ImageBox, use its glResource.
  * \param box the imagebox as the source for the texture
  * \return the newly allocated texture
  **/
 Texture *TextureManager::createTexture(ImageBox *box)
 {
 /*
-	Texture *sameImage = getTexture(box->getFilename());
+    Texture *sameImage = getTexture(box->getFilename());
 
-	Texture *texture;
+    Texture *texture;
 
-	if(sameImage != NULL)
-	{
-		texture = sameImage->clone();
-	}
-	else
-	{
-		texture = box->allocateTexture();
-	}
+    if (sameImage != NULL)
+    {
+        texture = sameImage->clone();
+    }
+    else
+    {
+        texture = box->allocateTexture();
+    }
 */
 
-	Texture *texture = box->allocateTexture();
-	addTexture(texture);
+    Texture *texture = box->allocateTexture();
+    addTexture(texture);
 
-	return texture;
+    return texture;
 }
 
 /**
  * Draws only the texture of the mesh on the currently active layer.
- * First the screen coordinates get computed by Transform::project(), then the texture gets draw in the resulting position.
- * \param	mode	Render mode. Screen coordinates gets computed only if mode is \c RENDER_FEEDBACK.
+ * First the screen coordinates get computed by Transform::project(), then the
+ * texture gets draw in the resulting position.
+ * \param mode  Render mode. Screen coordinates gets computed only if mode
+ * is \c RENDER_FEEDBACK.
  */
 void TextureManager::draw(int mode)
 {
-	unsigned hit = selector->getHitCount();
-	SelectItem* selected = selector->getSelected();
+    unsigned hit = selector->getHitCount();
+    SelectItem* selected = selector->getSelected();
 
-	if((ui->settings.mode >= ANIMATA_MODE_TEXTURE_POSITION) &&
-	    (ui->settings.mode <= ANIMATA_MODE_TEXTURE_SCALE))
-	{
+    if (isTextureMode(ui->settings.mode)) {
 
-		// select the first texture from the selection buffer
-		pTexture = NULL;
-		for(unsigned int i = 0; i < hit; i++)
-		{
-			if(selected->type == Selection::SELECT_TEXTURE)
-			{
-				pTexture = (*textures)[selected->name];
-			}
+        // select the first texture from the selection buffer
+        pTexture = NULL;
+        for (unsigned int i = 0; i < hit; i++) {
+            if (selected->type == Selection::SELECT_TEXTURE) {
+                pTexture = (*textures)[selected->name];
+            }
 
-			selected++;
-		}
-	}
+            selected++;
+        }
+    }
 
-	// draw the textures only in image and mesh mode
-	if(((ui->settings.mode >= ANIMATA_MODE_TEXTURE_POSITION) &&
-	    (ui->settings.mode <= ANIMATA_MODE_TEXTURE_SCALE)) ||
-	   ((ui->settings.mode >= ANIMATA_MODE_CREATE_VERTEX) &&
-	    (ui->settings.mode <= ANIMATA_MODE_MESH_DELETE)))
-	{
-		glColor3f(1.f, 1.f, 1.f);
-		glEnable(GL_TEXTURE_2D);
+    // draw the textures only in testure and mesh mode
+    if (!isMeshMode(ui->settings.mode) && !isTextureMode(ui->settings.mode))
+        return;
 
-		glLoadName(Selection::SELECT_TEXTURE);
-		glPushName(0);
-		for(unsigned int i = 0; i < textures->size(); i++)
-		{
-			Texture* texture = (*textures)[i];
+    glColor3f(1.f, 1.f, 1.f);
+    glEnable(GL_TEXTURE_2D);
 
-			// draw the texture only for the mesh on the current layer
-			if (ui->editorBox->getMesh()->getAttachedTexture() == texture)
-			{
-				activeTexture = texture;
-				glLoadName(i);
+    glLoadName(Selection::SELECT_TEXTURE);
+    glPushName(0);
+    for (unsigned int i = 0; i < textures->size(); i++) {
+        Texture* texture = (*textures)[i];
 
-				if (mode & RENDER_FEEDBACK)
-				{
-					glMatrixMode(GL_MODELVIEW);
-					glPushMatrix();
-					glMultMatrixf(ui->editorBox->getCurrentLayer()->getTransformationMatrix()->f);
+        // draw the texture only for the mesh on the current layer
+        if (ui->editorBox->getMesh()->getAttachedTexture() == texture) {
+            activeTexture = texture;
+            glLoadName(i);
 
-					Transform::setMatrices();
+            if (mode & RENDER_FEEDBACK) {
+                glMatrixMode(GL_MODELVIEW);
+                glPushMatrix();
+                glMultMatrixf(ui->editorBox->getCurrentLayer()->getTransformationMatrix()->f);
 
-					glMatrixMode(GL_MODELVIEW);
-					glPopMatrix();
+                Transform::setMatrices();
 
-					Vector3D view0 = Transform::project(texture->x, texture->y, 0);
-					texture->viewTopLeft.set(view0.x, view0.y);
-					Vector3D view1 = Transform::project(texture->x + texture->width, texture->y + texture->height, 0);
-					texture->viewBottomRight.set(view1.x, view1.y);
-				}
+                glMatrixMode(GL_MODELVIEW);
+                glPopMatrix();
 
-				if (mode & RENDER_TEXTURE)
-				{
-					// get the boundaries of actual viewport
-					GLint viewport[4];
-					glGetIntegerv(GL_VIEWPORT, viewport);
+                Vector3D view0 = Transform::project(texture->x, texture->y, 0);
+                texture->viewTopLeft.set(view0.x, view0.y);
+                Vector3D view1 = Transform::project(texture->x + texture->width,
+                                                    texture->y + texture->height, 0);
+                texture->viewBottomRight.set(view1.x, view1.y);
+            }
 
-					glMatrixMode(GL_PROJECTION);
-					glPushMatrix();
-					glLoadIdentity();
-					//glOrtho(0, viewport[2], 0, viewport[3], 0, 1);
-					glOrtho(viewport[0], viewport[2] + viewport[0], viewport[1], viewport[3] + viewport[1], 0, 1);
+            if (mode & RENDER_TEXTURE) {
+                // get the boundaries of actual viewport
+                GLint viewport[4];
+                glGetIntegerv(GL_VIEWPORT, viewport);
 
-					glMatrixMode(GL_MODELVIEW);
-					glPushMatrix();
-					glLoadIdentity();
+                glMatrixMode(GL_PROJECTION);
+                glPushMatrix();
+                glLoadIdentity();
 
-					texture->draw(pTexture == texture);
+                glOrtho(viewport[0], viewport[2] + viewport[0], viewport[1],
+                        viewport[3] + viewport[1], 0, 1);
 
-					glMatrixMode(GL_MODELVIEW);
-					glPopMatrix();
+                glMatrixMode(GL_MODELVIEW);
+                glPushMatrix();
+                glLoadIdentity();
 
-					glMatrixMode(GL_PROJECTION);
-					glPopMatrix();					
-				}
-			}
-		}
-		glPopName();
+                texture->draw(pTexture == texture);
 
-		glDisable(GL_TEXTURE_2D);
-	}
+                glMatrixMode(GL_MODELVIEW);
+                glPopMatrix();
+
+                glMatrixMode(GL_PROJECTION);
+                glPopMatrix();
+            }
+        }
+        glPopName();
+        glDisable(GL_TEXTURE_2D);
+    }
 }
 

@@ -29,12 +29,12 @@
 #include "Layer.h"
 
 #define QUERY_CRITICAL_ATTR(t, name, outValue) \
-		if (t->QueryValueAttribute(name, &outValue) != TIXML_SUCCESS) \
-			continue;
+        if (t->QueryValueAttribute(name, &outValue) != TIXML_SUCCESS) \
+            continue;
 
 #define QUERY_ATTR(t, name, outValue, defaultValue) \
-		if (t->QueryValueAttribute(name, &outValue) != TIXML_SUCCESS) \
-			outValue = defaultValue;
+        if (t->QueryValueAttribute(name, &outValue) != TIXML_SUCCESS) \
+            outValue = defaultValue;
 
 using namespace std;
 
@@ -44,33 +44,33 @@ namespace Animata
 /// Class to save and load animata scenes.
 class IO
 {
-	private:
-		void saveLayer(TiXmlElement *parent, Layer *layer);
-		void saveLayers(TiXmlElement *parent, vector<Layer *> *layers);
-		void saveTexture(TiXmlElement *parent, Texture *t);
-		void saveMesh(TiXmlElement *parent, Mesh *m);
-		void saveFaces(TiXmlElement *parent, vector<Face *> *faces,
-				vector<Vertex *> *vertices);
-		void saveSkeleton(TiXmlElement *parent, Skeleton *s, Mesh *m);
-		void saveBones(TiXmlElement *parent, vector<Bone *> *bones,
-				vector<Joint *> *joints, vector<Vertex *> *vertices);
-		void saveSettings(TiXmlElement *parent);
+private:
+    void saveLayer(TiXmlElement *parent, Layer *layer);
+    void saveLayers(TiXmlElement *parent, vector<Layer *> *layers);
+    void saveTexture(TiXmlElement *parent, Texture *t);
+    void saveMesh(TiXmlElement *parent, Mesh *m);
+    void saveFaces(TiXmlElement *parent, vector<Face *> *faces,
+                   vector<Vertex *> *vertices);
+    void saveSkeleton(TiXmlElement *parent, Skeleton *s, Mesh *m);
+    void saveBones(TiXmlElement *parent, vector<Bone *> *bones,
+                   vector<Joint *> *joints, vector<Vertex *> *vertices);
+    void saveSettings(TiXmlElement *parent);
 
-		Layer *loadLayer(TiXmlNode *layerNode, Layer *layerParent = NULL);
-		void loadLayers(TiXmlNode *parent, vector<Layer *> *layers,
-					Layer *layerParent);
-		void loadMesh(TiXmlNode *parent, Mesh *mesh);
-		void loadTexture(TiXmlNode *textureNode, Mesh *mesh);
-		void loadSkeleton(TiXmlNode *parent, Skeleton *skeleton, Mesh *m);
+    Layer *loadLayer(TiXmlNode *layerNode, Layer *layerParent = NULL);
+    void loadLayers(TiXmlNode *parent, vector<Layer *> *layers,
+                    Layer *layerParent);
+    void loadMesh(TiXmlNode *parent, Mesh *mesh);
+    void loadTexture(TiXmlNode *textureNode, Mesh *mesh);
+    void loadSkeleton(TiXmlNode *parent, Skeleton *skeleton, Mesh *m);
 
-		const char *filepath; ///< absolute filename to load from
+    const char *filepath; ///< absolute filename to load from
 
-	public:
-		/// Saves scene specified by its root layer using the given filename.
-		void save(const char *filename, Layer *rootLayer);
+public:
+    /// Saves scene specified by its root layer using the given filename.
+    void save(const char *filename, Layer *rootLayer);
 
-		/// Loads scene.
-		Layer *load(const char *filename);
+    /// Loads scene.
+    Layer *load(const char *filename);
 };
 
 } /* namespace Animata */

@@ -35,16 +35,16 @@ using namespace Animata;
  * \param l Pointer to label string.
  */
 Playback::Playback(int x, int y, int w, int h, const char* l) :
-	Fl_Gl_Window(x, y, w, h, l)
+    Fl_Gl_Window(x, y, w, h, l)
 {
-	camera = new Camera();
-	// rootLayer = NULL;
-	allLayers = NULL;
+    camera = new Camera();
+    // rootLayer = NULL;
+    allLayers = NULL;
 
-	fullscreen = 0;
-	this->resizable(this);
+    fullscreen = 0;
+    this->resizable(this);
 
-	glContext = NULL;
+    glContext = NULL;
 }
 
 /**
@@ -52,7 +52,7 @@ Playback::Playback(int x, int y, int w, int h, const char* l) :
  */
 Playback::~Playback()
 {
-	delete camera;
+    delete camera;
 }
 
 /**
@@ -61,36 +61,29 @@ Playback::~Playback()
  */
 void Playback::draw()
 {
-	if (!valid())
-	{
-		AnimataWindow::setupOpenGL();
+    if (!valid()) {
+        AnimataWindow::setupOpenGL();
+        camera->setSize(w(), h());
+    }
 
-		camera->setSize(w(), h());
-	}
+    // FIXME: somehow the context of the editorwindow has feedback on the
+    // playbackwindow's context on windows
+    // setting the viewport in the editorwindow causes to change it in the
+    // playbackwindow too
+    // camera->setupViewport();
 
-	// FIXME: somehow the context of the editorwindow has feedback on the
-	// playbackwindow's context on windows
-	// setting the viewport in the editorwindow causes to change it in the
-	// playbackwindow too
-	// camera->setupViewport();
+    glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glClearColor(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    camera->setupModelView();
 
-	camera->setupModelView();
-
-	/*
-	if (rootLayer)
-		rootLayer->draw(RENDER_FEEDBACK | RENDER_OUTPUT | RENDER_TEXTURE | RENDER_WIREFRAME);
-	*/
-	if (allLayers)
-	{
-		vector<Layer *>::iterator l = allLayers->begin();
-		for (; l < allLayers->end(); l++)
-		{
-			(*l)->drawWithoutRecursion(RENDER_FEEDBACK | RENDER_OUTPUT | RENDER_TEXTURE | RENDER_WIREFRAME);
-		}
-	}
+    if (allLayers) {
+        vector<Layer *>::iterator l = allLayers->begin();
+        for (; l < allLayers->end(); l++) {
+            (*l)->drawWithoutRecursion(RENDER_FEEDBACK | RENDER_OUTPUT
+                                       | RENDER_TEXTURE | RENDER_WIREFRAME);
+        }
+    }
 }
 
 /**
@@ -99,43 +92,36 @@ void Playback::draw()
  */
 int Playback::handle(int event)
 {
-	switch(event)
-	{
-		case FL_PUSH:
-			if(Fl::event_button() == FL_LEFT_MOUSE)
-				return 1;
-		case FL_KEYUP:
-			if(Fl::event_key() == 32)
-			{
-				if(fullscreen)
-				{
-					Fl_Window::fullscreen_off(ox, oy, ow, oh);
-				}
-				else
-				{
-					ox = this->x();
-					oy = this->y();
-					ow = this->w();
-					oh = this->h();
+    switch(event) {
+        case FL_PUSH:
+            if(Fl::event_button() == FL_LEFT_MOUSE)
+                return 1;
+        case FL_KEYUP:
+            if(Fl::event_key() == 32) {
+                if(fullscreen) {
+                    Fl_Window::fullscreen_off(ox, oy, ow, oh);
+                }
+                else {
+                    ox = this->x();
+                    oy = this->y();
+                    ow = this->w();
+                    oh = this->h();
+                    Fl_Window::fullscreen();
+                }
+                fullscreen = !fullscreen;
+            }
+            return 1;
+            break;
+        case FL_KEYDOWN:
+            // do not quit if esc is pressed
+            if(Fl::event_key() == FL_Escape)
+                return 1;
+            break;
+        default:
+            break;
+    }
 
-					Fl_Window::fullscreen();
-				}
-
-				fullscreen = !fullscreen;
-			}
-
-			return 1;
-			break;
-		case FL_KEYDOWN:
-			// do not quit if esc is pressed
-			if(Fl::event_key() == FL_Escape)
-				return 1;
-			break;
-		default:
-			break;
-	}
-
-	return Fl_Gl_Window::handle(event);
+    return Fl_Gl_Window::handle(event);
 }
 
 /**
@@ -144,11 +130,11 @@ int Playback::handle(int event)
  */
 void Playback::show()
 {
-	// context should be recreated, because on win the old one wont be used
-	// TODO: reuse the main window's context
-	context(NULL);
+    // context should be recreated, because on win the old one wont be used
+    // TODO: reuse the main window's context
+    context(NULL);
 
-	Fl_Gl_Window::show();
+    Fl_Gl_Window::show();
 }
 
 /**
@@ -157,8 +143,6 @@ void Playback::show()
  */
 void Playback::hide()
 {
-//	ui->editorBox->getCamera()->setPicture(NULL);
-
-	Fl_Window::hide();
+    Fl_Window::hide();
 }
 

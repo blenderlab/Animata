@@ -30,99 +30,99 @@ using namespace Animata;
 
 QuadEdge::QuadEdge()
 {
-	e[0].num = 0;
-	e[1].num = 1;
-	e[2].num = 2;
-	e[3].num = 3;
+    e[0].num = 0;
+    e[1].num = 1;
+    e[2].num = 2;
+    e[3].num = 3;
 
-	e[0].next = &(e[0]);
-	e[1].next = &(e[3]);
-	e[2].next = &(e[2]);
-	e[3].next = &(e[1]);
+    e[0].next = &(e[0]);
+    e[1].next = &(e[3]);
+    e[2].next = &(e[2]);
+    e[3].next = &(e[1]);
 }
 
 // return the dual of the current edge, directed from its right to its left.
 Edge *Edge::rot(void)
 {
-	return (num < 3) ? this + 1 : this - 3;
+    return (num < 3) ? this + 1 : this - 3;
 }
 
 // return the dual of the current edge, directed from its left to its right.
 Edge *Edge::invrot(void)
 {
-	return (num > 0) ? this - 1 : this + 3;
+    return (num > 0) ? this - 1 : this + 3;
 }
 
 // return the edge from the destination to the origin of the current edge.
 Edge *Edge::sym(void)
 {
-	return (num < 2) ? this + 2 : this - 2;
+    return (num < 2) ? this + 2 : this - 2;
 }
 
 // return the next ccw edge around (from) the origin of the current edge.
 Edge *Edge::onext(void)
 {
-	return next;
+    return next;
 }
 
 // return the next cw edge around (from) the origin of the current edge.
 Edge *Edge::oprev(void)
 {
-	return rot()->onext()->rot();
+    return rot()->onext()->rot();
 }
 
 // return the next ccw edge around (into) the destination of the current edge.
 Edge *Edge::dnext(void)
 {
-	return sym()->onext()->sym();
+    return sym()->onext()->sym();
 }
 
 // return the next cw edge around (into) the destination of the current edge.
 Edge *Edge::dprev(void)
 {
-	return invrot()->onext()->invrot();
+    return invrot()->onext()->invrot();
 }
 
 // return the ccw edge around the left face following the current edge.
 Edge *Edge::lnext(void)
 {
-	return invrot()->onext()->rot();
+    return invrot()->onext()->rot();
 }
 
 // return the ccw edge around the left face before the current edge.
 Edge *Edge::lprev(void)
 {
-	return onext()->sym();
+    return onext()->sym();
 }
 
 // return the edge around the right face ccw following the current edge.
 Edge *Edge::rnext(void)
 {
-	return rot()->onext()->invrot();
+    return rot()->onext()->invrot();
 }
 
 // return the edge around the right face ccw before the current edge.
 Edge *Edge::rprev(void)
 {
-	return sym()->onext();
+    return sym()->onext();
 }
 
 // ----- access to data pointers
 
 int Edge::org(void)
 {
-	return data;
+    return data;
 }
 
 int Edge::dest(void)
 {
-	return sym()->data;
+    return sym()->data;
 }
 
 void Edge::endpoints(int orig, int dest)
 {
-	data = orig;
-	sym()->data = dest;
+    data = orig;
+    sym()->data = dest;
 }
 
 // ----- basic topological operators
@@ -131,26 +131,25 @@ vector<QuadEdge *> *QuadEdge::qe_array = NULL;
 
 Edge *Edge::make_edge(void)
 {
-	if (QuadEdge::qe_array == NULL)
-		QuadEdge::qe_array = new vector<QuadEdge *>;
+    if (QuadEdge::qe_array == NULL)
+        QuadEdge::qe_array = new vector<QuadEdge *>;
 
-	QuadEdge *ql = new QuadEdge;
-	QuadEdge::qe_array->push_back(ql);
+    QuadEdge *ql = new QuadEdge;
+    QuadEdge::qe_array->push_back(ql);
 
-	return ql->e;
+    return ql->e;
 }
 
 void Edge::kill_edges(void)
 {
-	if (QuadEdge::qe_array)
-	{
-		vector<QuadEdge *>::iterator q = QuadEdge::qe_array->begin();
-		for (; q < QuadEdge::qe_array->end(); q++)
-			delete *q;
-		QuadEdge::qe_array->clear();
-		delete QuadEdge::qe_array;
-		QuadEdge::qe_array = NULL;
-	}
+    if (QuadEdge::qe_array) {
+        vector<QuadEdge *>::iterator q = QuadEdge::qe_array->begin();
+        for (; q < QuadEdge::qe_array->end(); q++)
+            delete *q;
+        QuadEdge::qe_array->clear();
+        delete QuadEdge::qe_array;
+        QuadEdge::qe_array = NULL;
+    }
 }
 
 /*
@@ -164,38 +163,36 @@ void Edge::kill_edges(void)
  */
 void Edge::splice(Edge *a, Edge *b)
 {
-	Edge *alpha = a->onext()->rot();
-	Edge *beta  = b->onext()->rot();
+    Edge *alpha = a->onext()->rot();
+    Edge *beta  = b->onext()->rot();
 
-	Edge *t1 = b->onext();
-	Edge *t2 = a->onext();
-	Edge *t3 = beta->onext();
-	Edge *t4 = alpha->onext();
+    Edge *t1 = b->onext();
+    Edge *t2 = a->onext();
+    Edge *t3 = beta->onext();
+    Edge *t4 = alpha->onext();
 
-	a->next = t1;
-	b->next = t2;
-	alpha->next = t3;
-	beta->next = t4;
+    a->next = t1;
+    b->next = t2;
+    alpha->next = t3;
+    beta->next = t4;
 }
 
 void Edge::delete_edge(Edge *e)
 {
-	splice(e, e->oprev());
-	splice(e->sym(), e->sym()->oprev());
+    splice(e, e->oprev());
+    splice(e->sym(), e->sym()->oprev());
 
-	QuadEdge *q = (QuadEdge *)(e - e->num);		// quad-edge pointer of edge
+    QuadEdge *q = (QuadEdge *)(e - e->num);        // quad-edge pointer of edge
 
-	vector<QuadEdge *>::iterator qi = QuadEdge::qe_array->begin();
-	for (; qi < QuadEdge::qe_array->end(); qi++)
-	{
-		if (*qi == q)
-		{
-			QuadEdge::qe_array->erase(qi);
-			break;
-		}
-	}
+    vector<QuadEdge *>::iterator qi = QuadEdge::qe_array->begin();
+    for (; qi < QuadEdge::qe_array->end(); qi++) {
+        if (*qi == q) {
+            QuadEdge::qe_array->erase(qi);
+            break;
+        }
+    }
 
-	delete q;
+    delete q;
 }
 
 /*
@@ -206,11 +203,11 @@ void Edge::delete_edge(Edge *e)
    */
 Edge* Edge::connect_edge(Edge *a, Edge *b)
 {
-	Edge *e = make_edge();
-	splice(e, a->lnext());
-	splice(e->sym(), b);
-	e->endpoints(a->dest(), b->org());
-	return e;
+    Edge *e = make_edge();
+    splice(e, a->lnext());
+    splice(e->sym(), b);
+    e->endpoints(a->dest(), b->org());
+    return e;
 }
 
 /*
@@ -219,12 +216,12 @@ Edge* Edge::connect_edge(Edge *a, Edge *b)
    */
 void Edge::swap(Edge *e)
 {
-	Edge *a = e->oprev();
-	Edge *b = e->sym()->oprev();
-	splice(e, a);
-	splice(e->sym(), b);
-	splice(e, a->lnext());
-	splice(e->sym(), b->lnext());
-	e->endpoints(a->dest(), b->dest());
+    Edge *a = e->oprev();
+    Edge *b = e->sym()->oprev();
+    splice(e, a);
+    splice(e->sym(), b);
+    splice(e, a->lnext());
+    splice(e->sym(), b->lnext());
+    e->endpoints(a->dest(), b->dest());
 }
 

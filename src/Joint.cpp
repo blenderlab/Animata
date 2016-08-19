@@ -36,15 +36,15 @@ using namespace Animata;
  **/
 Joint::Joint(float x, float y)
 {
-	this->x = x;
-	this->y = y;
-	fixed = false;
-	dragged = false;
-	selected = false;
-	dragTS = -1;
-	osc = false;
+    this->x = x;
+    this->y = y;
+    fixed = false;
+    dragged = false;
+    selected = false;
+    dragTS = -1;
+    osc = false;
 
-	setName("");
+    setName("");
 }
 
 /**
@@ -53,7 +53,7 @@ Joint::Joint(float x, float y)
  **/
 const char *Joint::getName(void)
 {
-	return name;
+    return name;
 }
 
 /**
@@ -63,8 +63,8 @@ const char *Joint::getName(void)
  **/
 void Joint::setName(const char *str)
 {
-	strncpy(name, str, 15);
-	name[15] = 0;
+    strncpy(name, str, 15);
+    name[15] = 0;
 }
 
 /**
@@ -72,11 +72,10 @@ void Joint::setName(const char *str)
  **/
 void Joint::simulate(void)
 {
-	if ((ui->settings.gravity == 1) & (!fixed) & (!dragged))
-	{
-		x += ui->settings.gravityForce * ui->settings.gravityX;
-		y += ui->settings.gravityForce * ui->settings.gravityY;
-	}
+    if ((ui->settings.gravity == 1) & (!fixed) & (!dragged)) {
+        x += ui->settings.gravityForce * ui->settings.gravityX;
+        y += ui->settings.gravityForce * ui->settings.gravityY;
+    }
 }
 
 /**
@@ -86,7 +85,7 @@ void Joint::simulate(void)
  **/
 void Joint::draw(int mouseOver, int active)
 {
-	Primitives::drawJoint(this, mouseOver, active);
+    Primitives::drawJoint(this, mouseOver, active);
 }
 
 /**
@@ -94,7 +93,7 @@ void Joint::draw(int mouseOver, int active)
  **/
 void Joint::flipSelection(void)
 {
-	selected = !selected;
+    selected = !selected;
 }
 
 /**
@@ -102,16 +101,15 @@ void Joint::flipSelection(void)
  * \param dx x distance
  * \param dy y distance
  * \param timeStamp timestamp to prevent moving joints multiple times when
- *		they belong to several bones
+ *        they belong to several bones
  **/
 void Joint::drag(float dx, float dy, int timeStamp /* = 0*/)
 {
-	if ((dragTS != timeStamp) || (timeStamp == 0))
-	{
-		x += dx;
-		y += dy;
-		dragged = true;
-		dragTS = timeStamp;
-	}
+    if ((dragTS != timeStamp) || (timeStamp == 0)) {
+        x += dx;
+        y += dy;
+        dragged = true;
+        dragTS = timeStamp;
+    }
 }
 

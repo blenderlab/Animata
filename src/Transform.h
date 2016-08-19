@@ -25,11 +25,11 @@
 #define __TRANSFORM_H__
 
 #if defined(__APPLE__)
-	#include <OPENGL/gl.h>
-	#include <OPENGL/glu.h>
+    #include <OPENGL/gl.h>
+    #include <OPENGL/glu.h>
 #else
-	#include <GL/gl.h>
-	#include <GL/glu.h>
+    #include <GL/gl.h>
+    #include <GL/glu.h>
 #endif
 
 #include "Vector3D.h"
@@ -40,20 +40,20 @@ namespace Animata
 /// Transforms points between screen and world coordinate-systems.
 class Transform
 {
-	private:
-		static double modelview[16];	///< modelview matrix
-		static double projection[16];	///< projection matrix
-		static GLint viewport[4];		///< viewport parameters
+private:
+    static double modelview[16];    ///< modelview matrix
+    static double projection[16];   ///< projection matrix
+    static GLint viewport[4];       ///< viewport parameters
 
-	public:
-		Transform() {}
-		virtual ~Transform () {}
+public:
+    Transform() {}
+    virtual ~Transform () {}
 
-		static void setMatrices();
+    static void setMatrices();
 
-		static Vector3D unproject(float x, float y, float z);
-		static Vector3D project(float x, float y, float z);
-		static float getDepth(float x, float y);
+    static Vector3D unproject(float x, float y, float z);
+    static Vector3D project(float x, float y, float z);
+    static float getDepth(float x, float y);
 };
 
 } /* namespace Animata */

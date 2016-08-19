@@ -30,13 +30,13 @@ using namespace Animata;
 
 Matrix::Matrix()
 {
-	clear();
+    clear();
 }
 
 Matrix::Matrix(double e[16])
 {
-	for(int i = 0; i < 16; i++)
-		f[i] = e[i];
+    for (int i = 0; i < 16; i++)
+        f[i] = e[i];
 }
 
 /**
@@ -44,8 +44,8 @@ Matrix::Matrix(double e[16])
  **/
 void Matrix::clear()
 {
-	for(int i = 0; i < 16; i++)
-		f[i] = 0.f;
+    for (int i = 0; i < 16; i++)
+        f[i] = 0.f;
 }
 
 /**
@@ -53,32 +53,34 @@ void Matrix::clear()
  **/
 void Matrix::loadIdentity()
 {
-	clear();
+    clear();
 
-	f[0] = f[5] = f[10] = f[15] = 1.f;
+    f[0] = f[5] = f[10] = f[15] = 1.f;
 }
 
 /**
- * Computes the inverse rotation portion of this matrix and returns it as a new object.
- * In case of OpenGL, the inverse of the rotation is the transpose of the rotation.
+ * Computes the inverse rotation portion of this matrix and returns it as a new
+ * object.  In case of OpenGL, the inverse of the rotation is the transpose of
+ * the rotation.
  **/
 Matrix& Matrix::inverseRotation()
 {
-	Matrix *invrot = new Matrix();
-	invrot = this;
+    Matrix *invrot = new Matrix();
+    invrot = this;
 
-	invrot->f[1] = f[4];
-	invrot->f[4] = f[1];
-	invrot->f[2] = f[8];
-	invrot->f[8] = f[2];
-	invrot->f[6] = f[9];
-	invrot->f[9] = f[6];
+    invrot->f[1] = f[4];
+    invrot->f[4] = f[1];
+    invrot->f[2] = f[8];
+    invrot->f[8] = f[2];
+    invrot->f[6] = f[9];
+    invrot->f[9] = f[6];
 
-	return *invrot;
+    return *invrot;
 }
 
 /**
- * Compute the inverse only from the first three rows of this matrix and return as a new object.
+ * Compute the inverse only from the first three rows of this matrix and return
+ * as a new object.
  * If the matrix is not invertible, null is returned.
  **/
 Matrix& Matrix::inverse()
@@ -113,42 +115,22 @@ Matrix& Matrix::inverse()
     inv->f[14] = (-f[2] * A4 + f[6] * A2 - f[14] * A0) * invDet;
 
     return *inv;
-
-/*
-	Matrix *inv = new Matrix();
-
-	inv->f[0] = f[5] * f[10] - f[9] * f[6];
-	inv->f[1] = f[9] * f[2] - f[1] * f[10];
-	inv->f[2] = f[1] * f[6] - f[5] * f[2];
-
-	float det = f[0] * inv->f[0] + f[1] * inv->f[1] + f[2] * inv->f[2];
-
-//	if(fabs(det) < 1e-12f)
-//		return NULL;
-
-	float invdet = 1.f / det;
-
-	inv->f[0] = inv->f[0] * invdet;
-	inv->f[1] = inv->f[1] * invdet;
-	inv->f[2] = inv->f[2] * invdet;
-	inv->f[3] = 0.f;
-*/
 }
 
 Matrix& Matrix::operator = (Matrix& m)
 {
-	for(int i = 0; i < 16; i++)
-		f[i] = m[i];
+    for (int i = 0; i < 16; i++)
+        f[i] = m[i];
 
-	return *this;
+    return *this;
 }
 
 Matrix& Matrix::operator = (float e[16])
 {
-	for(int i = 0; i < 16; i++)
-		f[i] = e[i];
+    for (int i = 0; i < 16; i++)
+        f[i] = e[i];
 
-	return *this;
+    return *this;
 }
 
 /**
@@ -158,19 +140,18 @@ Matrix& Matrix::operator = (float e[16])
  **/
 Matrix& Matrix::operator *= (Matrix& m)
 {
-	Matrix *temp = new Matrix();
-	*temp = *this;
+    Matrix *temp = new Matrix();
+    *temp = *this;
 
-	this->clear();
+    this->clear();
 
-	for(int i = 0; i < 4; i++)
-		for(int j = 0; j < 4; j++)
-			for(int k = 0; k < 4; k++)
-//				f[i*4 + j] += m[i*4 + k] * (*temp)[k*4 + j];
-				f[i*4 + j] += (*temp)[i*4 + k] * m[k*4 + j];
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            for (int k = 0; k < 4; k++)
+                f[i*4 + j] += (*temp)[i*4 + k] * m[k*4 + j];
 
-	delete temp;
-	return *this;
+    delete temp;
+    return *this;
 }
 
 /**
@@ -182,16 +163,16 @@ Matrix& Matrix::operator *= (Matrix& m)
  **/
 Matrix& Matrix::translate(float x, float y, float z)
 {
-	Matrix t;
-	t.loadIdentity();
+    Matrix t;
+    t.loadIdentity();
 
-	t[12] = x;
-	t[13] = y;
-	t[14] = z;
+    t[12] = x;
+    t[13] = y;
+    t[14] = z;
 
-	// left or right?
-	*this *= t;
-	return *this;
+    // left or right?
+    *this *= t;
+    return *this;
 }
 
 /**
@@ -203,16 +184,16 @@ Matrix& Matrix::translate(float x, float y, float z)
  **/
 Matrix& Matrix::scale(float x, float y, float z)
 {
-	Matrix t;
-	t.loadIdentity();
+    Matrix t;
+    t.loadIdentity();
 
-	t[0] = x;
-	t[5] = y;
-	t[10] = z;
+    t[0] = x;
+    t[5] = y;
+    t[10] = z;
 
-	// left or right?
-	*this *= t;
-	return *this;
+    // left or right?
+    *this *= t;
+    return *this;
 }
 
 /**
@@ -240,14 +221,12 @@ Matrix& Matrix::rotate(float theta)
 
 void Matrix::print()
 {
-	for(int i = 0; i < 4; i++)
-	{
-		for(int j = 0; j < 4; j++)
-		{
-			printf("%f ", f[j*4 + i]);
-		}
-		printf("\n");
-	}
-	printf("\n");
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            printf("%f ", f[j*4 + i]);
+        }
+        printf("\n");
+    }
+    printf("\n");
 }
 

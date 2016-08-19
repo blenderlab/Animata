@@ -30,29 +30,39 @@ namespace Animata
 // class storing 4x4 float matrix
 class Matrix
 {
-	public:
+public:
 
-		float f[16];			///< items of the matrix in one dimension to adapt to the openGL convencion
+    ///< items of the matrix in one dimension to adapt to the openGL convention
+    float f[16];
 
-		Matrix();
-		Matrix(double e[16]);
+    Matrix();
+    Matrix(double e[16]);
 
-		void clear();			///< zero matrix
-		void loadIdentity();	///< indentity matrix
+    void clear();           ///< zero matrix
+    void loadIdentity();    ///< indentity matrix
 
-		inline float& operator [] (int i) { return f[i]; }
+    inline float& operator [] (int i) { return f[i]; }
 
-		Matrix& operator = (Matrix& m);		///< assignment operator
-		Matrix& operator = (float e[16]);	///< float assignment operator
-		Matrix& operator *= (Matrix& m);	///< right multiply operator
+    Matrix& operator = (Matrix& m);     ///< assignment operator
+    Matrix& operator = (float e[16]);   ///< float assignment operator
+    Matrix& operator *= (Matrix& m);    ///< right multiply operator
 
-		Matrix& inverseRotation();						///< computes the inverse rotation from the 3x3 rotation portion of this matrix
-		Matrix& inverse();								///< computes and returns the inverse of this matrix
-		Matrix& translate(float x, float y, float z);	///< mutiplies the current matrix with the given translate matrix
-		Matrix& scale(float x, float y, float z);		///< mutiplies the current matrix with the given scale matrix
-        Matrix& rotate(float theta);        ///< multiplies the current matrix with the given rotation
+    ///< computes the inverse rotation from the 3x3 rotation portion of this matrix
+    Matrix& inverseRotation();
 
-		void print();
+    ///< computes and returns the inverse of this matrix
+    Matrix& inverse();
+
+    ///< mutiplies the current matrix with the given translate matrix
+    Matrix& translate(float x, float y, float z);
+
+    ///< mutiplies the current matrix with the given scale matrix
+    Matrix& scale(float x, float y, float z);
+
+    ///< multiplies the current matrix with the given rotation
+    Matrix& rotate(float theta);
+
+    void print();
 };
 
 } /* namespace Animata */
