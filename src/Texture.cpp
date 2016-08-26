@@ -34,15 +34,14 @@ using namespace Animata;
  * Creates a new texture object with default parameters from the given image
  * parameters.
  * \param filename      A string which points to the imagefile.
- * \param w             Width of the image.
- * \param h             Height of the image.
+ * \param dim           Dimensions of the image.
  * \param d             Color depth of the image.
  * \param p             Array that holds the pixel values.
  * \param reuseResource Indicates if a new OpenGL should be created for texture.
  * \bug Don't use reuseResource as it's not fully implemented.
  */
-Texture::Texture(const char *filename, int w, int h, int d, unsigned char* p,
-                 int reuseResource)
+Texture::Texture(const char *filename, const Vector2D& dim, int d,
+                 unsigned char* p, int reuseResource)
 {
     sWrap = tWrap = GL_CLAMP;
 
@@ -51,13 +50,11 @@ Texture::Texture(const char *filename, int w, int h, int d, unsigned char* p,
 
     this->filename = filename;
 
-    width = w;
-    height = h;
+    dimensions = dim;
     depth = d;
 
     data = (unsigned char*)p;
 
-    x = y = 0.f;
     scale = 1.f;
 
     if(!reuseResource) {
@@ -70,7 +67,7 @@ Texture::Texture(const char *filename, int w, int h, int d, unsigned char* p,
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, tWrap);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, minFilter);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, magFilter);
-        gluBuild2DMipmaps(GL_TEXTURE_2D, depth, width, height,
+        gluBuild2DMipmaps(GL_TEXTURE_2D, depth, dimensions.x, dimensions.y,
                           d == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, data);
     }
     else {
@@ -92,76 +89,69 @@ Texture::~Texture()
  */
 Texture *Texture::clone()
 {
-    return new Texture(filename, width, height, depth, data, glResource);
+    return new Texture(filename, dimensions, depth, data, glResource);
 }
 
 /**
  * Scales the texture around a fixed point.
- * \param s   Scale multiplier.
- * \param ox  Scale-center's \e x coordinate in the texture's coordinate system.
- * \param oy  Scale-center's \e y coordinate in the texture's coordinate system.
+ * \param s Scale multiplier.
+ * \param p Scale-center's coordinates in the texture's coordinate system.
  */
 /* TODO: same as in Layer.cpp, if it's needed somewhere else, put it into a
  * central place */
-void Texture::scaleAroundPoint(float s, float ox, float oy)
+void Texture::scaleAroundPoint(float s, const Vector2D& p)
 {
     if (s > MIN_SCALE) {
-        x -= ox * (s - scale);
-        y -= oy * (s - scale);
+        position -= p * (s - scale);
         scale = s;
     }
 }
 
 /**
  * Gets the alpha of the texture colour at the given position.
- * \param x x-coordinate of texel
- * \param y y-coordinate of texel
+ * \param p coordinates of texel
  * \return alpha value from 0 to 255
  */
-int Texture::getTexelAlpha(float x, float y)
+int Texture::getTexelAlpha(const Vector2D& p)
 {
-    if ((x < 0) || (x >= width) || (y < 0) || (y >= height))
+    if (p < Vector2D(0, 0) || p >= dimensions)
         return 0;
     else if (depth != 4)
         return 255;
     else
-        return data[((int)x + ((int)y)*width)*4 + 3];
+        return data[((int)p.x + ((int)p.y) * (int)dimensions.y) * 4 + 3];
 }
 
 /**
  * Approximation of the triangle alpha by recursively subdividing the triangle
  * and summing the alpha of the centroids
  *
- * \param x0        x-coordinate of vertex0
- * \param y0        y-coordinate of vertex0
- * \param x1        x-coordinate of vertex1
- * \param y1        y-coordinate of vertex1
- * \param x2        x-coordinate of vertex2
- * \param y2        y-coordinate of vertex2
+ * \param p0        coordinates of vertex0
+ * \param p1        coordinates of vertex1
+ * \param p2        coordinates of vertex2
  * \param maxIter   maximum number of iterations
  * \param iterLevel current iteration level used only internally
  * \return          alpha value from 0 to 255
  */
-int Texture::getTriangleAlpha(float x0, float y0, float x1, float y1,
-                              float x2, float y2, int maxIter, int iterLevel)
+int Texture::getTriangleAlpha(const Vector2D& p0, const Vector2D& p1,
+                              const Vector2D& p2, int maxIter, int iterLevel)
 {
     int alpha;
 
     if (depth != 4)
         return 255;
 
-    float xs = (x0 + x1 + x2) / 3.0;
-    float ys = (y0 + y1 + y2) / 3.0;
+    Vector2D s = (p0 + p1 + p2) / 3.0;
 
-    alpha = getTexelAlpha(xs, ys);
+    alpha = getTexelAlpha(s);
 
     if (iterLevel == maxIter)
         return alpha;
 
     // subdivide triangle
-    alpha += (  getTriangleAlpha(x0, y0, x1, y1, xs, ys, maxIter, iterLevel + 1)
-              + getTriangleAlpha(x0, y0, xs, ys, x2, y2, maxIter, iterLevel + 1)
-              + getTriangleAlpha(xs, ys, x1, y1, x2, y2, maxIter, iterLevel + 1));
+    alpha += (  getTriangleAlpha(p0, p1, s, maxIter, iterLevel + 1)
+              + getTriangleAlpha(p0, s, p2, maxIter, iterLevel + 1)
+              + getTriangleAlpha(s, p1, p2, maxIter, iterLevel + 1));
 
     if (iterLevel == 1) {
         // calculate number of triangles checked in total -

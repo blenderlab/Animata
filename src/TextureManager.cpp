@@ -167,11 +167,11 @@ void TextureManager::draw(int mode)
     glLoadName(Selection::SELECT_TEXTURE);
     glPushName(0);
     for (unsigned int i = 0; i < textures->size(); i++) {
-        Texture* texture = (*textures)[i];
+        Texture* tex = (*textures)[i];
 
         // draw the texture only for the mesh on the current layer
-        if (ui->editorBox->getMesh()->getAttachedTexture() == texture) {
-            activeTexture = texture;
+        if (ui->editorBox->getMesh()->getAttachedTexture() == tex) {
+            activeTexture = tex;
             glLoadName(i);
 
             if (mode & RENDER_FEEDBACK) {
@@ -184,11 +184,11 @@ void TextureManager::draw(int mode)
                 glMatrixMode(GL_MODELVIEW);
                 glPopMatrix();
 
-                Vector3D view0 = Transform::project(texture->x, texture->y, 0);
-                texture->viewTopLeft.set(view0.x, view0.y);
-                Vector3D view1 = Transform::project(texture->x + texture->width,
-                                                    texture->y + texture->height, 0);
-                texture->viewBottomRight.set(view1.x, view1.y);
+                Vector3D view0 = Transform::project(Vector3D(tex->position));
+                tex->viewTopLeft.set(view0.x, view0.y);
+                Vector3D view1 = Transform::project(Vector3D(tex->position
+                                                             + tex->dimensions));
+                tex->viewBottomRight.set(view1.x, view1.y);
             }
 
             if (mode & RENDER_TEXTURE) {
@@ -207,7 +207,7 @@ void TextureManager::draw(int mode)
                 glPushMatrix();
                 glLoadIdentity();
 
-                texture->draw(pTexture == texture);
+                tex->draw(pTexture == tex);
 
                 glMatrixMode(GL_MODELVIEW);
                 glPopMatrix();

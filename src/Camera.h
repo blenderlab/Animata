@@ -43,13 +43,12 @@ private:
     float distance;         ///< distance from the target
     float fov;              ///< vertical field of view in degrees
 
-    int width;              ///< width of the camerapicture at distance
-    int height;             ///< height of the camerapicture at distance
+    Vector2D dim;           ///< dimensions of the picture at distance
     double aspect;          ///< aspect of the camerapicture
 
     Camera *parent;         ///< the camera whose picture gets cloned by this
-    int pictureWidth;       ///< width of the parent's picture
-    int pictureHeight;      ///< height of the parent's picture
+
+    Vector2D pictureDim;    ///< dimensions of the parent's picture
 
     float zNear;            ///< distance of the near plane from the camera
     float zFar;             ///< distance of the far plane from the camera
@@ -60,13 +59,13 @@ public:
 
     Camera();
 
-    void setSize(int w, int h);
-    void setAspect(int w, int h);
+    void setSize(const Vector2D& d);
+    void setAspect(const Vector2D& d);
 
     void setupModelView();
     void setupPerspective();
     void setupOrtho();
-    void setupPickingProjection(int x, int y, int radius);
+    void setupPickingProjection(const Vector2D& center, int radius);
     void setupViewport();
 
     /**
@@ -79,21 +78,17 @@ public:
      * Returns the position of the camera-target.
      * \retval Vector3D 3D position of the camera-target.
      */
-    inline Vector3D *getTarget() { return &target; }
+    inline Vector3D& getTarget() { return target; }
 
-    inline void setTarget(Vector3D *t)
-        { target.x = t->x; target.y = t->y; target.z = t->z; }
+    inline void setTarget(const Vector3D& t)
+        { target.x = t.x; target.y = t.y; target.z = t.z; }
 
     /**
-     * Returns the width at the distance from the target of the camera picture.
-     * \retval int  Width of the picture.
+     * Returns the dimensions at the distance from the target of the camera
+     * picture.
+     * \retval Vector2D&  Dimensions of the picture.
      */
-    inline int getWidth() { return width; }
-    /**
-     * Returns the height at the distance from the target of the camera picture.
-     * \retval int  Height of the picture.
-     */
-    inline int getHeight() { return height; }
+    inline Vector2D& getDimensions() { return dim; }
 
     /**
      * Returns the distance from the camera-target.

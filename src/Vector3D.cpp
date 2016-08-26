@@ -40,11 +40,11 @@ Vector3D::Vector3D(float x, float y, float z)
     this->z = z;
 }
 
-Vector3D::Vector3D(Vector3D *p)
+Vector3D::Vector3D(const Vector2D& p)
 {
-    this->x = p->x;
-    this->y = p->y;
-    this->z = p->z;
+    this->x = p.x;
+    this->y = p.y;
+    this->z = 0.0f;
 }
 
 Vector3D& Vector3D::set(float _x, float _y, float _z)
@@ -73,21 +73,21 @@ Vector3D& Vector3D::setElement(float f, int index)
     return *this;
 }
 
-bool Vector3D::operator == (Vector3D &v)
+bool Vector3D::operator == (const Vector3D &v) const
 {
     return (  ((x - v.x) * (x - v.x)
              + (y - v.y) * (y - v.y)
              + (z - v.z) * (z - v.z)) < FLT_EPSILON);
 }
 
-bool Vector3D::operator != (Vector3D &v)
+bool Vector3D::operator != (const Vector3D &v) const
 {
     return (  ((x - v.x) * (x - v.x)
              + (y - v.y) * (y - v.y)
              + (z - v.z) * (z - v.z)) >= FLT_EPSILON);
 }
 
-Vector3D& Vector3D::operator += (Vector3D& v)
+Vector3D& Vector3D::operator += (const Vector3D& v)
 {
     x += v.x;
     y += v.y;
@@ -95,11 +95,27 @@ Vector3D& Vector3D::operator += (Vector3D& v)
     return *this;
 }
 
-Vector3D& Vector3D::operator -= (Vector3D& v)
+Vector3D& Vector3D::operator -= (const Vector3D& v)
 {
     x -= v.x;
     y -= v.y;
     z -= v.z;
+    return *this;
+}
+
+Vector3D& Vector3D::operator *= (const Vector3D& v)
+{
+    x *= v.x;
+    y *= v.y;
+    z *= v.z;
+    return *this;
+}
+
+Vector3D& Vector3D::operator /= (const Vector3D& v)
+{
+    x /= v.x;
+    y /= v.y;
+    z /= v.z;
     return *this;
 }
 
@@ -135,46 +151,56 @@ Vector3D& Vector3D::operator /= (float f)
     return *this;
 }
 
-Vector3D Vector3D::operator = (Vector3D& v)
+Vector3D& Vector3D::operator = (const Vector3D& v)
 {
     x = v.x;
     y = v.y;
     z = v.z;
-    return Vector3D(x, y, z);
+    return *this;
 }
 
-Vector3D Vector3D::operator + (Vector3D& v)
+Vector3D Vector3D::operator + (const Vector3D& v) const
 {
     return Vector3D(x + v.x, y + v.y, z + v.z);
 }
 
-Vector3D Vector3D::operator - (Vector3D& v)
+Vector3D Vector3D::operator - (const Vector3D& v) const
 {
     return Vector3D(x - v.x, y - v.y, z - v.z);
 }
 
-Vector3D Vector3D::operator + (float f)
+Vector3D Vector3D::operator * (const Vector3D& v) const
+{
+    return Vector3D(x * v.x, y * v.y, z * v.z);
+}
+
+Vector3D Vector3D::operator / (const Vector3D& v) const
+{
+    return Vector3D(x / v.x, y / v.y, z / v.z);
+}
+
+Vector3D Vector3D::operator + (float f) const
 {
     return Vector3D(x + f, y + f, z + f);
 }
 
-Vector3D Vector3D::operator - (float f)
+Vector3D Vector3D::operator - (float f) const
 {
     return Vector3D(x - f, y - f, z - f);
 }
 
-Vector3D Vector3D::operator * (float f)
+Vector3D Vector3D::operator * (float f) const
 {
     return Vector3D(x * f, y * f, z * f);
 }
 
-Vector3D Vector3D::operator / (float f)
+Vector3D Vector3D::operator / (float f) const
 {
     f = 1.0f / f;
     return Vector3D(x * f, y * f, z * f);
 }
 
-Vector3D& Vector3D::rotate(Matrix& m)
+Vector3D& Vector3D::rotate(const Matrix& m)
 {
     Vector3D *r = new Vector3D();
 
@@ -185,7 +211,7 @@ Vector3D& Vector3D::rotate(Matrix& m)
     return *r;
 }
 
-Vector3D& Vector3D::transform(Matrix& m)
+Vector3D& Vector3D::transform(const Matrix& m)
 {
     Vector3D *t = new Vector3D();
 
@@ -206,7 +232,7 @@ void Vector3D::normalize(void)
     }
 }
 
-float Vector3D::size(void)
+float Vector3D::size(void) const
 {
     return sqrt(x*x + y*y + z*z);
 }

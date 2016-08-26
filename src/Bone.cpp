@@ -70,7 +70,7 @@ Bone::Bone(Joint *j0, Joint *j1)
 
 Bone::~Bone()
 {
-    disattachVertices();
+    detachVertices();
     delete attachedVertices;
 }
 
@@ -174,9 +174,8 @@ void Bone::translateVertices(void)
  * \param timeStamp timestamp to prevent moving joints multiple times when
  *        they belong to several bones
  **/
-void Bone::drag(float x, float y, int timeStamp /* = 0*/)
+void Bone::drag(const Vector2D& d, int timeStamp /* = 0*/)
 {
-    Vector2D d(x, y);
     j0->drag(d, timeStamp);
     j1->drag(d, timeStamp);
 }
@@ -205,7 +204,7 @@ void Bone::draw(int mouseOver, int active)
         int r = (int)(getViewRadius());
         if (selected) {
             Vector2D c(getViewCenter());
-            Primitives::drawSelectionCircle(c.x, c.y, r);
+            Primitives::drawSelectionCircle(c, r);
             for (unsigned i = 0; i < attachedVertices->size(); i++) {
                 Vertex *v = (*attachedVertices)[i];
                 Primitives::drawVertexAttached(v);
@@ -226,7 +225,7 @@ void Bone::flipSelection(void)
  * Returns the name of the bone.
  * \return pointer to name
  **/
-const char *Bone::getName(void)
+const char *Bone::getName(void) const
 {
     return name;
 }
@@ -246,7 +245,7 @@ void Bone::setName(const char *str)
  * Gets bone center coordinates.
  * \return center vector
  **/
-Vector2D Bone::getCenter(void)
+Vector2D Bone::getCenter(void) const
 {
     Vector2D c((j0->position + j1->position) * 0.5f);
     return c;
@@ -256,7 +255,7 @@ Vector2D Bone::getCenter(void)
  * Gets bone center coordinates.
  * \return center vector
  **/
-Vector2D Bone::getViewCenter(void)
+Vector2D Bone::getViewCenter(void) const
 {
     Vector2D c((j0->viewPosition + j1->viewPosition) * 0.5f);
     return c;
@@ -266,7 +265,7 @@ Vector2D Bone::getViewCenter(void)
  * Gets radius of vertex selection circle in view coordinate-system.
  * \return The radius of the selection circle in view coordinate-system.
  */
-float Bone::getViewRadius()
+float Bone::getViewRadius() const
 {
     /* Distance has to be recalculated every time as it's based on the view
      * position of the joints. */
@@ -283,7 +282,7 @@ void Bone::attachVertices(vector<Vertex *> *verts)
     unsigned count = verts->size();
 
     /* clear previously attached vertices */
-    disattachVertices();
+    detachVertices();
 
     dsts = new float[count];
     weights = new float[count];
@@ -335,7 +334,7 @@ void Bone::attachVertices(vector<Vertex *> *verts, float *dsts,
     unsigned count = verts->size();
 
     /* clear previously attached vertices */
-    disattachVertices();
+    detachVertices();
 
     for (unsigned i = 0; i < count; i++) {
         attachedVertices->push_back((*verts)[i]);
@@ -366,10 +365,10 @@ void Bone::recalculateWeights(void)
 }
 
 /**
- * Disattach vertex from bone.
+ * Detach vertex from bone.
  * \param v pointer to vertex
  **/
-void Bone::disattachVertex(Vertex *v)
+void Bone::detachVertex(Vertex *v)
 {
     if (attachedVertices->empty() || v == NULL)
         return;
@@ -406,9 +405,9 @@ void Bone::selectAttachedVertices(bool s /* = true */)
 }
 
 /**
- * Disattaches vertices.
+ * Detaches vertices.
  **/
-void Bone::disattachVertices(void)
+void Bone::detachVertices(void)
 {
     /* clear previously attached vertices */
     attachedVertices->clear();
@@ -444,7 +443,7 @@ void Bone::disattachVertices(void)
  *            as arrays
  **/
 vector<Vertex *> *Bone::getAttachedVertices(float **dsts, float **weights,
-        float **ca, float **sa)
+        float **ca, float **sa) const
 {
     *dsts = this->dsts;
     *weights = this->weights;
@@ -457,7 +456,7 @@ vector<Vertex *> *Bone::getAttachedVertices(float **dsts, float **weights,
  * Gets the number of attached vertices.
  * \return number of attached vertices
  **/
-int Bone::getAttachedVerticesCount(void)
+int Bone::getAttachedVerticesCount(void) const
 {
     return (int)(attachedVertices->size());
 }

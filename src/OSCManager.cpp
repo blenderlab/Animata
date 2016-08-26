@@ -102,23 +102,23 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
         }
         else if (strcmp(m.AddressPattern(), "/joint") == 0) {
             const char *namePattern;
-            float x, y;
+            Vector2D pos;
             osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
             namePattern = (arg++)->AsString();
             /* parameters can be float or int */
             if (arg->IsInt32())
-                x = (arg++)->AsInt32();
+                pos.x = (arg++)->AsInt32();
             else
-                x = (arg++)->AsFloat();
+                pos.x = (arg++)->AsFloat();
             if (arg->IsInt32())
-                y = (arg++)->AsInt32();
+                pos.y = (arg++)->AsInt32();
             else
-                y = (arg++)->AsFloat();
+                pos.y = (arg++)->AsFloat();
             if (arg != m.ArgumentsEnd())
                 throw osc::ExcessArgumentException();
 
             // filter out NaNs
-            if (x != x || y != y)
+            if (pos.isNaN())
                 return;
 
             lock();
@@ -133,8 +133,7 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                 if (jointName[0] == 0)
                     continue;
                 if (strcmp(jointName, namePattern) == 0) {
-                    (*j)->position.x = x;
-                    (*j)->position.y = y;
+                    (*j)->position = pos;
                     found = 1;
                 }
             }
@@ -148,8 +147,7 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                     if (jointName[0] == 0)
                         continue;
                     if (patternMatch(jointName, namePattern)) {
-                        (*j)->position.x = x;
-                        (*j)->position.y = y;
+                        (*j)->position = pos;
                     }
                 }
             }
@@ -261,23 +259,28 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
         }
         else if (strcmp(m.AddressPattern(), "/layer/offset") == 0) {
             const char *namePattern;
-            float x, y;
+            Vector3D offset;
             osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
             namePattern = (arg++)->AsString();
             /* parameters can be float or int */
             if (arg->IsInt32())
-                x = (arg++)->AsInt32();
+                offset.x = (arg++)->AsInt32();
             else
-                x = (arg++)->AsFloat();
+                offset.x = (arg++)->AsFloat();
             if (arg->IsInt32())
-                y = (arg++)->AsInt32();
+                offset.y = (arg++)->AsInt32();
             else
-                y = (arg++)->AsFloat();
+                offset.y = (arg++)->AsFloat();
+            if (m.ArgumentCount() == 4) {
+                if (arg->IsInt32())
+                    offset.z = (arg++)->AsInt32();
+                else
+                    offset.z = (arg++)->AsFloat();
+            }
             if (arg != m.ArgumentsEnd())
                 throw osc::ExcessArgumentException();
 
-            // filter out NaNs
-            if (x != x || y != y)
+            if (offset.isNaN())
                 return;
 
             // get all layers
@@ -293,8 +296,10 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                 if (layerName[0] == 0)
                     continue;
                 if (strcmp(layerName, namePattern) == 0) {
-                    (*l)->setOffsetX(x);
-                    (*l)->setOffsetY(y);
+                    if (m.ArgumentCount() == 4)
+                        (*l)->setOffset(offset);
+                    else
+                        (*l)->setOffset(offset.xy());
                     found = 1;
                 }
             }
@@ -308,8 +313,10 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                     if (layerName[0] == 0)
                         continue;
                     if (patternMatch(layerName, namePattern)) {
-                        (*l)->setOffsetX(x);
-                        (*l)->setOffsetY(y);
+                        if (m.ArgumentCount() == 4)
+                            (*l)->setOffset(offset);
+                        else
+                            (*l)->setOffset(offset.xy());
                         found = 1;
                     }
                 }
@@ -323,29 +330,28 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
         }
         else if (strcmp(m.AddressPattern(), "/layerpos") == 0) {
             const char *namePattern;
-            float x, y, z;
+            Vector3D position;
             osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
             namePattern = (arg++)->AsString();
             /* parameters can be float or int */
             if (arg->IsInt32())
-                x = (arg++)->AsInt32();
+                position.x = (arg++)->AsInt32();
             else
-                x = (arg++)->AsFloat();
+                position.x = (arg++)->AsFloat();
             if (arg->IsInt32())
-                y = (arg++)->AsInt32();
+                position.y = (arg++)->AsInt32();
             else
-                y = (arg++)->AsFloat();
+                position.y = (arg++)->AsFloat();
             if (m.ArgumentCount() == 4) {
                 if (arg->IsInt32())
-                    z = (arg++)->AsInt32();
+                    position.z = (arg++)->AsInt32();
                 else
-                    z = (arg++)->AsFloat();
+                    position.z = (arg++)->AsFloat();
             }
             if (arg != m.ArgumentsEnd())
                 throw osc::ExcessArgumentException();
 
-            // filter out NaNs
-            if (x != x || y != y || z != z)
+            if (position.isNaN())
                 return;
 
             // get all layers
@@ -361,10 +367,11 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                 if (layerName[0] == 0)
                     continue;
                 if (strcmp(layerName, namePattern) == 0) {
-                    (*l)->setX(x);
-                    (*l)->setY(y);
+                    (*l)->setPosition(position);
                     if (m.ArgumentCount() == 4)
-                        (*l)->setZ(z);
+                        (*l)->setPosition(position);
+                    else
+                        (*l)->setPosition(position.xy());
                     found = 1;
                 }
             }
@@ -378,8 +385,10 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                     if (layerName[0] == 0)
                         continue;
                     if (patternMatch(layerName, namePattern)) {
-                        (*l)->setX(x);
-                        (*l)->setY(y);
+                        if (m.ArgumentCount() == 4)
+                            (*l)->setPosition(position.xy());
+                        else
+                            (*l)->setPosition(position.xy());
                         found = 1;
                     }
                 }
@@ -393,19 +402,41 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
         }
         else if (strcmp(m.AddressPattern(), "/layer/rotation") == 0) {
             const char *namePattern;
-            float theta;
+            Angle3D angle;
             osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
             namePattern = (arg++)->AsString();
             /* parameters can be float or int */
-            if (arg->IsInt32())
-                theta = (arg++)->AsInt32();
-            else
-                theta = (arg++)->AsFloat();
+            /* assume Z axis if only one value given */
+            switch (m.ArgumentCount()) {
+                case 2 :
+                    if (arg->IsInt32())
+                        angle.z = (arg++)->AsInt32();
+                    else
+                        angle.z = (arg++)->AsFloat();
+                    break;
+                case 4:
+                    if (arg->IsInt32())
+                        angle.x = (arg++)->AsInt32();
+                    else
+                        angle.x = (arg++)->AsFloat();
+                    if (arg->IsInt32())
+                        angle.y = (arg++)->AsInt32();
+                    else
+                        angle.y = (arg++)->AsFloat();
+                    if (arg->IsInt32())
+                        angle.z = (arg++)->AsInt32();
+                    else
+                        angle.z = (arg++)->AsFloat();
+                    break;
+                default:
+                    return;
+
+            }
             if (arg != m.ArgumentsEnd())
                 throw osc::ExcessArgumentException();
 
             // filter out NaNs
-            if (theta != theta)
+            if (angle.isNaN())
                 return;
 
             // get all layers
@@ -421,7 +452,10 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                 if (layerName[0] == 0)
                     continue;
                 if (strcmp(layerName, namePattern) == 0) {
-                    (*l)->setTheta(theta);
+                    if (m.ArgumentCount() == 2)
+                        (*l)->setAngleElement(angle.z, 2);
+                    else
+                        (*l)->setAngle(angle);
                     found = 1;
                 }
             }
@@ -435,7 +469,10 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                     if (layerName[0] == 0)
                         continue;
                     if (patternMatch(layerName, namePattern)) {
-                        (*l)->setTheta(theta);
+                        if (m.ArgumentCount() == 2)
+                            (*l)->setAngleElement(angle.z, 2);
+                        else
+                            (*l)->setAngle(angle);
                         found = 1;
                     }
                 }
@@ -449,23 +486,28 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
         }
         else if (strcmp(m.AddressPattern(), "/layerdeltapos") == 0) {
             const char *namePattern;
-            float x, y;
+            Vector3D delta;
             osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
             namePattern = (arg++)->AsString();
             /* parameters can be float or int */
             if (arg->IsInt32())
-                x = (arg++)->AsInt32();
+                delta.x = (arg++)->AsInt32();
             else
-                x = (arg++)->AsFloat();
+                delta.x = (arg++)->AsFloat();
             if (arg->IsInt32())
-                y = (arg++)->AsInt32();
+                delta.y = (arg++)->AsInt32();
             else
-                y = (arg++)->AsFloat();
+                delta.y = (arg++)->AsFloat();
+            if (m.ArgumentCount() == 4) {
+                if (arg->IsInt32())
+                    delta.z = (arg++)->AsInt32();
+                else
+                    delta.z = (arg++)->AsFloat();
+            }
             if (arg != m.ArgumentsEnd())
                 throw osc::ExcessArgumentException();
 
-            // filter out NaNs
-            if (x != x || y != y)
+            if (delta.isNaN())
                 return;
 
             // get all layers
@@ -481,7 +523,7 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                 if (layerName[0] == 0)
                     continue;
                 if (strcmp(layerName, namePattern) == 0) {
-                    (*l)->move(x, y);
+                    (*l)->move(delta);
                     found = 1;
                 }
             }
@@ -495,7 +537,7 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                     if (layerName[0] == 0)
                         continue;
                     if (patternMatch(layerName, namePattern)) {
-                        (*l)->move(x, y);
+                        (*l)->move(delta);
                         found = 1;
                     }
                 }

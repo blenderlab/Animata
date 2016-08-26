@@ -13,7 +13,7 @@ SOURCES  = ['animata.cpp', 'Vector2D.cpp', 'Vertex.cpp', 'Face.cpp', 'Mesh.cpp',
 			'Layer.cpp', 'QuadEdge.cpp', 'Subdiv.cpp',
 			'Vector3D.cpp', 'Camera.cpp', 'Matrix.cpp',
 			'OSCManager.cpp', 'Playback.cpp', 'IO.cpp',
-			'Transform.cpp',
+			'Transform.cpp', 'Angle3D.cpp',
 			'animataUI.cpp']
 
 XMLLIB = ['libs/FLU/Flu_Tree_Browser.cpp', 'libs/FLU/flu_pixmaps.cpp',

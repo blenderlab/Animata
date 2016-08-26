@@ -62,8 +62,8 @@ int ImageBox::handle(int event)
 
 Texture *ImageBox::allocateTexture()
 {
-    return new Texture(filename,
-                origImage->w(), origImage->h(), origImage->d(),
+    Vector2D dim(origImage->w(), origImage->h());
+    return new Texture(filename, dim, origImage->d(),
                 (unsigned char*)origImage->data()[0]);
 }
 

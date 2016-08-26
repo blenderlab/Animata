@@ -188,25 +188,40 @@ private:
   inline void cb_layerVisible_i(Fl_Check_Button*, long);
   static void cb_layerVisible(Fl_Check_Button*, long);
 public:
-  Fl_Value_Input *layerX;
+  Fl_Value_Input *layerPositionX;
 private:
-  inline void cb_layerX_i(Fl_Value_Input*, void*);
-  static void cb_layerX(Fl_Value_Input*, void*);
+  inline void cb_layerPositionX_i(Fl_Value_Input*, void*);
+  static void cb_layerPositionX(Fl_Value_Input*, void*);
 public:
-  Fl_Value_Input *layerY;
+  Fl_Value_Input *layerPositionY;
 private:
-  inline void cb_layerY_i(Fl_Value_Input*, void*);
-  static void cb_layerY(Fl_Value_Input*, void*);
+  inline void cb_layerPositionY_i(Fl_Value_Input*, void*);
+  static void cb_layerPositionY(Fl_Value_Input*, void*);
 public:
   Fl_Value_Input *layerDepth;
 private:
   inline void cb_layerDepth_i(Fl_Value_Input*, void*);
   static void cb_layerDepth(Fl_Value_Input*, void*);
 public:
-  Fl_Value_Input *layerRotation;
+  Fl_Value_Input *layerScale;
 private:
-  inline void cb_layerRotation_i(Fl_Value_Input*, void*);
-  static void cb_layerRotation(Fl_Value_Input*, void*);
+  inline void cb_layerScale_i(Fl_Value_Input*, void*);
+  static void cb_layerScale(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Input *layerRotationX;
+private:
+  inline void cb_layerRotationX_i(Fl_Value_Input*, void*);
+  static void cb_layerRotationX(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Input *layerRotationY;
+private:
+  inline void cb_layerRotationY_i(Fl_Value_Input*, void*);
+  static void cb_layerRotationY(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Input *layerRotationZ;
+private:
+  inline void cb_layerRotationZ_i(Fl_Value_Input*, void*);
+  static void cb_layerRotationZ(Fl_Value_Input*, void*);
 public:
   Fl_Value_Input *layerOffsetX;
 private:
@@ -218,10 +233,10 @@ private:
   inline void cb_layerOffsetY_i(Fl_Value_Input*, void*);
   static void cb_layerOffsetY(Fl_Value_Input*, void*);
 public:
-  Fl_Value_Input *layerScale;
+  Fl_Value_Input *layerOffsetZ;
 private:
-  inline void cb_layerScale_i(Fl_Value_Input*, void*);
-  static void cb_layerScale(Fl_Value_Input*, void*);
+  inline void cb_layerOffsetZ_i(Fl_Value_Input*, void*);
+  static void cb_layerOffsetZ(Fl_Value_Input*, void*);
 public:
   Fl_Check_Button *playback_show_hide;
 private:

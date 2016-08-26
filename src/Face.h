@@ -61,7 +61,7 @@ public:
      * \param dx    Distance in the \e x coordinate.
      * \param dy    Distance in the \e y coordinate.
      */
-    void move(float dx, float dy);
+    void move(const Vector2D& d);
 
     /**
      * Calculates the center of the Face.

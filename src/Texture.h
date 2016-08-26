@@ -56,33 +56,30 @@ private:
 
     const char *filename;   ///< filename from which the texture is created
 
-    int getTexelAlpha(float x, float y);
+    int getTexelAlpha(const Vector2D& p);
 
 public:
 
     ///< size of the border around the texture when mouse over
     static const int BORDER = 0;
 
-    float x;    ///< \e x coordinate of the position in world coordinate-system
-    float y;    ///< \e y coordinate of the position in world coordinate-system
-
-    int width;  ///< width of the texture
-    int height; ///< height of the texture
+    Vector2D position;  ///< \e coordinates of the position in world coordinate-system
+    Vector2D dimensions;
 
     Vector2D viewTopLeft;
     Vector2D viewBottomRight;
 
 
-    Texture(const char *filename, int w, int h, int d, unsigned char* p,
+    Texture(const char *filename, const Vector2D& dim, int d, unsigned char* p,
             int reuseResource = 0);
     ~Texture();
 
     void draw(int mouseOver = 0);
 
-    int getTriangleAlpha(float x0, float y0, float x1, float y1,
-                         float x2, float y2, int maxIter = 3, int iterLevel = 1);
+    int getTriangleAlpha(const Vector2D& p0, const Vector2D& p1,
+                         const Vector2D& p2, int maxIter = 3, int iterLevel = 1);
 
-    void scaleAroundPoint(float s, float ox, float oy);
+    void scaleAroundPoint(float s, const Vector2D& point);
 
     /**
      * Returns an array holding pixel values of the texture.
@@ -94,7 +91,7 @@ public:
      * Returns scale multiplier of the texture.
      * \retval float Scale multiplier.
      */
-    inline float getScale(void) { return scale; }
+    inline float getScale(void) const { return scale; }
     /**
      * Sets scale multiplier value.
      * \param s New scale multiplier.
@@ -102,15 +99,11 @@ public:
     inline void setScale(float s) { scale = s; }
 
     /**
-     * Returns width of the texture.
-     * \retval int Width of the texture.
+     * Returns dimensions of the texture.
+     * \retval Vector2D& dimensions of the texture.
      */
-    inline int getWidth() { return width; }
-    /**
-     * Returns height of the texture.
-     * \retval int Height of the texture.
-     */
-    inline int getHeight() { return height; }
+    inline const Vector2D& getDimensions() const { return dimensions; }
+
     /**
      * Returns the OpenGL resource which holds the texture.
      * \retval GLuint OpenGL resource that represent the texture.

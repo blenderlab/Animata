@@ -333,7 +333,7 @@ editorBox->setJointPrefsFromUI(PREFS_JOINT_FIXED, &tempStorage);}
             }
             Fl_Group bonePrefs {
               label {Bone Properties} open
-              xywh {111 531 610 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17
+              xywh {111 531 610 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17 hide
             } {
               Fl_Input boneName {
                 label {Name: }
@@ -392,13 +392,13 @@ if (mmax < mult)
               }
               Fl_Value_Slider boneTempo {
                 label {Tempo: }
-                callback {editorBox->setBoneTempo(o->value());} selected
+                callback {editorBox->setBoneTempo(o->value());}
                 xywh {457 627 250 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 step 0.001 textcolor 16
               }
             }
             Fl_Group attachVertices {
-              label {Attach Vertices}
-              xywh {111 531 520 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17 hide
+              label {Attach Vertices} open
+              xywh {111 531 520 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17
             } {
               Fl_Value_Slider attachArea {
                 label {Area:}
@@ -418,8 +418,8 @@ o->clear();}
               }
               Fl_Button {} {
                 label Detach
-                callback {editorBox->disattachVertices();
-o->clear();}
+                callback {editorBox->detachVertices();
+o->clear();} selected
                 tooltip {(SHIFT+D)} xywh {266 627 100 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x10064 color 30 selection_color 3 labelsize 10 labelcolor 7
               }
             }
@@ -548,7 +548,7 @@ layers->redraw();}
           }
           Fl_Group {} {
             label {Layer Properties} open
-            xywh {217 531 403 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17
+            xywh {217 531 608 121} box BORDER_FRAME color 36 selection_color 30 labelfont 1 labelsize 12 labelcolor 3 align 17
           } {
             Fl_Input layerName {
               label {Name: }
@@ -560,71 +560,94 @@ if (n)
 {    
     n->label(o->value());
 }}
-              xywh {272 558 250 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 1 textsize 12 textcolor 22
+              xywh {259 558 250 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 1 textsize 12 textcolor 22
             }
             Fl_Value_Slider layerAlpha {
               label {Alpha: }
               callback {tempStorage.f = o->value();
 editorBox->setLayerPrefsFromUI(PREFS_LAYER_ALPHA, &tempStorage);}
-              xywh {272 581 200 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 step 0.001 textcolor 16
+              xywh {259 581 200 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 step 0.001 textcolor 16
             }
             Fl_Check_Button layerVisible {
               label Visible user_data_type long
               callback {tempStorage.i = o->value();
 editorBox->setLayerPrefsFromUI(PREFS_LAYER_VISIBILITY, &tempStorage);}
-              xywh {471 581 51 20} box BORDER_BOX down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
+              xywh {458 581 51 20} box BORDER_BOX down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
             }
             Fl_Group {} {
               label {Position: } open
-              xywh {272 604 250 20} box FLAT_BOX color 40 labelsize 10 labelcolor 7 align 4
+              xywh {569 558 250 20} box FLAT_BOX color 40 labelsize 10 labelcolor 7 align 4
             } {
-              Fl_Value_Input layerX {
+              Fl_Value_Input layerPositionX {
                 label {x: }
                 callback {tempStorage.f = o->value();
-editorBox->setLayerPrefsFromUI(PREFS_LAYER_X, &tempStorage);}
-                xywh {291 604 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_POSITION_X, &tempStorage);}
+                xywh {588 558 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
               }
-              Fl_Value_Input layerY {
+              Fl_Value_Input layerPositionY {
                 label {y: }
                 callback {tempStorage.f = o->value();
-editorBox->setLayerPrefsFromUI(PREFS_LAYER_Y, &tempStorage);}
-                xywh {375 604 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_POSITION_Y, &tempStorage);}
+                xywh {672 558 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
               }
               Fl_Value_Input layerDepth {
                 label {depth: }
                 callback {tempStorage.f = o->value();
 editorBox->setLayerPrefsFromUI(PREFS_LAYER_DEPTH, &tempStorage);}
-                xywh {472 604 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
-              }
-            }
-            Fl_Group {} {
-              label {Rotation: }
-              xywh {272 627 250 20} box FLAT_BOX color 40 labelsize 10 labelcolor 7 align 4
-            } {
-              Fl_Value_Input layerRotation {
-                label {𝝧: }
-                callback {tempStorage.f = o->value();
-editorBox->setLayerPrefsFromUI(PREFS_LAYER_ROTATION, &tempStorage);}
-                xywh {291 627 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
-              }
-              Fl_Value_Input layerOffsetX {
-                label {Cx: }
-                callback {tempStorage.f = o->value();
-editorBox->setLayerPrefsFromUI(PREFS_LAYER_OFFSET_X, &tempStorage);}
-                xywh {375 627 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
-              }
-              Fl_Value_Input layerOffsetY {
-                label {Cy: }
-                callback {tempStorage.f = o->value();
-editorBox->setLayerPrefsFromUI(PREFS_LAYER_OFFSET_Y, &tempStorage);}
-                xywh {472 627 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+                xywh {769 558 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
               }
             }
             Fl_Value_Input layerScale {
               label {scale: }
               callback {tempStorage.f = o->value();
 editorBox->setLayerPrefsFromUI(PREFS_LAYER_SCALE, &tempStorage);}
-              xywh {563 604 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+              xywh {259 604 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+            }
+            Fl_Group {} {
+              label {Rotation: } open
+              xywh {569 604 250 20} box FLAT_BOX color 40 labelsize 10 labelcolor 7 align 4
+            } {
+              Fl_Value_Input layerRotationX {
+                label {x: }
+                callback {tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_ROTATION_X, &tempStorage);}
+                xywh {588 604 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+              }
+              Fl_Value_Input layerRotationY {
+                label {y: }
+                callback {tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_ROTATION_Y, &tempStorage);}
+                xywh {672 604 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+              }
+              Fl_Value_Input layerRotationZ {
+                label {z: }
+                callback {tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_ROTATION_Z, &tempStorage);}
+                xywh {769 604 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+              }
+            }
+            Fl_Group {} {
+              label {Offset: } open
+              xywh {569 581 250 20} box FLAT_BOX color 40 labelsize 10 labelcolor 7 align 4
+            } {
+              Fl_Value_Input layerOffsetX {
+                label {x: }
+                callback {tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_OFFSET_X, &tempStorage);}
+                xywh {588 581 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+              }
+              Fl_Value_Input layerOffsetY {
+                label {y: }
+                callback {tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_OFFSET_Y, &tempStorage);}
+                xywh {672 581 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+              }
+              Fl_Value_Input layerOffsetZ {
+                label {depth: }
+                callback {tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_OFFSET_Z, &tempStorage);}
+                xywh {769 581 50 20} box BORDER_BOX color 30 selection_color 30 labelsize 10 labelcolor 7 when 8 textsize 10 textcolor 16
+              }
             }
           }
           Fl_Group {} {
@@ -638,10 +661,16 @@ editorBox->setLayerPrefsFromUI(PREFS_LAYER_SCALE, &tempStorage);}
             tooltip {(S)} xywh {116 558 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
           }
           Fl_Button {} {
-            label Rotate
-            user_data ANIMATA_MODE_LAYER_ROTATE user_data_type long
+            label {Rotate XY}
+            user_data ANIMATA_MODE_LAYER_ROTATE_XY user_data_type long
             callback cb_Create
             tooltip {(S)} xywh {116 581 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
+          }
+          Fl_Button {} {
+            label {Rotate Z}
+            user_data ANIMATA_MODE_LAYER_ROTATE_Z user_data_type long
+            callback cb_Create
+            tooltip {(S)} xywh {116 604 90 20} type Radio box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7 when 1
           }
         }
         Fl_Group {} {

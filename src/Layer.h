@@ -27,6 +27,8 @@
 #include "Skeleton.h"
 #include "Mesh.h"
 #include "Matrix.h"
+#include "Vector3D.h"
+#include "Angle3D.h"
 
 using namespace std;
 
@@ -46,11 +48,14 @@ private:
     Skeleton *skeleton;             ///< the skeleton belonging to this layer
 
     char name[16];                  ///< name of layer
-    float x, y, z;                  ///< position of the layer origin
-    float alpha;                    ///< layer alpha
+
+    Vector3D position;              ///< position of the layer origin
+
+    Vector3D offset;                ///< layer scale and rotation offset
     float scale;                    ///< layer scale
-    float offsetX, offsetY;         ///< layer scale and rotation offset
-    float theta;                    ///< layer rotation
+    Angle3D angle;                  ///< layer rotation angle
+
+    float alpha;                    ///< layer alpha
     bool visible;                   ///< visibility on/off
 
     /** Counts the created layers so far. Used for automatic naming of layers */
@@ -101,7 +106,7 @@ public:
      **/
     inline Matrix *getTransformationMatrix() { return &transformation; }
 
-    const char *getName(void);
+    const char *getName(void) const;
     void setName(const char *str);
 
     /// Returns mesh.
@@ -114,86 +119,85 @@ public:
     /// Sets layer parent.
     inline void setParent(Layer *p) { parent = p; }
 
-    /// Returns x position.
-    inline float getX(void) const { return x; }
-    /// Returns y position.
-    inline float getY(void) const { return y; }
-    /// Returns z position.
-    inline float getZ(void) const { return z; }
+    /// Returns position.
+    inline Vector3D getPosition(void) const { return position; }
+
     /// Returns cummulated z position.
     inline float getTotalDepth() const { return transformation.f[14]; }
+
+    /// Returns offset
+    inline Vector3D getOffset(void) const { return offset; }
     /// Returns scale.
     inline float getScale(void) const { return scale; }
     /// Returns theta.
-    inline float getTheta(void) const { return theta; }
+    inline Angle3D getAngle(void) const { return angle; }
+
     /// Returns alpha.
     inline float getAlpha(void) const { return alpha; }
-    /// Returns x offset
-    inline float getOffsetX(void) const { return offsetX; }
-    /// Returns y offset
-    inline float getOffsetY(void) const { return offsetY; }
 
-    float getAccumulatedAlpha(void);
+    float getAccumulatedAlpha(void) const;
 
     /// Returns visibility.
     inline bool getVisibility() const { return visible; }
 
     /// Sets x position.
-    inline void setX(float x)
-        { this->x = x; /* calcTransformationMatrix(); */ }
-    /// Sets y position.
-    inline void setY(float y)
-        { this->y = y; /* calcTransformationMatrix(); */ }
-    /// Sets z position.
-    inline void setZ(float z)
-        { this->z = z; /* calcTransformationMatrix(); */ }
-    /// Sets scale.
+    inline void setPosition(const Vector3D& v)
+        { this->position = v; /* calcTransformationMatrix(); */ }
+    inline void setPosition(const Vector2D& v)
+        { this->position = v; /* calcTransformationMatrix(); */ }
+    inline void setPositionElement(float value, int index)
+        { this->position.setElement(value, index); }
+
+    /// Sets offset
+    inline void setOffset(const Vector3D& v)
+        { this->offset = v; calcTransformationMatrix(); }
+    inline void setOffset(const Vector2D& v)
+        { this->offset = v; calcTransformationMatrix(); }
+    inline void setOffsetElement(float value, int index)
+        { this->offset.setElement(value, index); }
+
+        /// Sets scale.
     inline void setScale(float scale)
         { this->scale = scale; calcTransformationMatrix(); }
-    /// Sets theta.
-    inline void setTheta(float theta)
-        { this->theta = theta; calcTransformationMatrix(); }
+
+    /// Sets angle.
+    inline void setAngle(const Angle3D& angle)
+        { this->angle = angle; calcTransformationMatrix(); }
+    inline void setAngleElement(float value, int index)
+        { this->angle.setElement(value, index); }
+
     /// Sets alpha.
     inline void setAlpha(float alpha)
         { this->alpha = alpha; }
-    /// Sets x offset
-    inline void setOffsetX(float x)
-        { this->offsetX = x; }
-    /// Sets y offset
-    inline void setOffsetY(float y)
-        { this->offsetY = y; }
-
     void setVisibility(bool v);
 
     /**
      * Moves layer.
-     * \param x x-distance to move by
-     * \param y y-distance to move by
+     * \param d distance to move by
      **/
-    inline void move(float x, float y)
-        { this->x += x; this->y += y; calcTransformationMatrix(); }
-    inline void setOffset(float x, float y)
-        { this->offsetX = x; this->offsetY = y; calcTransformationMatrix(); }
+    inline void move(const Vector3D& d)
+        { this->position += d; calcTransformationMatrix(); }
+    inline void move(const Vector2D& d)
+        { this->position += d; calcTransformationMatrix(); }
+
     /**
      * Resizes layer.
      * \param s value added to scale
      **/
-    inline void resize(float s) { this->scale += s; calcTransformationMatrix(); }
+    inline void resize(float s)
+        { this->scale += s; calcTransformationMatrix(); }
+
     /**
      * Rotates layer.
      * \param s value added to theta
      **/
-    inline void rotate(float s) { this->theta += s; calcTransformationMatrix(); }
-    /**
-     * Changes layer depth.
-     * \param z value to add to the layer z-coordinate
-     **/
-    inline void depth(float z) { this->z += z; calcTransformationMatrix(); }
+    inline void rotate(const Angle3D& angle)
+        { this->angle += angle; calcTransformationMatrix(); }
 
-    void scaleAroundPoint(float s, float ox, float oy);
+    void scaleAroundPoint(float s, const Vector3D& p);
 
-    void setup(float x, float y, float z, float alpha, float offsetX,
-               float offsetY, float scale, float theta);
+    void setup(const Vector3D& position, const Vector3D& offset, float scale,
+               const Angle3D& angle, float alpha);
 
     inline static bool zorder(const Layer *a, const Layer *b)
         { return a->getTotalDepth() > b->getTotalDepth(); }

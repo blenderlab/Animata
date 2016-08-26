@@ -106,11 +106,12 @@ public:
     ~Selection();
 
     void doPick(Camera *camera, Layer *layer, TextureManager *textureManager,
-                int x, int y);
+                const Vector2D& center);
 
-    void doSelect(Drawable *node, unsigned type, float x, float y,
-                  float w, float h);
-    void doCircleSelect(Drawable *node, unsigned type, int x, int y, int r);
+    void doSelect(Drawable *node, unsigned type, const Vector2D& pos,
+                  const Vector2D& dim);
+    void doCircleSelect(Drawable *node, unsigned type, const Vector2D& center,
+                        int radius);
 
     void doFeedback(Layer *layer);
 

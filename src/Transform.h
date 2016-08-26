@@ -51,9 +51,9 @@ public:
 
     static void setMatrices();
 
-    static Vector3D unproject(float x, float y, float z);
-    static Vector3D project(float x, float y, float z);
-    static float getDepth(float x, float y);
+    static Vector3D unproject(const Vector3D& p);
+    static Vector3D project(const Vector3D& p);
+    static float getDepth(const Vector2D& p);
 };
 
 } /* namespace Animata */

@@ -61,7 +61,8 @@ public:
      * \param yc    \e y coordinate of the selection circle's center.
      * \param r     Radius of the selection circle's center.
      */
-    virtual void circleSelect(unsigned i, int type, int xc, int yc, float r) = 0;
+    virtual void circleSelect(unsigned i, int type, const Vector2D& center,
+                              float r) = 0;
 };
 
 } /* namespace Animata */

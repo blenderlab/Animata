@@ -44,11 +44,11 @@ public:
     Skeleton();
     ~Skeleton();
 
-    Joint *addJoint(float x, float y);
+    Joint *addJoint(const Vector2D& pos);
     Bone *addBone(Joint *j0, Joint *j1);
 
-    int moveSelectedJoints(float dx, float dy);
-    int moveSelectedBones(float dx, float dy);
+    int moveSelectedJoints(const Vector2D& d);
+    int moveSelectedBones(const Vector2D& d);
     void endMoveSelectedJoints(void);
     void endMoveSelectedBones(void);
 
@@ -74,13 +74,14 @@ public:
 
     virtual void draw(int mode, int active = 1);
     virtual void select(unsigned i, int type);
-    virtual void circleSelect(unsigned i, int type, int xc, int yc, float r);
+    virtual void circleSelect(unsigned i, int type, const Vector2D& center,
+                              float r);
 
     void simulate(int times = 1);
 
     void attachVertices(vector<Vertex *> *verts);
-    void disattachVertices(void);
-    void disattachSelectedVertex(Vertex *v);
+    void detachVertices(void);
+    void detachSelectedVertex(Vertex *v);
 
     void selectVerticesInRange(Mesh *mesh);
 

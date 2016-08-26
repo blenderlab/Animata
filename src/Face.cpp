@@ -25,24 +25,17 @@
 
 using namespace Animata;
 
-void Face::move(float dx, float dy)
+void Face::move(const Vector2D& d)
 {
-    v[0]->coord.x += dx;
-    v[0]->coord.y += dy;
-    v[1]->coord.x += dx;
-    v[1]->coord.y += dy;
-    v[2]->coord.x += dx;
-    v[2]->coord.y += dy;
+    v[0]->coord += d;
+    v[1]->coord += d;
+    v[2]->coord += d;
 }
 
 Vector2D Face::center(void)
 {
-    Vector2D c;
-
-    c.x = (v[0]->coord.x + v[1]->coord.x + v[2]->coord.x) / 3.0;
-    c.y = (v[0]->coord.y + v[1]->coord.y + v[2]->coord.y) / 3.0;
-
-    return c;
+    Vector2D c(v[0]->coord + v[1]->coord + v[2]->coord);
+    return c / 3.0;
 }
 
 void Face::attachTexture(Texture *t)
@@ -52,12 +45,10 @@ void Face::attachTexture(Texture *t)
 
     float scale = t->getScale();
 
-    float sx = (float)t->width * scale;
-    float sy = (float)t->height * scale;
+    Vector2D s = t->dimensions * scale;
 
     for (unsigned int i = 0; i < 3; i++) {
-        v[i]->texCoord.x = (v[i]->coord.x - t->x) / sx;
-        v[i]->texCoord.y = (v[i]->coord.y - t->y) / sy;
+        v[i]->texCoord = (v[i]->coord - t->position) / s;
     }
 }
 

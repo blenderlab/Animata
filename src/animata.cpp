@@ -353,11 +353,11 @@ void AnimataWindow::attachVertices(void)
 }
 
 /**
- * Disattaches vertices from selected bones.
+ * Detaches vertices from selected bones.
  **/
-void AnimataWindow::disattachVertices(void)
+void AnimataWindow::detachVertices(void)
 {
-    cSkeleton->disattachVertices();
+    cSkeleton->detachVertices();
 }
 
 /**
@@ -435,7 +435,7 @@ void AnimataWindow::draw()
     if (!valid()) {
         setupOpenGL();
 
-        camera->setSize(w(), h());
+        camera->setSize(Vector2D(w(), h()));
 
         // recalculate picture size in playback window
         ui->playback->invalidate();
@@ -460,24 +460,20 @@ void AnimataWindow::draw()
         // show hint line for triangle creation
         case ANIMATA_MODE_CREATE_TRIANGLE:
             if (pointedVertex) {
-                Primitives::drawFaceWhileConnecting(pointedVertex->view.x,
-                                                    pointedVertex->view.y,
-                                                    mouseX, h() - mouseY);
+                Primitives::drawFaceWhileConnecting(pointedVertex->view,
+                                                    Vector2D(mouse.x, h() - mouse.y));
             }
             if (pointedVertex && pointedPrevVertex) {
-                Primitives::drawFaceWhileConnecting(pointedVertex->view.x,
-                                                    pointedVertex->view.y,
-                                                    pointedPrevVertex->view.x,
-                                                    pointedPrevVertex->view.y);
+                Primitives::drawFaceWhileConnecting(pointedVertex->view,
+                                                    pointedPrevVertex->view);
 
             }
             break;
         // show hint line for bone creation
         case ANIMATA_MODE_CREATE_BONE:
             if (pointedJoint) {
-                Primitives::drawBoneWhileConnecting(pointedJoint->viewPosition.x,
-                                                    pointedJoint->viewPosition.y,
-                                                    mouseX, h() - mouseY);
+                Primitives::drawBoneWhileConnecting(pointedJoint->viewPosition,
+                                                    Vector2D(mouse.x, h() - mouse.y));
             }
             break;
         default:
@@ -495,12 +491,12 @@ void AnimataWindow::draw()
             if (!Fl::event_state(FL_SHIFT))
                 cMesh->clearSelection();
 
-            Primitives::drawSelectionBox(dragMouseX, h() - dragMouseY, mouseX,
-                                         h() - mouseY);
+            Primitives::drawSelectionBox(Vector2D(dragMouse.x, h() - dragMouse.y),
+                                         Vector2D(mouse.x, h() - mouse.y));
 
             // use view coordinates as vertices are drawn on an ortho layer
-            selector->doSelect(cMesh, Selection::SELECT_VERTEX,
-                    dragMouseX, dragMouseY, mouseX, mouseY);
+            selector->doSelect(cMesh, Selection::SELECT_VERTEX, dragMouse,
+                               mouse);
         }
         // for joint
         else if (!pointedJoint && !pointedBone &&
@@ -510,12 +506,12 @@ void AnimataWindow::draw()
             if (!Fl::event_state(FL_SHIFT))
                 cSkeleton->clearSelection();
 
-            Primitives::drawSelectionBox(dragMouseX, h() - dragMouseY, mouseX,
-                                         h() - mouseY);
+            Primitives::drawSelectionBox(Vector2D(dragMouse.x, h() - dragMouse.y),
+                                         Vector2D(mouse.x, h() - mouse.y));
 
             // use view coordinates as joints are drawn on an ortho layer
-            selector->doSelect(cSkeleton, Selection::SELECT_JOINT,
-                dragMouseX, dragMouseY, mouseX, mouseY);
+            selector->doSelect(cSkeleton, Selection::SELECT_JOINT, dragMouse,
+                               mouse);
         }
     }
 
@@ -523,7 +519,7 @@ void AnimataWindow::draw()
     glPopMatrix();
 
     // call selection
-    selector->doPick(camera, cLayer, textureManager, mouseX, mouseY);
+    selector->doPick(camera, cLayer, textureManager, mouse);
 }
 
 /**
@@ -594,13 +590,13 @@ void AnimataWindow::createAttachedTexture(ImageBox *box)
     cMesh->attachTexture(texture);
 }
 
-Vector2D AnimataWindow::transformMouseToWorld(int x, int y)
+Vector2D AnimataWindow::transformMouseToWorld(Vector2D& pos)
 {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     camera->setupModelView();
     Matrix m(*cMatrix);
-    m.rotate(cLayer->getTheta() * -1.f);
+    m.rotate(cLayer->getAngle() * -1.f);
     glMultMatrixf(m.f);
 
     glMatrixMode(GL_PROJECTION);
@@ -614,10 +610,10 @@ Vector2D AnimataWindow::transformMouseToWorld(int x, int y)
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 
-    Vector3D o = Transform::unproject(x, y, 0);
-    Vector3D v = Transform::unproject(x, y, 1);
+    Vector3D o = Transform::unproject(Vector3D(pos.x, pos.y, 0));
+    Vector3D v = Transform::unproject(Vector3D(pos.x, pos.y, 1));
 
-    Vector3D d(v.x - o.x, v.y - o.y, v.z - o.z);
+    Vector3D d(v - o);
     d.normalize();
 
     // a simplified equation can be used instead of the general plane-line intersection
@@ -629,23 +625,19 @@ Vector2D AnimataWindow::transformMouseToWorld(int x, int y)
 
     float t = -o.z / d.z;
 
-    Vector3D p = d * t;
-    p.y += o.y;
-    p.x += o.x + 0.5f;    // FIXME: why + 0.5 ???
-    p.z += o.z;
+    Vector3D p = d * t + o;
+    p.x += 0.5f;    // FIXME: why + 0.5 ???
 
     return Vector2D(p.x, p.y);
 }
 
 void AnimataWindow::handleLeftMousePress(void)
 {
-    prevMouseX = dragMouseX = mouseX = Fl::event_x();
-    prevMouseY = dragMouseY = mouseY = Fl::event_y();
+    prevMouse = dragMouse = mouse.set(Fl::event_x(), Fl::event_y());
 
     // transform the mouse coordinates based on the current layer
-    Vector2D p = transformMouseToWorld(mouseX, mouseY);
-    transDragMouse.x = transMouse.x = p.x;
-    transDragMouse.y = transMouse.y = p.y;
+    Vector2D p = transformMouseToWorld(mouse);
+    transDragMouse = transMouse = p;
 
     pointedPrevPrevVertex = pointedPrevVertex;
     pointedPrevVertex = pointedVertex;
@@ -667,8 +659,7 @@ void AnimataWindow::handleLeftMousePress(void)
         case ANIMATA_MODE_CREATE_VERTEX:
             /* do not create a vertex if there is one below the cursor */
             if(!pointedVertex) {
-                cMesh->addVertex((float)transMouse.x,
-                                 (float)transMouse.y);
+                cMesh->addVertex(transMouse);
             }
             break;
 
@@ -680,7 +671,7 @@ void AnimataWindow::handleLeftMousePress(void)
             if (pointedVertex) {
                 Vertex *v;
                 cMesh->getSelectedVertex(&v);
-                cSkeleton->disattachSelectedVertex(v);
+                cSkeleton->detachSelectedVertex(v);
 
                 cMesh->deleteSelectedVertex();
                 pointedVertex = NULL;
@@ -695,8 +686,7 @@ void AnimataWindow::handleLeftMousePress(void)
         case ANIMATA_MODE_CREATE_JOINT: {
                 /* do not create a joint if there is one below the cursor */
                 if (!pointedJoint) {
-                    Joint *j = cSkeleton->addJoint((float)transMouse.x,
-                                                   (float)transMouse.y);
+                    Joint *j = cSkeleton->addJoint(transMouse);
                     cSkeleton->clearSelection();
                     j->selected = true;
 
@@ -792,7 +782,7 @@ void AnimataWindow::handleLeftMousePress(void)
             break;
 
         case ANIMATA_MODE_LAYER_OFFSET:
-            cLayer->setOffset((float)transMouse.x, (float)transMouse.y);
+            cLayer->setOffset(transMouse);
             setLayerUIPrefs(cLayer);
             break;
 
@@ -803,13 +793,10 @@ void AnimataWindow::handleLeftMousePress(void)
 
 void AnimataWindow::handleRightMousePress()
 {
-    prevMouseX = dragMouseX = mouseX = Fl::event_x();
-    prevMouseY = dragMouseY = mouseY = Fl::event_y();
+    prevMouse = dragMouse = mouse.set(Fl::event_x(), Fl::event_y());
 
     // transform the mouse coordinates based on the current layer
-    Vector2D p = transformMouseToWorld(mouseX, mouseY);
-    transDragMouse.x = transMouse.x = p.x;
-    transDragMouse.y = transMouse.y = p.y;
+    transDragMouse = transMouse = transformMouseToWorld(mouse);
 }
 
 void AnimataWindow::handleLeftMouseRelease()
@@ -893,48 +880,41 @@ void AnimataWindow::handleRightMouseRelease()
 
 void AnimataWindow::handleMouseMotion(void)
 {
-    mouseX = Fl::event_x();
-    mouseY = Fl::event_y();
+    mouse.set(Fl::event_x(), Fl::event_y());
 
     // transform the mouse coordinates based on the current layer
-    Vector2D p = transformMouseToWorld(mouseX, mouseY);
-    transMouse.x = p.x;
-    transMouse.y = p.y;
+    transMouse = transformMouseToWorld(mouse);
 }
 
 void AnimataWindow::handleMouseDrag(void)
 {
-    mouseX = Fl::event_x();
-    mouseY = Fl::event_y();
+    Vector2D mouse(Fl::event_x(), Fl::event_y());
 
     dragging = true;
-//    Vector2D dragTrans = transformMouseToWorld(dragMouseX, dragMouseY);
+//    Vector2D dragTrans = transformMouseToWorld(dragMouse);
 
     // transform the mouse coordinates based on the current layer
-    Vector2D p1 = transformMouseToWorld(mouseX, mouseY);
-    Vector2D p2 = transformMouseToWorld(prevMouseX, prevMouseY);
+    Vector2D p1 = transformMouseToWorld(mouse);
+    Vector2D p2 = transformMouseToWorld(prevMouse);
 
-    transMouse.x = p1.x;
-    transMouse.y = p1.y;
+    transMouse = p1;
 
-    Vector2D viewDist(mouseX - prevMouseX, mouseY - prevMouseY);
-    Vector2D worldDist(p1.x - p2.x, p1.y - p2.y);
+    Vector2D viewDist(mouse - prevMouse);
+    Vector2D worldDist(p1 - p2);
 
     if (!Fl::event_button1()) {
-        Vector3D *target = camera->getTarget();
-        Vector3D cameraTarget(target->x - worldDist.x, target->y - worldDist.y,
-                              target->z);
-        camera->setTarget(&cameraTarget);
-        ui->playback->getCamera()->setTarget(&cameraTarget);
+        Vector3D cameraTarget = camera->getTarget() - worldDist;
+        camera->setTarget(cameraTarget);
+        ui->playback->getCamera()->setTarget(cameraTarget);
     }
     else
     switch (ui->settings.mode) {
         case ANIMATA_MODE_MESH_SELECT:
             if (pointedVertex && pointedVertex->selected) {
-                cMesh->moveSelectedVertices(worldDist.x, worldDist.y);
+                cMesh->moveSelectedVertices(worldDist);
             }
             else if (pointedFace) {
-                pointedFace->move(worldDist.x, worldDist.y);
+                pointedFace->move(worldDist);
             }
             break;
 
@@ -942,12 +922,12 @@ void AnimataWindow::handleMouseDrag(void)
             /* if the joint below the cursor is selected drag the selected
              * joints */
             if (pointedJoint && pointedJoint->selected) {
-                cSkeleton->moveSelectedJoints(worldDist.x, worldDist.y);
+                cSkeleton->moveSelectedJoints(worldDist);
                 setJointUIPrefs(pointedJoint);
             }
             else
             if (pointedBone && pointedBone->selected) {
-                cSkeleton->moveSelectedBones(worldDist.x, worldDist.y);
+                cSkeleton->moveSelectedBones(worldDist);
                 setBoneUIPrefs(pointedBone);
             }
             break;
@@ -955,36 +935,40 @@ void AnimataWindow::handleMouseDrag(void)
         case ANIMATA_MODE_TEXTURE_POSITION:
         case ANIMATA_MODE_LAYER_MOVE:
             // FIXME: scale shouldn't alter distance when moving layers
-            cLayer->move(worldDist.x * cLayer->getScale(),
-                         worldDist.y * cLayer->getScale());
+            // TODO: check if depth changed, call sort() if necessary
+            cLayer->move(worldDist * cLayer->getScale());
             setLayerUIPrefs(cLayer);
             break;
 
         case ANIMATA_MODE_TEXTURE_SCALE:
         case ANIMATA_MODE_LAYER_SCALE: {
             // the scale center has to be transformed into the layer coordinate space
-            /*
-            cLayer->scaleAroundPoint(cLayer->getScale() + (float)(viewDist.y) / 100.f,
-                                            (dragMouseX - cLayer->getX()) / cLayer->getScale(),
-                                            (dragMouseY - cLayer->getY()) / cLayer->getScale());
-            */
-//            cLayer->scaleAroundPoint(cLayer->getScale() + (float)(viewDist.y) / 100.f, dragTrans.x, dragTrans.y);
+
+//            cLayer->scaleAroundPoint(cLayer->getScale() + (float)(viewDist.y) / 100.f,
+//                                     (dragMouse - cLayer->getPosition()) / cLayer->getScale());
+
+//            cLayer->scaleAroundPoint(cLayer->getScale() + (float)(viewDist.y) / 100.f,
+//                                     dragTrans);
             float scale = cLayer->getScale() + (float)(viewDist.y) / 100.f;
             cLayer->setScale(scale > 0.f ? scale : 0.f);
             setLayerUIPrefs(cLayer);
         }
             break;
         case ANIMATA_MODE_LAYER_OFFSET:
-            cLayer->setOffset((float)transMouse.x, (float)transMouse.y);
+            cLayer->setOffset(transMouse);
             setLayerUIPrefs(cLayer);
             break;
-        case ANIMATA_MODE_LAYER_ROTATE:
-            cLayer->rotate((float)(viewDist.y) / 100.f);
+        case ANIMATA_MODE_LAYER_ROTATE_XY:
+            cLayer->rotate(Angle3D(viewDist.y * -0.01f, viewDist.x * 0.01f, 0.0f));
+            setLayerUIPrefs(cLayer);
+            break;
+        case ANIMATA_MODE_LAYER_ROTATE_Z:
+            cLayer->rotate(Angle3D(0.0f, 0.0f, viewDist.y * 0.01f));
             setLayerUIPrefs(cLayer);
             break;
 
         case ANIMATA_MODE_LAYER_DEPTH:
-            cLayer->depth(viewDist.y);
+            cLayer->move(Vector3D(0.0f, 0.0f, viewDist.y));
             sort(allLayers->begin(), allLayers->end(), Layer::zorder);
             setLayerUIPrefs(cLayer);
             break;
@@ -993,8 +977,7 @@ void AnimataWindow::handleMouseDrag(void)
             break;
     }
 
-    prevMouseX = mouseX;
-    prevMouseY = mouseY;
+    prevMouse = mouse;
 }
 
 void AnimataWindow::handleMouseWheel(void)
@@ -1002,8 +985,8 @@ void AnimataWindow::handleMouseWheel(void)
     Vector3D target(camera->getTarget());
 
     target.z -= Fl::event_dy();
-    camera->setTarget(&target);
-    ui->playback->getCamera()->setTarget(&target);
+    camera->setTarget(target);
+    ui->playback->getCamera()->setTarget(target);
 }
 
 /**
@@ -1172,35 +1155,43 @@ void AnimataWindow::setLayerPrefsFromUI(enum ANIMATA_PREFERENCES prefParam,
                                         void *value)
 {
     // vector<Layer *>::iterator l = selectedLayers.begin();
-
     switch (prefParam) {
         case PREFS_LAYER_NAME:
             cLayer->setName(*((const char **)value));
-            break;
+            return;
         case PREFS_LAYER_ALPHA:
             cLayer->setAlpha(*((float *)value));
-            break;
+            return;
         case PREFS_LAYER_VISIBILITY:
             cLayer->setVisibility(*((int *)value));
-            break;
-        case PREFS_LAYER_X:
-            cLayer->setX(*((float *)value));
-            break;
-        case PREFS_LAYER_Y:
-            cLayer->setY(*((float *)value));
-            break;
+            return;
+        case PREFS_LAYER_POSITION_X:
+            cLayer->setPositionElement(*((float *)value), 0);
+            return;
+        case PREFS_LAYER_POSITION_Y:
+            cLayer->setPositionElement(*((float *)value), 1);
+            return;
         case PREFS_LAYER_DEPTH:
-            cLayer->setZ(*((float *)value));
+            cLayer->setPositionElement(*((float *)value), 2);
             sort(allLayers->begin(), allLayers->end(), Layer::zorder);
-            break;
+            return;
         case PREFS_LAYER_OFFSET_X:
-            cLayer->setOffsetX(*((float *)value));
+            cLayer->setOffsetElement(*((float *)value), 0);
             break;
         case PREFS_LAYER_OFFSET_Y:
-            cLayer->setOffsetY(*((float *)value));
+            cLayer->setOffsetElement(*((float *)value), 1);
             break;
-        case PREFS_LAYER_ROTATION:
-            cLayer->setTheta(*((float *)value));
+        case PREFS_LAYER_OFFSET_Z:
+            cLayer->setOffsetElement(*((float *)value), 2);
+            break;
+        case PREFS_LAYER_ROTATION_X:
+            cLayer->setAngleElement(*((float *)value), 0);
+            break;
+        case PREFS_LAYER_ROTATION_Y:
+            cLayer->setAngleElement(*((float *)value), 1);
+            break;
+        case PREFS_LAYER_ROTATION_Z:
+            cLayer->setAngleElement(*((float *)value), 2);
             break;
         case PREFS_LAYER_SCALE:
             cLayer->setScale(*((float *)value));
@@ -1208,6 +1199,7 @@ void AnimataWindow::setLayerPrefsFromUI(enum ANIMATA_PREFERENCES prefParam,
         default:
             break;
     }
+    cLayer->calcTransformationMatrix();
 }
 
 /**
@@ -1221,12 +1213,18 @@ void AnimataWindow::setLayerUIPrefs(Layer *l)
         ui->layerName->value(l->getName());
         ui->layerAlpha->value(l->getAlpha());
         ui->layerVisible->value(l->getVisibility());
-        ui->layerX->value(l->getX());
-        ui->layerY->value(l->getY());
-        ui->layerDepth->value(l->getZ());
-        ui->layerOffsetX->value(l->getOffsetX());
-        ui->layerOffsetY->value(l->getOffsetY());
-        ui->layerRotation->value(l->getTheta());
+        Vector3D vec = l->getPosition();
+        ui->layerPositionX->value(vec.x);
+        ui->layerPositionY->value(vec.y);
+        ui->layerDepth->value(vec.z);
+        vec = l->getOffset();
+        ui->layerOffsetX->value(vec.x);
+        ui->layerOffsetY->value(vec.y);
+        ui->layerOffsetZ->value(vec.z);
+        Angle3D ang = l->getAngle();
+        ui->layerRotationX->value(ang.x);
+        ui->layerRotationY->value(ang.y);
+        ui->layerRotationZ->value(ang.z);
         ui->layerScale->value(l->getScale());
     }
 }

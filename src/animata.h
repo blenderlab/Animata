@@ -85,7 +85,8 @@ enum ANIMATA_MODES
     ANIMATA_MODE_LAYER_OFFSET,
     ANIMATA_MODE_LAYER_SCALE,
     ANIMATA_MODE_LAYER_DEPTH,
-    ANIMATA_MODE_LAYER_ROTATE
+    ANIMATA_MODE_LAYER_ROTATE_XY,
+    ANIMATA_MODE_LAYER_ROTATE_Z
 };
 
 inline bool isMeshMode(int mode)
@@ -109,7 +110,7 @@ inline bool isTextureMode(int mode)
 inline bool isLayerMode(int mode)
 {
     return (   mode >= ANIMATA_MODE_LAYER_MOVE
-            && mode <= ANIMATA_MODE_LAYER_ROTATE);
+            && mode <= ANIMATA_MODE_LAYER_ROTATE_Z);
 }
 
 enum ANIMATA_DISPLAY_ELEMENTS
@@ -162,11 +163,11 @@ class AnimataWindow : public Fl_Gl_Window
 {
 private:
     /** mouse coordinates */
-    int mouseX, mouseY;
+    Vector2D mouse;
     /** previous mouse coordinates to measure mouse movement */
-    int prevMouseX, prevMouseY;
+    Vector2D prevMouse;
     /** mouse coordinates where the dragging started */
-    int dragMouseX, dragMouseY;
+    Vector2D dragMouse;
     bool dragging; /**< set to true while dragging the mouse */
 
     /** transformed mouse coordinates, based on current layers transformation */
@@ -239,7 +240,7 @@ private:
     void selectVertices(void);
 
     /// Transforms a screen coordinate to world coordinate.
-    Vector2D transformMouseToWorld(int x, int y);
+    Vector2D transformMouseToWorld(Vector2D& pos);
 
     char filename[PATH_MAX+1]; ///< filename of scene
 
@@ -270,7 +271,7 @@ public:
     void triangulate(void);
 
     void attachVertices(void);
-    void disattachVertices(void);
+    void detachVertices(void);
 
     int handle(int);
 

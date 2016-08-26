@@ -215,8 +215,8 @@ void IO::saveTexture(TiXmlElement *parent, Texture *t)
     if (filename)
         texture->SetAttribute("location", filename);
 
-    texture->SetDoubleAttribute("x", t->x);
-    texture->SetDoubleAttribute("y", t->y);
+    texture->SetDoubleAttribute("x", t->position.x);
+    texture->SetDoubleAttribute("y", t->position.y);
     texture->SetDoubleAttribute("scale", t->getScale());
 
     parent->LinkEndChild(texture);
@@ -229,14 +229,20 @@ void IO::saveLayer(TiXmlElement *parent, Layer *layer)
 {
     TiXmlElement *layerXML = new TiXmlElement("layer");
     layerXML->SetAttribute("name", layer->getName());
-    layerXML->SetDoubleAttribute("x", layer->getX());
-    layerXML->SetDoubleAttribute("y", layer->getY());
-    layerXML->SetDoubleAttribute("z", layer->getZ());
-    layerXML->SetDoubleAttribute("alpha", layer->getAlpha());
-    layerXML->SetDoubleAttribute("offsetX", layer->getOffsetX());
-    layerXML->SetDoubleAttribute("offsetY", layer->getOffsetY());
+    Vector3D temp = layer->getPosition();
+    layerXML->SetDoubleAttribute("x", temp.x);
+    layerXML->SetDoubleAttribute("y", temp.y);
+    layerXML->SetDoubleAttribute("z", temp.z);
+    temp = layer->getOffset();
+    layerXML->SetDoubleAttribute("offsetX", temp.x);
+    layerXML->SetDoubleAttribute("offsetY", temp.y);
+    layerXML->SetDoubleAttribute("offsetZ", temp.z);
     layerXML->SetDoubleAttribute("scale", layer->getScale());
-    layerXML->SetDoubleAttribute("theta", layer->getTheta());
+    Angle3D angle = layer->getAngle();
+    layerXML->SetDoubleAttribute("angleX", angle.x);
+    layerXML->SetDoubleAttribute("angleY", angle.y);
+    layerXML->SetDoubleAttribute("angleZ", angle.z);
+    layerXML->SetDoubleAttribute("alpha", layer->getAlpha());
     layerXML->SetAttribute("vis", layer->getVisibility());
 
     Mesh *m = layer->getMesh();
@@ -318,21 +324,21 @@ void IO::loadSkeleton(TiXmlNode *parent, Skeleton *skeleton, Mesh *m)
         TiXmlElement *j = jointNode->ToElement();
 
         const char *name;
-        float x, y;
+        Vector2D pos;
         int selected;
         int osc;
         int fixed;
         jointCount++;
         /* if there's a critical error the joint is skipped */
-        QUERY_CRITICAL_ATTR(j, "x", x);
-        QUERY_CRITICAL_ATTR(j, "y", y);
+        QUERY_CRITICAL_ATTR(j, "x", pos.x);
+        QUERY_CRITICAL_ATTR(j, "y", pos.y);
         /* loadedJointCount holds the number of actually loaded joints */
         loadedJointCount++;
         QUERY_ATTR(j, "selected", selected, 0);
         QUERY_ATTR(j, "osc", osc, 0);
         QUERY_ATTR(j, "fixed", fixed, 0);
         name = j->Attribute("name"); // can be NULL
-        Joint *joint = skeleton->addJoint(x, y);
+        Joint *joint = skeleton->addJoint(pos);
         joint->selected = selected;
         joint->osc = osc;
         joint->fixed = fixed;
@@ -473,22 +479,21 @@ void IO::loadMesh(TiXmlNode *parent, Mesh *mesh)
     while ((vertexNode = verticesNode->IterateChildren(vertexNode))) {
         TiXmlElement *vert = vertexNode->ToElement();
 
-        float x, y, u, v;
+        Vector2D pos, texPos;
         int selected;
         vertexCount++;
         /* if there's a critical error the vertex is skipped */
-        QUERY_CRITICAL_ATTR(vert, "x", x);
-        QUERY_CRITICAL_ATTR(vert, "y", y);
+        QUERY_CRITICAL_ATTR(vert, "x", pos.x);
+        QUERY_CRITICAL_ATTR(vert, "y", pos.y);
         /* loadedVertexCount is incremented only if all the necessary
          * attributes are set */
         loadedVertexCount++;
-        QUERY_ATTR(vert, "u", u, 0);
-        QUERY_ATTR(vert, "v", v, 0);
+        QUERY_ATTR(vert, "u", texPos.x, 0);
+        QUERY_ATTR(vert, "v", texPos.y, 0);
         QUERY_ATTR(vert, "selected", selected, 0);
 
-        Vertex *vertex = mesh->addVertex(x, y);
-        vertex->texCoord.x = u;
-        vertex->texCoord.y = v;
+        Vertex *vertex = mesh->addVertex(pos);
+        vertex->texCoord = texPos;
         vertex->selected = selected;
     }
 
@@ -528,7 +533,8 @@ void IO::loadTexture(TiXmlNode *textureNode, Mesh *mesh)
 
     TiXmlElement *t = textureNode->ToElement();
     const char *location;
-    float x, y, scale;
+    Vector2D pos;
+    float scale;
 
     location = t->Attribute("location");
     if (location == NULL)
@@ -539,8 +545,8 @@ void IO::loadTexture(TiXmlNode *textureNode, Mesh *mesh)
     const char *dir = dirname(filepath);
     snprintf(fullpath, PATH_MAX, "%s/%s", dir, location);
 
-    QUERY_ATTR(t, "x", x, 0);
-    QUERY_ATTR(t, "y", y, 0);
+    QUERY_ATTR(t, "x", pos.x, 0);
+    QUERY_ATTR(t, "y", pos.y, 0);
     QUERY_ATTR(t, "scale", scale, 1.0);
 
     // load image using fltk and add it to the texture manager
@@ -555,8 +561,7 @@ void IO::loadTexture(TiXmlNode *textureNode, Mesh *mesh)
     Texture *texture = ui->editorBox->getTextureManager()->createTexture(box);
 
     // set texture parameters
-    texture->x = x;
-    texture->y = y;
+    texture->position = pos;
     texture->setScale(scale);
 
     mesh->setAttachedTexture(texture);
@@ -574,7 +579,9 @@ Layer *IO::loadLayer(TiXmlNode *layerNode, Layer *layerParent /* = NULL */)
     TiXmlElement *l = layerNode->ToElement();
 
     const char *name;
-    float x, y, z, offsetX, offsetY, scale, theta, alpha;
+    Vector3D position, offset;
+    Angle3D angle;
+    float scale, alpha;
     int vis;
 
     name = l->Attribute("name");
@@ -583,13 +590,17 @@ Layer *IO::loadLayer(TiXmlNode *layerNode, Layer *layerParent /* = NULL */)
         return NULL;
     }
 
-    QUERY_ATTR(l, "x", x, 0);
-    QUERY_ATTR(l, "y", y, 0);
-    QUERY_ATTR(l, "z", z, 0);
-    QUERY_ATTR(l, "offsetX", offsetX, 0.0);
-    QUERY_ATTR(l, "offsetY", offsetY, 0.0);
+    QUERY_ATTR(l, "x", position.x, 0);
+    QUERY_ATTR(l, "y", position.y, 0);
+    QUERY_ATTR(l, "z", position.z, 0);
+    QUERY_ATTR(l, "offsetX", offset.x, 0.0);
+    QUERY_ATTR(l, "offsetY", offset.y, 0.0);
+    QUERY_ATTR(l, "offsetZ", offset.z, 0.0);
     QUERY_ATTR(l, "scale", scale, 1.0);
-    QUERY_ATTR(l, "theta", theta, 0.0);
+    QUERY_ATTR(l, "theta", angle.z, 0.0);
+    QUERY_ATTR(l, "angleX", angle.x, 0.0);
+    QUERY_ATTR(l, "angleY", angle.y, 0.0);
+    QUERY_ATTR(l, "angleZ", angle.z, 0.0);
     QUERY_ATTR(l, "alpha", alpha, 1.0);
     QUERY_ATTR(l, "vis", vis, 1);
 
@@ -603,7 +614,7 @@ Layer *IO::loadLayer(TiXmlNode *layerNode, Layer *layerParent /* = NULL */)
     }
 
     layer->setName(name);
-    layer->setup(x, y, z, alpha, offsetX, offsetX, scale, theta);
+    layer->setup(position, offset, scale, angle, alpha);
     layer->setVisibility(vis);
 
     // load mesh

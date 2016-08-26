@@ -61,9 +61,10 @@ Playback::~Playback()
  */
 void Playback::draw()
 {
+    printf("Playback::draw()\n");
     if (!valid()) {
         AnimataWindow::setupOpenGL();
-        camera->setSize(w(), h());
+        camera->setSize(Vector2D(w(), h()));
     }
 
     // FIXME: somehow the context of the editorwindow has feedback on the
@@ -92,6 +93,7 @@ void Playback::draw()
  */
 int Playback::handle(int event)
 {
+    printf("Playback::handle\n");
     switch(event) {
         case FL_PUSH:
             if(Fl::event_button() == FL_LEFT_MOUSE)

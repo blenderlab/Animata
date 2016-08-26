@@ -48,13 +48,13 @@ public:
     void simulate(void);
     void translateVertices(void);
 
-    void drag(float dx, float dy, int timeStamp = 0);
+    void drag(const Vector2D& d, int timeStamp = 0);
     void release(void);
 
     void draw(int mouseOver, int active = 1);
     void flipSelection(void);
 
-    const char *getName(void);
+    const char *getName(void) const;
     void setName(const char *str);
 
     void attachVertices(vector<Vertex *> *verts);
@@ -64,19 +64,19 @@ public:
 
     /// Selects attached vertices.
     void selectAttachedVertices(bool s = true);
-    void disattachVertices(void);
+    void detachVertices(void);
     /// Disattaches one vertex.
-    void disattachVertex(Vertex *v);
+    void detachVertex(Vertex *v);
 
     /// Returns the vector of attached vertices.
     vector<Vertex *> *getAttachedVertices(float **dsts,
-        float **weights, float **ca, float **sa);
+        float **weights, float **ca, float **sa) const;
 
     /// Returns number of attached vertices.
-    int getAttachedVerticesCount(void);
+    int getAttachedVerticesCount(void) const;
 
     /// Gets bone size.
-    inline float getOrigSize(void) { return dOrig; };
+    inline float getOrigSize(void) const { return dOrig; };
     /// Sets bone size.
     inline void setOrigSize(float s) { dOrig = s; };
 
@@ -103,13 +103,13 @@ public:
     inline float getLengthMultMax(void) { return lengthMultMax; }
 
     /// Gets tempo of bone length change.
-    inline float getTempo(void) { return tempo; }
+    inline float getTempo(void) const { return tempo; }
     /// Returns current time of oscillator.
-    inline float getTime(void) { return time; }
+    inline float getTime(void) const { return time; }
 
     /// Returns bone centre.
-    Vector2D getCenter(void);
-    Vector2D getViewCenter(void);
+    Vector2D getCenter(void) const;
+    Vector2D getViewCenter(void) const;
 
     Joint *j0; ///< one endpoint of bone
     Joint *j1; ///< the other endpoint of bone
@@ -119,15 +119,15 @@ public:
     /// Sets radius multiplier used when attaching vertices to bone.
     inline void setRadiusMult(float f) { attachRadiusMult = f; }
     /// Gets radius multiplier used when attaching vertices to bone.
-    inline float getRadiusMult(void) { return attachRadiusMult; }
+    inline float getRadiusMult(void) const { return attachRadiusMult; }
     /// Gets radius of vertex selection circle.
-    inline float getRadius(void) { return dOrig*.5f*attachRadiusMult; }
+    inline float getRadius(void) const { return dOrig*.5f*attachRadiusMult; }
     /// Sets attachment falloff.
     inline void setFalloff(float f) { falloff = f; }
     /// Gets attachment falloff.
-    inline float getFalloff(void) { return falloff; }
+    inline float getFalloff(void) const { return falloff; }
     void recalculateWeights(void);
-    float getViewRadius();
+    float getViewRadius() const;
 
 private:
     float dOrig;    //< original length of bone

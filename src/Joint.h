@@ -47,16 +47,16 @@ public:
      */
     int dragTS;
 
-    Joint(Vector2D& v);
+    Joint(const Vector2D& v);
 
-    const char *getName(void);
+    const char *getName(void) const;
     void setName(const char *str);
 
     void simulate(void);
     void draw(int dragged = 0, int active = 1);
     void flipSelection(void);
 
-    void drag(Vector2D& d, int timeStamp = 0);
+    void drag(const Vector2D& d, int timeStamp = 0);
 
 private:
     char name[16];

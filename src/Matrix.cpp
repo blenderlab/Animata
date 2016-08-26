@@ -22,7 +22,6 @@
 */
 
 #include "Matrix.h"
-#include "Vector3D.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -117,7 +116,7 @@ Matrix& Matrix::inverse()
     return *inv;
 }
 
-Matrix& Matrix::operator = (Matrix& m)
+Matrix& Matrix::operator = (const Matrix& m)
 {
     for (int i = 0; i < 16; i++)
         f[i] = m[i];
@@ -138,7 +137,7 @@ Matrix& Matrix::operator = (float e[16])
  * the current matrix gets multiplied with the given one from right
  * /param m the given matrix to which the current is multiplied
  **/
-Matrix& Matrix::operator *= (Matrix& m)
+Matrix& Matrix::operator *= (const Matrix& m)
 {
     Matrix *temp = new Matrix();
     *temp = *this;
@@ -157,18 +156,16 @@ Matrix& Matrix::operator *= (Matrix& m)
 /**
  * constructs a translate matrix from the given translation vector
  * and multiplies it to the current matrix
- * /param x x coordinate of the translation
- * /param y y coordinate of the translation
- * /param z z coordinate of the translation
+ * /param v vector specifying the translation
  **/
-Matrix& Matrix::translate(float x, float y, float z)
+Matrix& Matrix::translate(const Vector3D& v)
 {
     Matrix t;
     t.loadIdentity();
 
-    t[12] = x;
-    t[13] = y;
-    t[14] = z;
+    t[12] = v.x;
+    t[13] = v.y;
+    t[14] = v.z;
 
     // left or right?
     *this *= t;
@@ -178,18 +175,16 @@ Matrix& Matrix::translate(float x, float y, float z)
 /**
  * constructs a scale matrix from the given scale vector
  * and multiplies it to the current matrix
- * /param x x coordinate of the scale
- * /param y y coordinate of the scale
- * /param z z coordinate of the scale
+ * /param v vector specifying the scale
  **/
-Matrix& Matrix::scale(float x, float y, float z)
+Matrix& Matrix::scale(const Vector3D& v)
 {
     Matrix t;
     t.loadIdentity();
 
-    t[0] = x;
-    t[5] = y;
-    t[10] = z;
+    t[0] = v.x;
+    t[5] = v.y;
+    t[10] = v.z;
 
     // left or right?
     *this *= t;
@@ -201,7 +196,39 @@ Matrix& Matrix::scale(float x, float y, float z)
  * and multiplies it to the current matrix
  * /param theta angle to rotate around the z-axis
  **/
-Matrix& Matrix::rotate(float theta)
+Matrix& Matrix::rotate(const Angle3D& angle)
+{
+    Matrix t;
+    t.loadIdentity();
+
+    float sinA = sin(angle.x);
+    float cosA = cos(angle.x);
+    float sinB = sin(angle.y);
+    float cosB = cos(angle.y);
+    float sinC = sin(angle.z);
+    float cosC = cos(angle.z);
+
+    t[0] = cosB * cosC;;
+    t[1] = -cosB * sinC;
+    t[2] = sinB;
+    t[4] = cosA * sinC + sinA * sinB * cosC;
+    t[5] = cosA * cosC - sinA * sinB * sinC;
+    t[6] = -sinA * cosB;
+    t[8] = sinA * sinC - cosA * sinB * cosC;
+    t[9] = sinA * cosC + cosA * sinB * sinC;
+    t[10] = cosA * cosB;
+
+    // left or right?
+    *this *= t;
+    return *this;
+}
+
+/**
+ * constructs a rotation matrix from the given angle
+ * and multiplies it to the current matrix
+ * /param theta angle to rotate around the z-axis
+ **/
+Matrix& Matrix::rotateZ(float theta)
 {
     Matrix t;
     t.loadIdentity();

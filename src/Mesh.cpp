@@ -76,14 +76,12 @@ Mesh::~Mesh()
 
 /**
  * Creates new vertex at given position, and adds it to the mesh.
- * \param    x    \e x coordinate of the position
- * \param    y    \e y coordinate of the position
+ * \param    pos  \e coordinates of the position
  * \retval Vertex* The newly created vertex.
  */
-Vertex *Mesh::addVertex(float x, float y)
+Vertex *Mesh::addVertex(const Vector2D& pos)
 {
-    Vector2D vector(x, y);
-    Vertex *v = new Vertex(vector);
+    Vertex *v = new Vertex(pos);
     vertices->push_back(v);
     return v;
 }
@@ -170,21 +168,20 @@ void Mesh::select(unsigned i, int type)
 
 /**
  * Turns selected to true on the i.th vertex if its in the given circle.
- * \param i     The number of the vertex to select.
- * \param type  Should be Selection::SELECT_VERTEX.
- * \param xc    \e x coordinate of the circle's center.
- * \param yc    \e y coordinate of the circle's center.
- * \param r     Radius of the circle.
+ * \param i         The number of the vertex to select.
+ * \param type      Should be Selection::SELECT_VERTEX.
+ * \param center    \e Coordinates of the circle's center.
+ * \param radius    Radius of the circle.
  */
-void Mesh::circleSelect(unsigned i, int type, int xc, int yc, float r)
+void Mesh::circleSelect(unsigned i, int type, const Vector2D& center,
+                        float radius)
 {
     switch (type) {
         case Selection::SELECT_VERTEX:
             if (i < vertices->size()) {
                 Vertex *v = (*vertices)[i];
-                float dx = v->view.x - xc;
-                float dy = v->view.y - yc;
-                if (dx * dx + dy * dy <= r * r)
+                Vector2D d = v->view - center;
+                if (d.x * d.x + d.y * d.y <= radius * radius)
                     v->selected = true;
             }
             break;
@@ -302,17 +299,13 @@ void Mesh::triangulateFaceProc(int p0, int p1, int p2)
     if (attachedTexture) {
         // if triangle alpha is below the threshold reject the face
         Texture *t = attachedTexture;
-        float scale = t->getScale();
+        float scaleInv = 1.0f / t->getScale();
 
-        float t0x = t->width * ((v0->coord.x - t->x) / ((float)t->width * scale));
-        float t0y = t->height * ((v0->coord.y - t->y) / ((float)t->height * scale));
-        float t1x = t->width * ((v1->coord.x - t->x) / ((float)t->width * scale));
-        float t1y = t->height * ((v1->coord.y - t->y) / ((float)t->height * scale));
-        float t2x = t->width * ((v2->coord.x - t->x) / ((float)t->width * scale));
-        float t2y = t->height * ((v2->coord.y - t->y) / ((float)t->height * scale));
+        Vector2D t0 = (v0->coord - t->position) * scaleInv;
+        Vector2D t1 = (v1->coord - t->position) * scaleInv;
+        Vector2D t2 = (v2->coord - t->position) * scaleInv;
 
-        int alpha = attachedTexture->getTriangleAlpha(t0x, t0y,
-                t1x, t1y, t2x, t2y, 4);
+        int alpha = attachedTexture->getTriangleAlpha(t0, t1, t2, 4);
         if (alpha < ui->settings.triangulateAlphaThreshold)
             return;
     }
@@ -340,17 +333,13 @@ void Mesh::triangulateFaceProcSelected(int p0, int p1, int p2)
     if (attachedTexture) {
         // if triangle alpha is below the threshold reject the face
         Texture *t = attachedTexture;
-        float scale = t->getScale();
+        float scaleInv = 1.0f / t->getScale();
 
-        float t0x = t->width * ((v0->coord.x - t->x) / ((float)t->width * scale));
-        float t0y = t->height * ((v0->coord.y - t->y) / ((float)t->height * scale));
-        float t1x = t->width * ((v1->coord.x - t->x) / ((float)t->width * scale));
-        float t1y = t->height * ((v1->coord.y - t->y) / ((float)t->height * scale));
-        float t2x = t->width * ((v2->coord.x - t->x) / ((float)t->width * scale));
-        float t2y = t->height * ((v2->coord.y - t->y) / ((float)t->height * scale));
+        Vector2D t0 = (v0->coord - t->position) * scaleInv;
+        Vector2D t1 = (v1->coord - t->position) * scaleInv;
+        Vector2D t2 = (v2->coord - t->position) * scaleInv;
 
-        int alpha = attachedTexture->getTriangleAlpha(t0x, t0y, t1x, t1y,
-                                                      t2x, t2y, 4);
+        int alpha = attachedTexture->getTriangleAlpha(t0, t1, t2, 4);
         if (alpha < ui->settings.triangulateAlphaThreshold)
             return;
     }
@@ -477,19 +466,17 @@ void Mesh::attachTexture(Texture *t)
 /**
  * Moves the already selected vertices by a given distance.
  * Also returns the number of moved vertices.
- * \param dx    Distance in the \e x coordinate.
- * \param dy    Distance in the \e y coordinate.
+ * \param d     Vector specifying the distance to move.
  * \retval int  Number of the moved vertices.
  */
-int Mesh::moveSelectedVertices(float dx, float dy)
+int Mesh::moveSelectedVertices(const Vector2D& d)
 {
     int movedVertices = 0;
 
     for (unsigned i = 0; i < vertices->size(); i++) {
         Vertex *v = (*vertices)[i];
         if (v->selected) {
-            v->coord.x += dx;
-            v->coord.y += dy;
+            v->coord += d;
             movedVertices++;
         }
     }
@@ -537,7 +524,7 @@ void Mesh::setVertexViewCoords(float *coords, unsigned int size)
 
         // vertex is out of screen lets do projection here
         if (i + 1 < size && coords[i + 1] == Selection::OUT_OF_SCREEN) {
-            Vector3D view = Transform::project(v->coord.x, v->coord.y, 0);
+            Vector3D view = Transform::project(v->coord);
 
             v->view.x = view.x;
             v->view.y = view.y;

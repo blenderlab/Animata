@@ -24,6 +24,8 @@
 #ifndef __VECTOR3D_H__
 #define __VECTOR3D_H__
 
+#include "Vector2D.h"
+
 namespace Animata
 {
 
@@ -36,39 +38,46 @@ public:
 
     Vector3D();
     Vector3D(float x, float y, float z);
-    Vector3D(Vector3D *p);
+    Vector3D(const Vector2D& p);
 
     Vector3D& set(float _x, float _y, float _z);
     Vector3D& setElement(float f, int index);
 
-    bool operator == (Vector3D &p);
-    bool operator != (Vector3D &p);
+    bool operator == (const Vector3D &p) const;
+    bool operator != (const Vector3D &p) const;
 
-    Vector3D& operator += (Vector3D&);
-    Vector3D& operator -= (Vector3D&);
+    Vector3D& operator += (const Vector3D&);
+    Vector3D& operator -= (const Vector3D&);
+    Vector3D& operator *= (const Vector3D&);
+    Vector3D& operator /= (const Vector3D&);
 
     Vector3D& operator += (float f);
     Vector3D& operator -= (float f);
     Vector3D& operator *= (float f);
     Vector3D& operator /= (float f);
 
-    Vector3D operator = (Vector3D&);
+    Vector3D& operator = (const Vector3D& p);
 
-    Vector3D operator + (Vector3D& p);
-    Vector3D operator - (Vector3D& p);
+    Vector3D operator + (const Vector3D& p) const;
+    Vector3D operator - (const Vector3D& p) const;
+    Vector3D operator * (const Vector3D& p) const;
+    Vector3D operator / (const Vector3D& p) const;
 
-    Vector3D operator + (float f);
-    Vector3D operator - (float f);
-    Vector3D operator * (float f);
-    Vector3D operator / (float f);
+    Vector3D operator + (float f) const;
+    Vector3D operator - (float f) const;
+    Vector3D operator * (float f) const;
+    Vector3D operator / (float f) const;
 
-    Vector3D& rotate(Matrix& m);
-    Vector3D& transform(Matrix& m);
+    Vector3D& rotate(const Matrix& m);
+    Vector3D& transform(const Matrix& m);
 
     void normalize(void);
-    float size(void);
+    float size(void) const;
 
-    inline bool hasNaN() { return (x!=x) || (y!=y) || (z!=z); }
+    inline bool isNaN() const
+        { return (x!=x) || (y!=y) || (z!=z); }
+
+    inline Vector2D xy() const { return Vector2D(x, y); }
 };
 
 } /* namespace Animata */

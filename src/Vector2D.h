@@ -40,35 +40,44 @@ public:
     Vector2D& set(float _x, float _y);
     Vector2D& setElement(float f, int index);
 
-    bool operator == (Vector2D &p) const;
-    bool operator != (Vector2D &p) const;
+    bool operator == (const Vector2D &p) const;
+    bool operator != (const Vector2D &p) const;
+    bool operator < (const Vector2D &p) const;
+    bool operator <= (const Vector2D &p) const;
+    bool operator > (const Vector2D &p) const;
+    bool operator >= (const Vector2D &p) const;
 
-    Vector2D& operator += (Vector2D& v);
-    Vector2D& operator -= (Vector2D& v);
+    Vector2D& operator += (const Vector2D& v);
+    Vector2D& operator -= (const Vector2D& v);
+    Vector2D& operator *= (const Vector2D& v);
+    Vector2D& operator /= (const Vector2D& v);
 
     Vector2D& operator += (float f);
     Vector2D& operator -= (float f);
     Vector2D& operator *= (float f);
     Vector2D& operator /= (float f);
 
-    Vector2D& operator = (Vector2D& v);
+    Vector2D& operator = (const Vector2D& v);
 
-    Vector2D operator + (Vector2D& v) const;
-    Vector2D operator - (Vector2D& v) const;
+    Vector2D operator + (const Vector2D& v) const;
+    Vector2D operator - (const Vector2D& v) const;
+    Vector2D operator * (const Vector2D& v) const;
+    Vector2D operator / (const Vector2D& v) const;
 
     Vector2D operator + (float f) const;
     Vector2D operator - (float f) const;
     Vector2D operator * (float f) const;
     Vector2D operator / (float f) const;
 
-    float dot(Vector2D& v1, Vector2D& v2) const;
-    float cross(Vector2D& v1, Vector2D& v2) const;
+    float dot(const Vector2D& v1, const Vector2D& v2) const;
+    float cross(const Vector2D& v1, const Vector2D& v2) const;
 
     void normalize(void);
     float size(void) const;
     float atan2(void) const;
 
-    inline bool hasNaN(void) const { return (x!=x) || (y!=y); }
+    inline bool isNaN() const
+        { return (x!=x) || (y!=y); }
 };
 
 } /* namespace Animata */

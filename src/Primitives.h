@@ -55,7 +55,7 @@ public:
     static void drawCrossHairs(Layer *l);
 
     static void drawBone(Bone *b, int mouseOver, int active);
-    static void drawBoneWhileConnecting(float x1, float y1, float x2, float y2);
+    static void drawBoneWhileConnecting(const Vector2D& p1, const Vector2D& p2);
 
     static void drawJoint(Joint *j, int mouseOver, int active);
 
@@ -63,20 +63,20 @@ public:
     static void drawVertexAttached(Vertex *v);
 
     static void drawFace(Face *face, int mouseOver = 0, int active = 1);
-    static void drawFaceWhileConnecting(float x1, float y1, float x2, float y2);
+    static void drawFaceWhileConnecting(const Vector2D& p1, const Vector2D& p2);
 
-    static void drawSelectionBox(float x1, float y1, float x2, float y2);
-    static void drawSelectionCircle(float x, float y, float r);
+    static void drawSelectionBox(const Vector2D& p1, const Vector2D& p2);
+    static void drawSelectionCircle(const Vector2D& c, float r);
 
     static void fill(bool b);
     static void stroke(bool b);
     static void strokeWeight(float w);
 
-    static void drawLine(float x1, float y1, float x2, float y2);
-    static void drawCircle(float x, float y, float r);
-    static void drawRect(float x, float y, float size);
-    static void drawTriangle(float x1, float y1, float x2, float y2,
-                             float x3, float y3);
+    static void drawLine(const Vector2D& p1, const Vector2D& p2);
+    static void drawCircle(const Vector2D& c, float r);
+    static void drawRect(const Vector2D& p, float size);
+    static void drawTriangle(const Vector2D& p1, const Vector2D& p2,
+                             const Vector2D& p3);
 
 private:
 
@@ -99,6 +99,8 @@ private:
     static float vertexSize;
     static float border;
     static int dAlpha;
+
+    static void drawLine(float x1, float y1, float x2, float y2);
 };
 
 } /* namespace Animata */

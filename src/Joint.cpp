@@ -34,7 +34,7 @@ using namespace Animata;
 /**
  * Creates a joint at the (x, y) coordinate.
  **/
-Joint::Joint(Vector2D& v)
+Joint::Joint(const Vector2D& v)
 {
     this->position = v;
     fixed = false;
@@ -50,7 +50,7 @@ Joint::Joint(Vector2D& v)
  * Returns the name of the joint.
  * \return pointer to name
  **/
-const char *Joint::getName(void)
+const char *Joint::getName(void) const
 {
     return name;
 }
@@ -101,7 +101,7 @@ void Joint::flipSelection(void)
  * \param timeStamp timestamp to prevent moving joints multiple times when
  *        they belong to several bones
  **/
-void Joint::drag(Vector2D& d, int timeStamp /* = 0*/)
+void Joint::drag(const Vector2D& d, int timeStamp /* = 0*/)
 {
     if ((dragTS != timeStamp) || (timeStamp == 0)) {
         position += d;

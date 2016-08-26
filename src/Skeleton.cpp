@@ -67,14 +67,12 @@ Skeleton::~Skeleton()
 
 /**
  * Adds a new joint to the skeleton.
- * \param x x-coordinate of the joint
- * \param y y-coordinate of the joint
+ * \param pos Position of the joint
  * \return pointer to the new joint
  **/
-Joint *Skeleton::addJoint(float x, float y)
+Joint *Skeleton::addJoint(const Vector2D& pos)
 {
-    Vector2D v(x, y);
-    Joint *j = new Joint(v);
+    Joint *j = new Joint(pos);
     joints->push_back(j);
 
     /* add to vector of all joints */
@@ -115,18 +113,15 @@ Bone *Skeleton::addBone(Joint *j0, Joint *j1)
 
 /**
  * Moves selected joints.
- * \param dx x distance to move by
- * \param dy y distance to move by
+ * \param d distance to move by
  * \return number of joints moved
  **/
-int Skeleton::moveSelectedJoints(float dx, float dy)
+int Skeleton::moveSelectedJoints(const Vector2D& d)
 {
     int movedJoints = 0;
-    Vector2D d(dx, dy);
 
     for (unsigned i = 0; i < joints->size(); i++) {
         Joint *j = (*joints)[i];
-
         if (j->selected) {
             j->drag(d);
             movedJoints++;
@@ -147,11 +142,10 @@ void Skeleton::endMoveSelectedJoints(void)
 
 /**
  * Moves selected bones.
- * \param dx x distance to move by
- * \param dy y distance to move by
+ * \param d distance to move by
  * \return number of bones moved
  **/
-int Skeleton::moveSelectedBones(float dx, float dy)
+int Skeleton::moveSelectedBones(const Vector2D& d)
 {
     int movedBones = 0;
 
@@ -161,9 +155,8 @@ int Skeleton::moveSelectedBones(float dx, float dy)
 
     for (unsigned i = 0; i < bones->size(); i++) {
         Bone *b = (*bones)[i];
-
         if (b->selected) {
-            b->drag(dx, dy, timeStamp);
+            b->drag(d, timeStamp);
             movedBones++;
         }
     }
@@ -438,8 +431,8 @@ void Skeleton::selectVerticesInRange(Mesh *mesh)
                 Vector2D v = b->getViewCenter();
                 // float r = b->getRadius();
                 float r = b->getViewRadius();
-                selector->doCircleSelect(mesh, Selection::SELECT_VERTEX,
-                        (int)v.x, (int)v.y, (int)r);
+                selector->doCircleSelect(mesh, Selection::SELECT_VERTEX, v,
+                                         (int)r);
             }
             else {
                 b->selectAttachedVertices();
@@ -449,30 +442,30 @@ void Skeleton::selectVerticesInRange(Mesh *mesh)
 }
 
 /**
- * Disattaches vertices from bone.
+ * Detaches vertices from bone.
  **/
-void Skeleton::disattachVertices(void)
+void Skeleton::detachVertices(void)
 {
     for (unsigned i = 0; i < bones->size(); i++) {
         Bone *b = (*bones)[i];
         if (b->selected) {
             b->selectAttachedVertices(false); // clear selection
-            b->disattachVertices();
+            b->detachVertices();
         }
     }
 }
 
 /**
- * Disattaches the given vertex.
+ * Detaches the given vertex.
  * \param v pointer to vertex
  **/
-void Skeleton::disattachSelectedVertex(Vertex *v)
+void Skeleton::detachSelectedVertex(Vertex *v)
 {
     if (v == NULL) /* no vertex below the cursor */
         return;
 
     for (unsigned i = 0; i < bones->size(); i++) {
-        (*bones)[i]->disattachVertex(v);
+        (*bones)[i]->detachVertex(v);
     }
 }
 
@@ -490,7 +483,7 @@ void Skeleton::setJointViewCoords(float *coords, unsigned int size)
 
         // joint is out of screen lets do projection here
         if (i + 1 < size && coords[i + 1] == Selection::OUT_OF_SCREEN) {
-            Vector3D view = Transform::project(j->position.x, j->position.y, 0);
+            Vector3D view = Transform::project(j->position);
 
             j->viewPosition.x = view.x;
             j->viewPosition.y = view.y;
@@ -617,7 +610,8 @@ void Skeleton::select(unsigned i, int type)
 /**
  * Not implemented.
  **/
-void Skeleton::circleSelect(unsigned i, int type, int xc, int yc, float r)
+void Skeleton::circleSelect(unsigned i, int type, const Vector2D& center,
+                            float r)
 {
 }
 

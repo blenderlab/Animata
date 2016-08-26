@@ -29,8 +29,9 @@
 using namespace Animata;
 
 /**
- * Creates a new selection object which is responsible for picking, selection and feedback.
- * Buffers for OpenGL and also for storing picked primitives are allocated with it's default size.
+ * Creates a new selection object which is responsible for picking, selection
+ * and feedback.  Buffers for OpenGL and also for storing picked primitives are
+ * allocated with it's default size.
  */
 Selection::Selection()
 {
@@ -61,20 +62,22 @@ Selection::~Selection()
 
         /// starts the picking on given coordinates
 /**
- * Drawing the mesh, skeleton and tetxure in GL_SELECT mode, deterimes which of their building blocks are in radius of the given coordinate.
- * This can be used for getting objects under the mouse cursor if called with the mouse coordinates.
- * Searching radius is read from \a radius.
- * The found primitives are then saved in the \a selected array, which elements hold each primitive's type and name.
- * Camera is used to determine the projection matrix for picking based on the camera properties.
+ * Drawing the mesh, skeleton and tetxure in GL_SELECT mode, deterimes which of
+ * their building blocks are in radius of the given coordinate.  This can be
+ * used for getting objects under the mouse cursor if called with the mouse
+ * coordinates.  Searching radius is read from \a radius.  The found primitives
+ * are then saved in the \a selected array, which elements hold each primitive's
+ * type and name.  Camera is used to determine the projection matrix for picking
+ * based on the camera properties.
  *
  * \param camera            The camera used for the scene.
  * \param layer             Mesh and skeleton gets searched from this layer.
  * \param textureManager    TextureManager which holds the texture attached to
  *                          the mesh on the given layer.
- * \param x                 \e x coordinate of the searching center.
- * \param y                 \e y coordinate of the searching center.
+ * \param c                 Coordinates of the searching center.
  */
-void Selection::doPick(Camera *camera, Layer *layer, TextureManager *textureManager, int x, int y)
+void Selection::doPick(Camera *camera, Layer *layer,
+                       TextureManager *textureManager, const Vector2D& center)
 {
     GLint hits;
 
@@ -98,7 +101,7 @@ void Selection::doPick(Camera *camera, Layer *layer, TextureManager *textureMana
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
 
-    camera->setupPickingProjection(x, y, radius);
+    camera->setupPickingProjection(center, radius);
 
     /* Drawing happens in ortho mode without any transformation in the modelview
      * matrix */
@@ -170,14 +173,12 @@ void Selection::processHits(unsigned hits, GLuint buffer[])
  * \param node  The an object inherited from Drawable which gets searched for
  *              its primitives.
  * \param type  Type of primitive which are searched.
- * \param x     \e x coordinate of the searching reactangle's upper left corner.
- * \param y     \e y coordinate of the searching reactangle's upper left corner.
- * \param w     Width of the searching reactangle.
- * \param h     Height of the searching reactangle.
+ * \param pos   \e Coordinates of the searching rectangle's upper left corner.
+ * \param dim   Dimensions of the searching rectangle.
  * \sa doCircleSelect()
  */
-void Selection::doSelect(Drawable *node, unsigned type, float x, float y,
-                         float w, float h)
+void Selection::doSelect(Drawable *node, unsigned type, const Vector2D& pos,
+                         const Vector2D& dim)
 {
     GLint hits;
 
@@ -198,7 +199,7 @@ void Selection::doSelect(Drawable *node, unsigned type, float x, float y,
     glLoadIdentity();
 
     // mirror the screen along y coordinate because of the different coordinate systems
-    glOrtho(x, w, viewport[3] - h, viewport[3] - y, -1, 1);
+    glOrtho(pos.x, dim.x, viewport[3] - dim.y, viewport[3] - pos.y, -1, 1);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -232,21 +233,20 @@ void Selection::doSelect(Drawable *node, unsigned type, float x, float y,
  * Selects the building elements of \c type from \c node in the given circle by
  * calling circleSelect() for each element.
  * \c node has to be an inherited from Drawable, so it gets a valid circleSelect()
- * \param node  The an object inherited from Drawable which gets searched for
- *              its primitives.
- * \param type  Type of primitive which are searched.
- * \param xc    \e x coordinate of the searching circle's center.
- * \param yc    \e y coordinate of the searching circle's center.
- * \param r     Radius of the searching circle.
+ * \param node      The an object inherited from Drawable which gets searched
+ *                  for its primitives.
+ * \param type      Type of primitive which are searched.
+ * \param center    \e Coordinates of the searching circle's center.
+ * \param radius    Radius of the searching circle.
  * \sa doSelect()
  */
-void Selection::doCircleSelect(Drawable *node, unsigned type, int xc, int yc,
-                               int r)
+void Selection::doCircleSelect(Drawable *node, unsigned type,
+                               const Vector2D& center, int radius)
 {
-    int x0 = xc - r;
-    int y0 = yc - r;
-    int x1 = xc + r;
-    int y1 = yc + r;
+    int x0 = center.x - radius;
+    int y0 = center.y - radius;
+    int x1 = center.x + radius;
+    int y1 = center.y + radius;
 
     GLint hits;
 
@@ -286,7 +286,7 @@ void Selection::doCircleSelect(Drawable *node, unsigned type, int xc, int yc,
         ptr += 3;
         if (names == 2 && *ptr == type) {
             ptr++;
-            node->circleSelect(*ptr, type, xc, yc, r);
+            node->circleSelect(*ptr, type, center, radius);
             ptr++;
         }
         else {

@@ -44,15 +44,13 @@ void Transform::setMatrices()
  * Projects a given 3D point (in world coordinates) to the screen coordinates
  * based on the previously saved transformation parameters.
  *
- * \param x \e x coordiate of the point
- * \param y \e y coordiate of the point
- * \param z \e z coordiate of the point
+ * \param p \e coordinates of the point
  */
-Vector3D Transform::project(float x, float y, float z)
+Vector3D Transform::project(const Vector3D& p)
 {
     double wx, wy, wz;
 
-    gluProject(x, y, z, modelview, projection, viewport, &wx, &wy, &wz);
+    gluProject(p.x, p.y, p.z, modelview, projection, viewport, &wx, &wy, &wz);
 
     return Vector3D(wx, wy, wz);
 }
@@ -61,15 +59,13 @@ Vector3D Transform::project(float x, float y, float z)
  * Unprojects a given 3D point (in screen coordinates) to world coordinates
  * based on the previously saved transformation parameters.
  *
- * \param x \e x coordiate of the point
- * \param y \e y coordiate of the point
- * \param z \e z coordiate of the point
+ * \param p \e coordinates of the point
  */
-Vector3D Transform::unproject(float x, float y, float z)
+Vector3D Transform::unproject(const Vector3D& p)
 {
     double vx, vy, vz;
 
-    gluUnProject((double)x, (double)viewport[3] - (double)y, (double)z,
+    gluUnProject((double)p.x, (double)viewport[3] - (double)p.y, (double)p.z,
                  modelview, projection, viewport, &vx, &vy, &vz);
 
     return Vector3D(vx, vy, vz);
@@ -78,14 +74,13 @@ Vector3D Transform::unproject(float x, float y, float z)
 /**
  * Gets the depth value from the depthbuffer at the given pixel.
  *
- * \param x \e x coordiate of the point
- * \param y \e y coordiate of the point
+ * \param p \e coordinates of the point
  */
-float Transform::getDepth(float x, float y)
+float Transform::getDepth(const Vector2D& p)
 {
     float depth;
 
-    glReadPixels((GLint)x, (GLint)(viewport[3] - y), 1, 1, GL_DEPTH_COMPONENT,
+    glReadPixels((GLint)p.x, (GLint)(viewport[3] - p.y), 1, 1, GL_DEPTH_COMPONENT,
                  GL_FLOAT, &depth);
 
     return depth;

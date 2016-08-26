@@ -55,9 +55,6 @@ Camera::Camera()
     distance = 150.f;
     fov = 90.f;
 
-    width = height = 0;
-    pictureWidth = pictureHeight = 0;
-
     zNear = 0.1f;
     zFar = 1000.f;
 
@@ -74,19 +71,17 @@ Camera::Camera()
  * /param w Width of the view.
  * /param h Height of the view.
  **/
-void Camera::setSize(int w, int h)
+void Camera::setSize(const Vector2D& d)
 {
-    width = pictureWidth = w;
-    height = pictureHeight = h;
+    dim = pictureDim = d;
 
     if (!init) {
-        target.x = width  / 2;
-        target.y = height / 2;
+        target = dim * 0.5;
 
-        setAspect(width, height);
+        setAspect(dim);
 
         if (parent) {
-            target = *parent->getTarget();
+            target = parent->getTarget();
             distance = parent->getDistance();
             fov = parent->getFOV();
         }
@@ -95,22 +90,21 @@ void Camera::setSize(int w, int h)
     }
 
     // setAspect(width, height);
-    aspect = height > 0 ? (double)width / (double)height : 1.0;
+    aspect = dim.y > 0 ? (double)dim.x / (double)dim.y : 1.0;
 
     if (parent) {
-        int pw = parent->getWidth();
-        int ph = parent->getHeight();
+        Vector2D p = parent->getDimensions();
 
         // setAspect(pw, ph);
-        aspect = ph > 0 ? (double)pw / (double)ph : 1.0;
+        aspect = p.y > 0 ? (double)p.x / (double)p.y : 1.0;
 
-        if (width / aspect > height) {
-            pictureHeight = height;
-            pictureWidth = (int)(pictureHeight * aspect);
+        if (dim.x / aspect > dim.y) {
+            pictureDim.y = dim.y;
+            pictureDim.x = (int)(pictureDim.y * aspect);
         }
         else {
-            pictureWidth = width;
-            pictureHeight = (int)(pictureWidth / aspect);
+            pictureDim.x = dim.x;
+            pictureDim.y = (int)(pictureDim.x / aspect);
         }
     }
 
@@ -121,15 +115,14 @@ void Camera::setSize(int w, int h)
  * Calculates the aspect of the picture based on the given parameters.
  * The vertical field-of-view gets also calculated and stored, what is required
  * for an undistorted picture.
- * \param w Width of the picture at camera distance from the target.
- * \param h Height of the picture at camera distance from the target.
+ * \param d Dimensions of the picture at camera distance from the target.
  */
-void Camera::setAspect(int w, int h)
+void Camera::setAspect(const Vector2D& d)
 {
-    aspect = h > 0 ? (double)w / (double)h : 1.0;
+    aspect = d.y > 0 ? (double)d.x / (double)d.y : 1.0;
 
     double radtheta, degtheta;
-    radtheta = 2.0 * atan2(h / 2, distance);
+    radtheta = 2.0 * atan2(d.y / 2, distance);
     degtheta = (180.0 * radtheta) / M_PI;
 
     fov = degtheta;
@@ -160,9 +153,9 @@ void Camera::setupOrtho()
     glMatrixMode(GL_PROJECTION);
 
     glLoadIdentity();
-    glOrtho((width - pictureWidth) / 2, width + (width - pictureWidth) / 2,
-            (height - pictureHeight) / 2, height + (height - pictureHeight) / 2,
-            -1, 1);
+    Vector2D p1 = (dim - pictureDim) * 0.5;
+    Vector2D p2 = p1 + dim;
+    glOrtho(p1.x, p2.x, p1.y, p2.y, -1, 1);
 
     setupViewport();
 }
@@ -171,11 +164,10 @@ void Camera::setupOrtho()
  * Sets up the projection matrix which will be used by picking functions.
  * This is done via multiplying the a special picking matrix onto the current
  * projection matrix.
- * /param x         \e x coordinate of the picking position
- * /param y         \e y coordinate of the picking position
+ * /param d         Coordinates of the picking position
  * /param radius    The radius around the given point where picking occures.
  */
-void Camera::setupPickingProjection(int x, int y, int radius)
+void Camera::setupPickingProjection(const Vector2D& p, int radius)
 {
     // get the boundaries of actual viewport
     GLint viewport[4];
@@ -184,12 +176,12 @@ void Camera::setupPickingProjection(int x, int y, int radius)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    gluPickMatrix((GLdouble)x, (GLdouble)(viewport[3] - y), (GLdouble)radius,
+    gluPickMatrix((GLdouble)p.x, (GLdouble)(viewport[3] - p.y), (GLdouble)radius,
                   (GLdouble)radius, viewport);
 
-    glOrtho((width - pictureWidth) / 2, width + (width - pictureWidth) / 2,
-            (height - pictureHeight) / 2, height + (height - pictureHeight) / 2,
-            -1, 1);
+    Vector2D p1 = (dim - pictureDim) * 0.5;
+    Vector2D p2 = p1 + dim;
+    glOrtho(p1.x, p2.x, p1.y, p2.y, -1, 1);
 }
 
 /**
@@ -212,7 +204,8 @@ void Camera::setupModelView()
  */
 void Camera::setupViewport()
 {
-    glViewport((width - pictureWidth) / 2, (height - pictureHeight) / 2,
-               pictureWidth, pictureHeight);
+    Vector2D p = (dim - pictureDim) * 0.5;
+
+    glViewport(p.x, p.y, pictureDim.x, pictureDim.y);
 }
 

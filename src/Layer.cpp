@@ -51,10 +51,8 @@ Layer::Layer(Layer *p)
     sprintf(name, "layer_%04d", Layer::layerCount);
     Layer::layerCount++;
 
-    x = y = z = 0.f;
     alpha = 1.0;
     scale = 1.0;
-    theta = 0.0;
 
     visible = true;
 
@@ -115,7 +113,7 @@ void Layer::setLayers(std::vector<Layer *> *newLayers)
  * Returns name of layer.
  * \return pointer to string
  **/
-const char *Layer::getName(void)
+const char *Layer::getName(void) const
 {
     return name;
 }
@@ -132,26 +130,20 @@ void Layer::setName(const char *str)
 
 /**
  * Sets layer parameters.
- * \param x x-coordinate
- * \param y y-coordinate
- * \param z depth
- * \param alpha alpha
+ * \param position position of layer origin
+ * \param offset scale and rotation offset
  * \param scale scale
- * \param rotX rotX
- * \param rotY rotY
- * \param theta theta
+ * \param angle rotation angle
+ * \param alpha alpha
  */
-void Layer::setup(float x, float y, float z, float alpha, float offsetX,
-                  float offsetY, float scale, float theta)
+void Layer::setup(const Vector3D& position, const Vector3D& offset, float scale,
+                  const Angle3D& angle, float alpha)
 {
-    this->x = x;
-    this->y = y;
-    this->z = z;
-    this->alpha = alpha;
-    this->offsetX = offsetX;
-    this->offsetY = offsetY;
+    this->position = position;
+    this->offset = offset;
     this->scale = scale;
-    this->theta = theta;
+    this->angle = angle;
+    this->alpha = alpha;
 
     calcTransformationMatrix();
 }
@@ -165,11 +157,12 @@ void Layer::setup(float x, float y, float z, float alpha, float offsetX,
  **/
 /* TODO: same as in Texture.cpp, if it's needed somewhere else, put it into a 
  * central place */
-void Layer::scaleAroundPoint(float s, float ox, float oy)
+void Layer::scaleAroundPoint(float s, const Vector3D& p)
 {
     if (s > MIN_SCALE) {
-        x -= ox * (s - scale);
-        y -= oy * (s - scale);
+        float temp = s - scale;
+        Vector3D scaleVector(p * temp);
+        position *= scaleVector;
         scale = s;
     }
     calcTransformationMatrix();
@@ -193,7 +186,7 @@ void Layer::drawWithoutRecursion(int mode)
     glMultMatrixf(transformation.f);
 
     Camera *cam = ui->editorBox->getCamera();
-    float camZ = cam->getTarget()->z - cam->getDistance();
+    float camZ = cam->getTarget().z - cam->getDistance();
 
     bool isCurrentLayer = this == ui->editorBox->getCurrentLayer();
 
@@ -272,21 +265,18 @@ void Layer::simulate(int times)
 void Layer::calcTransformationMatrix()
 {
     transformation.loadIdentity();
-    transformation.translate(-offsetX, -offsetY, 0.0f);
-    transformation.scale(scale, scale, 1.0f);
-    transformation.rotate(theta);
-    transformation.translate(x + offsetX, y + offsetY, z);
+    transformation.translate(offset * -1.0f);
+    transformation.scale(Vector3D(scale, scale, 1.0f));
+    transformation.rotate(angle);
+    transformation.translate(position + offset);
 
     Layer *actLayer = this;
     while (actLayer->getParent()) {
         actLayer = actLayer->getParent();
-        transformation.translate(-actLayer->getOffsetX(),
-                                 -actLayer->getOffsetY(), 0.0f);
-        transformation.scale(actLayer->getScale(), actLayer->getScale(), 1.0f);
-        transformation.rotate(actLayer->getTheta());
-        transformation.translate(actLayer->getX() + actLayer->getOffsetX(),
-                                 actLayer->getY() + actLayer->getOffsetY(),
-                                 actLayer->getZ());
+        transformation.translate(actLayer->getOffset() * -1.0f);
+        transformation.scale(Vector3D(actLayer->getScale(), actLayer->getScale(), 1.0f));
+        transformation.rotate(actLayer->getAngle());
+        transformation.translate(actLayer->getPosition() + actLayer->getOffset());
     }
 
     // transformation matrix of this layer changed
@@ -361,7 +351,7 @@ int Layer::deleteSublayer(Layer *layer)
  * The alpha value is multiplied by the parents' alpha.
  * \return layer alpha value
  **/
-float Layer::getAccumulatedAlpha(void)
+float Layer::getAccumulatedAlpha(void) const
 {
     if (parent == NULL) {
         return alpha;

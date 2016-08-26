@@ -56,9 +56,11 @@ int Primitives::dAlpha = 100;
 void Primitives::drawCrossHairs(Layer *l)
 {
     strokeColor(255, 255, 0, 128);
-    float x = l->getOffsetX(), y = l->getOffsetY();
-    drawLine(x, -1000000, x, 1000000);
-    drawLine(-1000000, y, 1000000, y);
+    Vector3D offset = l->getOffset();
+    drawLine(Vector2D(offset.x, -1000000),
+             Vector2D(offset.x, 1000000));
+    drawLine(Vector2D(-1000000, offset.y),
+             Vector2D(1000000, offset.y));
 }
 
 ///////////////////////////////    BONE     //////////////////////////////////
@@ -84,7 +86,7 @@ void Primitives::drawBone(Bone *b, int mouseOver, int active)
     else {
         strokeColor(0, 0, 0, 128 - alpha);
     }
-    drawLine(v1.x, v1.y, v2.x, v2.y);
+    drawLine(v1, v2);
     strokeWeight(boneSize * size);
     if (mouseOver) {
         strokeColor(255, 255, 0, 128 - alpha);
@@ -98,23 +100,23 @@ void Primitives::drawBone(Bone *b, int mouseOver, int active)
     else {
         strokeColor(255, 255, 255, 128 - alpha);
     }
-    drawLine(v1.x, v1.y, v2.x, v2.y);
+    drawLine(v1, v2);
     if (!(b->selected)) {
         strokeWeight(boneSize / 3 * size);
         strokeColor(255, 255, 255, 128 - alpha);
-        drawLine(v1.x, v1.y, v2.x, v2.y);
+        drawLine(v1, v2);
     }
 }
 
-void Primitives::drawBoneWhileConnecting(float x1, float y1, float x2, float y2)
+void Primitives::drawBoneWhileConnecting(const Vector2D& p1, const Vector2D& p2)
 {
     stroke(true);
     strokeWeight((boneSize + border) );
     strokeColor(0, 0, 0, 128);
-    drawLine(x1, y1, x2, y2);
+    drawLine(p1, p2);
     strokeWeight(boneSize);
     strokeColor(0, 255, 0, 128);
-    drawLine(x1, y1, x2, y2);
+    drawLine(p1, p2);
 }
 
 ///////////////////////////////    JOINT    //////////////////////////////////
@@ -129,7 +131,7 @@ void Primitives::drawJoint(Joint *j, int mouseOver, int active)
     stroke(false);
     fill(true);
     fillColor(0, 0, 0, 128 - alpha);
-    drawCircle(j->viewPosition.x, j->viewPosition.y, jointSize + border);
+    drawCircle(j->viewPosition, jointSize + border);
 
     if (mouseOver) {
         stroke(true);
@@ -155,22 +157,19 @@ void Primitives::drawJoint(Joint *j, int mouseOver, int active)
         strokeColor(255, 255, 255, 200 - alpha);
     }
     strokeWeight(2);
-    drawCircle(j->viewPosition.x, j->viewPosition.y, jointSize);
+    drawCircle(j->viewPosition, jointSize);
 }
 
 ///////////////////////////////    VERTEX   //////////////////////////////////
 
 void Primitives::drawVertex(Vertex *v, int mouseOver, int active)
 {
-    float x = v->view.x;
-    float y = v->view.y;
-
     int alpha = active ? 0 : dAlpha;
 
     fill(true);
     stroke(false);
     fillColor(0,0,0,128 - alpha);
-    drawRect(x, y, vertexSize + border);
+    drawRect(v->view, vertexSize + border);
 
     if (mouseOver) {
         stroke(true);
@@ -191,19 +190,16 @@ void Primitives::drawVertex(Vertex *v, int mouseOver, int active)
     }
 
     strokeWeight(1);
-    drawRect(x, y, vertexSize);
+    drawRect(v->view, vertexSize);
 }
 
 void Primitives::drawVertexAttached(Vertex *v)
 {
-    float x = v->view.x;
-    float y = v->view.y;
-
     fill(false);
     stroke(true);
     strokeColor(255,0,0,128);
     strokeWeight(1);
-    drawRect(x, y, vertexSize + border*2);
+    drawRect(v->view, vertexSize + border * 2);
 }
 
 
@@ -211,13 +207,6 @@ void Primitives::drawVertexAttached(Vertex *v)
 
 void Primitives::drawFace(Face *face, int mouseOver /* = 0 */, int active)
 {
-    float x1 = face->v[0]->view.x;
-    float y1 = face->v[0]->view.y;
-    float x2 = face->v[1]->view.x;
-    float y2 = face->v[1]->view.y;
-    float x3 = face->v[2]->view.x;
-    float y3 = face->v[2]->view.y;
-
     int alpha = active ? 0 : dAlpha;
 
     fill(true);
@@ -231,15 +220,15 @@ void Primitives::drawFace(Face *face, int mouseOver /* = 0 */, int active)
         strokeColor(255, 255, 255, 200 - alpha);
         fillColor(0, 0, 0, 42);
     }
-    drawTriangle(x1, y1, x2, y2, x3, y3);
+    drawTriangle(face->v[0]->view, face->v[1]->view, face->v[2]->view);
 }
 
-void Primitives::drawFaceWhileConnecting(float x1, float y1, float x2, float y2)
+void Primitives::drawFaceWhileConnecting(const Vector2D& p1, const Vector2D& p2)
 {
     stroke(true);
     strokeWeight(1);
     strokeColor(0, 255, 0, 200);
-    drawLine(x1, y1, x2, y2);
+    drawLine(p1, p2);
 }
 
 void Primitives::fill(bool b)
@@ -257,25 +246,25 @@ void Primitives::strokeWeight(float w)
     strokeW=w;
 }
 
-void Primitives::drawRect(float x, float y, float size)
+void Primitives::drawRect(const Vector2D& pos, float size)
 {
-    float x1=x - size/2;
-    float y1=y - size/2;
-    float x2=x + size/2;
-    float y2=y + size/2;
+    size *= 0.5;
+    Vector2D p1 = pos - size;
+    Vector2D p2 = pos + size;
+
     if (doFill) {
         glColor4f(fillColorR, fillColorG, fillColorB, fillColorA);
-        glRectf(x1,y1,x2,y2);
+        glRectf(p1.x, p1.y, p2.x, p2.y);
     }
     if (doStroke) {
-        drawLine(x1, y1, x2, y1);
-        drawLine(x2, y1, x2, y2);
-        drawLine(x2, y2, x1, y2);
-        drawLine(x1, y2, x1, y1);
+        drawLine(p1.x, p1.y, p2.x, p1.y);
+        drawLine(p2.x, p1.y, p2.x, p2.y);
+        drawLine(p2.x, p2.y, p1.x, p2.y);
+        drawLine(p1.x, p2.y, p1.x, p1.y);
     }
 }
 
-void Primitives::drawSelectionBox(float x1, float y1, float x2, float y2)
+void Primitives::drawSelectionBox(const Vector2D& p1, const Vector2D& p2)
 {
     glLineWidth(1);
     glLineStipple(1, 0xAAAA);
@@ -283,16 +272,16 @@ void Primitives::drawSelectionBox(float x1, float y1, float x2, float y2)
     glColor4f(1.f, 1.f, 1.f, 1.f);
     glBegin(GL_LINE_LOOP);
 
-    glVertex2f(x1,y1);
-    glVertex2f(x2,y1);
-    glVertex2f(x2,y2);
-    glVertex2f(x1,y2);
+    glVertex2f(p1.x, p1.y);
+    glVertex2f(p2.x, p1.y);
+    glVertex2f(p2.x, p2.y);
+    glVertex2f(p1.x, p2.y);
 
     glEnd();
     glDisable(GL_LINE_STIPPLE);
 }
 
-void Primitives::drawSelectionCircle(float x, float y, float r)
+void Primitives::drawSelectionCircle(const Vector2D& c, float r)
 {
     glLineWidth(1.5);
     glLineStipple(1, 0xAAAA);
@@ -303,27 +292,42 @@ void Primitives::drawSelectionCircle(float x, float y, float r)
     float angle = 0;
     glBegin(GL_LINE_LOOP);
         for (int i = 0; i < segments; i++) {
-            glVertex2f(x + r*cos(angle), y + r*sin(angle));
+            glVertex2f(c.x + r*cos(angle), c.y + r*sin(angle));
             angle += inc;
         }
     glEnd();
     glDisable(GL_LINE_STIPPLE);
 }
 
-void Primitives::drawTriangle(float x1, float y1, float x2, float y2, float x3, float y3)
+void Primitives::drawTriangle(const Vector2D& p1, const Vector2D& p2,
+                              const Vector2D& p3)
 {
     if (doFill) {
         glColor4f(fillColorR, fillColorG, fillColorB, fillColorA);
         glBegin(GL_TRIANGLES);
-        glVertex2f(x1,y1);
-        glVertex2f(x2,y2);
-        glVertex2f(x3,y3);
+        glVertex2f(p1.x, p1.y);
+        glVertex2f(p2.x, p2.y);
+        glVertex2f(p3.x, p3.y);
         glEnd();
     }
     if (doStroke) {
-        drawLine(x1, y1, x2, y2);
-        drawLine(x2, y2, x3, y3);
-        drawLine(x3, y3, x1, y1);
+        drawLine(p1, p2);
+        drawLine(p2, p3);
+        drawLine(p3, p1);
+    }
+}
+
+void Primitives::drawLine(const Vector2D& p1, const Vector2D& p2)
+{
+    if (doStroke) {
+        glLineWidth(strokeW);
+        glColor4f(strokeColorR, strokeColorG, strokeColorB, strokeColorA);
+        glBegin(GL_LINES);
+
+        glVertex2f(p1.x, p1.y);
+        glVertex2f(p2.x, p2.y);
+
+        glEnd();
     }
 }
 
@@ -334,14 +338,14 @@ void Primitives::drawLine(float x1, float y1, float x2, float y2)
         glColor4f(strokeColorR, strokeColorG, strokeColorB, strokeColorA);
         glBegin(GL_LINES);
 
-        glVertex2f(x1,y1);
-        glVertex2f(x2,y2);
+        glVertex2f(x1, y1);
+        glVertex2f(x2, y2);
 
         glEnd();
     }
 }
 
-void Primitives::drawCircle(float x, float y, float r)
+void Primitives::drawCircle(const Vector2D& c, float r)
 {
     const int num = 8;
     static float ca[num+1], sa[num+1];
@@ -361,16 +365,17 @@ void Primitives::drawCircle(float x, float y, float r)
     if (doFill) {
         glColor4f(fillColorR, fillColorG, fillColorB, fillColorA);
         glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(x, y);
+        glVertex2f(c.x, c.y);
         for (int i = 0; i < num; i++) {
-            glVertex2f(x + r*ca[i], y + r*sa[i]);
+            glVertex2f(c.x + r*ca[i], c.y + r*sa[i]);
         }
-        glVertex2f(x+r, y);
+        glVertex2f(c.x + r, c.y);
         glEnd();
     }
     if (doStroke) {
         for (int i = 0; i < num; i++) {
-            Primitives::drawLine(x + r*ca[i], y + r*sa[i],x + r*ca[i+1], y + r*sa[i+1]);
+            Primitives::drawLine(c.x + r * ca[i], c.y + r * sa[i],
+                                 c.x + r * ca[i+1], c.y + r * sa[i+1]);
         }
     }
 }

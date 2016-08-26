@@ -24,6 +24,9 @@
 #ifndef __MATRIX_H__
 #define __MATRIX_H__
 
+#include "Vector3D.h"
+#include "Angle3D.h"
+
 namespace Animata
 {
 
@@ -42,10 +45,11 @@ public:
     void loadIdentity();    ///< indentity matrix
 
     inline float& operator [] (int i) { return f[i]; }
+    inline float operator [] (int i) const { return f[i]; }
 
-    Matrix& operator = (Matrix& m);     ///< assignment operator
+    Matrix& operator = (const Matrix& m);     ///< assignment operator
     Matrix& operator = (float e[16]);   ///< float assignment operator
-    Matrix& operator *= (Matrix& m);    ///< right multiply operator
+    Matrix& operator *= (const Matrix& m);    ///< right multiply operator
 
     ///< computes the inverse rotation from the 3x3 rotation portion of this matrix
     Matrix& inverseRotation();
@@ -54,13 +58,14 @@ public:
     Matrix& inverse();
 
     ///< mutiplies the current matrix with the given translate matrix
-    Matrix& translate(float x, float y, float z);
+    Matrix& translate(const Vector3D& v);
 
     ///< mutiplies the current matrix with the given scale matrix
-    Matrix& scale(float x, float y, float z);
+    Matrix& scale(const Vector3D& v);
 
     ///< multiplies the current matrix with the given rotation
-    Matrix& rotate(float theta);
+    Matrix& rotate(const Angle3D& a);
+    Matrix& rotateZ(float theta);
 
     void print();
 };

@@ -68,12 +68,12 @@ public:
     Mesh();
     virtual ~Mesh();
 
-    Vertex *addVertex(float x, float y);
+    Vertex *addVertex(const Vector2D& pos);
 
     void deleteSelectedVertex(void);
     void deleteSelectedFace(Face *f);
 
-    int moveSelectedVertices(float dx, float dy);
+    int moveSelectedVertices(const Vector2D& d);
     void clearSelection(void);
     vector<Vertex *> *getSelectedVertices();
 
@@ -137,7 +137,8 @@ public:
 
     virtual void draw(int mode, int active = 1);
     virtual void select(unsigned i, int type);
-    virtual void circleSelect(unsigned i, int type, int xc, int yc, float r);
+    virtual void circleSelect(unsigned i, int type, const Vector2D& center,
+                              float radius);
 };
 
 } /* namespace Animata */

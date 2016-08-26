@@ -343,7 +343,7 @@ void AnimataUI::cb_Attach(Fl_Button* o, void* v) {
 }
 
 void AnimataUI::cb_Detach_i(Fl_Button* o, void*) {
-  editorBox->disattachVertices();
+  editorBox->detachVertices();
 o->clear();
 }
 void AnimataUI::cb_Detach(Fl_Button* o, void* v) {
@@ -484,20 +484,20 @@ void AnimataUI::cb_layerVisible(Fl_Check_Button* o, long v) {
   ((AnimataUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_layerVisible_i(o,v);
 }
 
-void AnimataUI::cb_layerX_i(Fl_Value_Input* o, void*) {
+void AnimataUI::cb_layerPositionX_i(Fl_Value_Input* o, void*) {
   tempStorage.f = o->value();
-editorBox->setLayerPrefsFromUI(PREFS_LAYER_X, &tempStorage);
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_POSITION_X, &tempStorage);
 }
-void AnimataUI::cb_layerX(Fl_Value_Input* o, void* v) {
-  ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_layerX_i(o,v);
+void AnimataUI::cb_layerPositionX(Fl_Value_Input* o, void* v) {
+  ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_layerPositionX_i(o,v);
 }
 
-void AnimataUI::cb_layerY_i(Fl_Value_Input* o, void*) {
+void AnimataUI::cb_layerPositionY_i(Fl_Value_Input* o, void*) {
   tempStorage.f = o->value();
-editorBox->setLayerPrefsFromUI(PREFS_LAYER_Y, &tempStorage);
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_POSITION_Y, &tempStorage);
 }
-void AnimataUI::cb_layerY(Fl_Value_Input* o, void* v) {
-  ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_layerY_i(o,v);
+void AnimataUI::cb_layerPositionY(Fl_Value_Input* o, void* v) {
+  ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_layerPositionY_i(o,v);
 }
 
 void AnimataUI::cb_layerDepth_i(Fl_Value_Input* o, void*) {
@@ -508,12 +508,36 @@ void AnimataUI::cb_layerDepth(Fl_Value_Input* o, void* v) {
   ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_layerDepth_i(o,v);
 }
 
-void AnimataUI::cb_layerRotation_i(Fl_Value_Input* o, void*) {
+void AnimataUI::cb_layerScale_i(Fl_Value_Input* o, void*) {
   tempStorage.f = o->value();
-editorBox->setLayerPrefsFromUI(PREFS_LAYER_ROTATION, &tempStorage);
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_SCALE, &tempStorage);
 }
-void AnimataUI::cb_layerRotation(Fl_Value_Input* o, void* v) {
-  ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_layerRotation_i(o,v);
+void AnimataUI::cb_layerScale(Fl_Value_Input* o, void* v) {
+  ((AnimataUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_layerScale_i(o,v);
+}
+
+void AnimataUI::cb_layerRotationX_i(Fl_Value_Input* o, void*) {
+  tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_ROTATION_X, &tempStorage);
+}
+void AnimataUI::cb_layerRotationX(Fl_Value_Input* o, void* v) {
+  ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_layerRotationX_i(o,v);
+}
+
+void AnimataUI::cb_layerRotationY_i(Fl_Value_Input* o, void*) {
+  tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_ROTATION_Y, &tempStorage);
+}
+void AnimataUI::cb_layerRotationY(Fl_Value_Input* o, void* v) {
+  ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_layerRotationY_i(o,v);
+}
+
+void AnimataUI::cb_layerRotationZ_i(Fl_Value_Input* o, void*) {
+  tempStorage.f = o->value();
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_ROTATION_Z, &tempStorage);
+}
+void AnimataUI::cb_layerRotationZ(Fl_Value_Input* o, void* v) {
+  ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_layerRotationZ_i(o,v);
 }
 
 void AnimataUI::cb_layerOffsetX_i(Fl_Value_Input* o, void*) {
@@ -532,12 +556,12 @@ void AnimataUI::cb_layerOffsetY(Fl_Value_Input* o, void* v) {
   ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_layerOffsetY_i(o,v);
 }
 
-void AnimataUI::cb_layerScale_i(Fl_Value_Input* o, void*) {
+void AnimataUI::cb_layerOffsetZ_i(Fl_Value_Input* o, void*) {
   tempStorage.f = o->value();
-editorBox->setLayerPrefsFromUI(PREFS_LAYER_SCALE, &tempStorage);
+editorBox->setLayerPrefsFromUI(PREFS_LAYER_OFFSET_Z, &tempStorage);
 }
-void AnimataUI::cb_layerScale(Fl_Value_Input* o, void* v) {
-  ((AnimataUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_layerScale_i(o,v);
+void AnimataUI::cb_layerOffsetZ(Fl_Value_Input* o, void* v) {
+  ((AnimataUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_layerOffsetZ_i(o,v);
 }
 
 void AnimataUI::cb_playback_show_hide_i(Fl_Check_Button* o, void*) {
@@ -961,6 +985,7 @@ AnimataUI::AnimataUI() {
             bonePrefs->labelsize(12);
             bonePrefs->labelcolor((Fl_Color)3);
             bonePrefs->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+            bonePrefs->hide();
             { boneName = new Fl_Input(161, 558, 250, 20, "Name: ");
               boneName->box(FL_BORDER_BOX);
               boneName->color((Fl_Color)30);
@@ -1056,7 +1081,6 @@ AnimataUI::AnimataUI() {
             attachVertices->labelsize(12);
             attachVertices->labelcolor((Fl_Color)3);
             attachVertices->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-            attachVertices->hide();
             { attachArea = new Fl_Value_Slider(161, 558, 450, 20, "Area:");
               attachArea->type(1);
               attachArea->box(FL_BORDER_BOX);
@@ -1253,7 +1277,7 @@ AnimataUI::AnimataUI() {
           o->labelcolor(FL_BACKGROUND2_COLOR);
           o->callback((Fl_Callback*)cb_Delete);
         } // Fl_Button* o
-        { Fl_Group* o = new Fl_Group(217, 531, 403, 121, "Layer Properties");
+        { Fl_Group* o = new Fl_Group(217, 531, 608, 121, "Layer Properties");
           o->box(FL_BORDER_FRAME);
           o->color((Fl_Color)36);
           o->selection_color((Fl_Color)30);
@@ -1261,7 +1285,7 @@ AnimataUI::AnimataUI() {
           o->labelsize(12);
           o->labelcolor((Fl_Color)3);
           o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-          { layerName = new Fl_Input(272, 558, 250, 20, "Name: ");
+          { layerName = new Fl_Input(259, 558, 250, 20, "Name: ");
             layerName->box(FL_BORDER_BOX);
             layerName->color((Fl_Color)30);
             layerName->selection_color((Fl_Color)30);
@@ -1272,7 +1296,7 @@ AnimataUI::AnimataUI() {
             layerName->callback((Fl_Callback*)cb_layerName);
             layerName->when(FL_WHEN_CHANGED);
           } // Fl_Input* layerName
-          { layerAlpha = new Fl_Value_Slider(272, 581, 200, 20, "Alpha: ");
+          { layerAlpha = new Fl_Value_Slider(259, 581, 200, 20, "Alpha: ");
             layerAlpha->type(1);
             layerAlpha->box(FL_BORDER_BOX);
             layerAlpha->color((Fl_Color)30);
@@ -1284,7 +1308,7 @@ AnimataUI::AnimataUI() {
             layerAlpha->callback((Fl_Callback*)cb_layerAlpha);
             layerAlpha->align(Fl_Align(FL_ALIGN_LEFT));
           } // Fl_Value_Slider* layerAlpha
-          { layerVisible = new Fl_Check_Button(471, 581, 51, 20, "Visible");
+          { layerVisible = new Fl_Check_Button(458, 581, 51, 20, "Visible");
             layerVisible->box(FL_BORDER_BOX);
             layerVisible->down_box(FL_BORDER_BOX);
             layerVisible->value(1);
@@ -1294,35 +1318,35 @@ AnimataUI::AnimataUI() {
             layerVisible->labelcolor(FL_BACKGROUND2_COLOR);
             layerVisible->callback((Fl_Callback*)cb_layerVisible);
           } // Fl_Check_Button* layerVisible
-          { Fl_Group* o = new Fl_Group(272, 604, 250, 20, "Position: ");
+          { Fl_Group* o = new Fl_Group(569, 558, 250, 20, "Position: ");
             o->box(FL_FLAT_BOX);
             o->color((Fl_Color)40);
             o->labelsize(10);
             o->labelcolor(FL_BACKGROUND2_COLOR);
             o->align(Fl_Align(FL_ALIGN_LEFT));
-            { layerX = new Fl_Value_Input(291, 604, 50, 20, "x: ");
-              layerX->box(FL_BORDER_BOX);
-              layerX->color((Fl_Color)30);
-              layerX->selection_color((Fl_Color)30);
-              layerX->labelsize(10);
-              layerX->labelcolor(FL_BACKGROUND2_COLOR);
-              layerX->textsize(10);
-              layerX->textcolor((Fl_Color)16);
-              layerX->callback((Fl_Callback*)cb_layerX);
-              layerX->when(FL_WHEN_ENTER_KEY);
-            } // Fl_Value_Input* layerX
-            { layerY = new Fl_Value_Input(375, 604, 50, 20, "y: ");
-              layerY->box(FL_BORDER_BOX);
-              layerY->color((Fl_Color)30);
-              layerY->selection_color((Fl_Color)30);
-              layerY->labelsize(10);
-              layerY->labelcolor(FL_BACKGROUND2_COLOR);
-              layerY->textsize(10);
-              layerY->textcolor((Fl_Color)16);
-              layerY->callback((Fl_Callback*)cb_layerY);
-              layerY->when(FL_WHEN_ENTER_KEY);
-            } // Fl_Value_Input* layerY
-            { layerDepth = new Fl_Value_Input(472, 604, 50, 20, "depth: ");
+            { layerPositionX = new Fl_Value_Input(588, 558, 50, 20, "x: ");
+              layerPositionX->box(FL_BORDER_BOX);
+              layerPositionX->color((Fl_Color)30);
+              layerPositionX->selection_color((Fl_Color)30);
+              layerPositionX->labelsize(10);
+              layerPositionX->labelcolor(FL_BACKGROUND2_COLOR);
+              layerPositionX->textsize(10);
+              layerPositionX->textcolor((Fl_Color)16);
+              layerPositionX->callback((Fl_Callback*)cb_layerPositionX);
+              layerPositionX->when(FL_WHEN_ENTER_KEY);
+            } // Fl_Value_Input* layerPositionX
+            { layerPositionY = new Fl_Value_Input(672, 558, 50, 20, "y: ");
+              layerPositionY->box(FL_BORDER_BOX);
+              layerPositionY->color((Fl_Color)30);
+              layerPositionY->selection_color((Fl_Color)30);
+              layerPositionY->labelsize(10);
+              layerPositionY->labelcolor(FL_BACKGROUND2_COLOR);
+              layerPositionY->textsize(10);
+              layerPositionY->textcolor((Fl_Color)16);
+              layerPositionY->callback((Fl_Callback*)cb_layerPositionY);
+              layerPositionY->when(FL_WHEN_ENTER_KEY);
+            } // Fl_Value_Input* layerPositionY
+            { layerDepth = new Fl_Value_Input(769, 558, 50, 20, "depth: ");
               layerDepth->box(FL_BORDER_BOX);
               layerDepth->color((Fl_Color)30);
               layerDepth->selection_color((Fl_Color)30);
@@ -1335,48 +1359,7 @@ AnimataUI::AnimataUI() {
             } // Fl_Value_Input* layerDepth
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(272, 627, 250, 20, "Rotation: ");
-            o->box(FL_FLAT_BOX);
-            o->color((Fl_Color)40);
-            o->labelsize(10);
-            o->labelcolor(FL_BACKGROUND2_COLOR);
-            o->align(Fl_Align(FL_ALIGN_LEFT));
-            { layerRotation = new Fl_Value_Input(291, 627, 50, 20, "\360\235\235\247: ");
-              layerRotation->box(FL_BORDER_BOX);
-              layerRotation->color((Fl_Color)30);
-              layerRotation->selection_color((Fl_Color)30);
-              layerRotation->labelsize(10);
-              layerRotation->labelcolor(FL_BACKGROUND2_COLOR);
-              layerRotation->textsize(10);
-              layerRotation->textcolor((Fl_Color)16);
-              layerRotation->callback((Fl_Callback*)cb_layerRotation);
-              layerRotation->when(FL_WHEN_ENTER_KEY);
-            } // Fl_Value_Input* layerRotation
-            { layerOffsetX = new Fl_Value_Input(375, 627, 50, 20, "Cx: ");
-              layerOffsetX->box(FL_BORDER_BOX);
-              layerOffsetX->color((Fl_Color)30);
-              layerOffsetX->selection_color((Fl_Color)30);
-              layerOffsetX->labelsize(10);
-              layerOffsetX->labelcolor(FL_BACKGROUND2_COLOR);
-              layerOffsetX->textsize(10);
-              layerOffsetX->textcolor((Fl_Color)16);
-              layerOffsetX->callback((Fl_Callback*)cb_layerOffsetX);
-              layerOffsetX->when(FL_WHEN_ENTER_KEY);
-            } // Fl_Value_Input* layerOffsetX
-            { layerOffsetY = new Fl_Value_Input(472, 627, 50, 20, "Cy: ");
-              layerOffsetY->box(FL_BORDER_BOX);
-              layerOffsetY->color((Fl_Color)30);
-              layerOffsetY->selection_color((Fl_Color)30);
-              layerOffsetY->labelsize(10);
-              layerOffsetY->labelcolor(FL_BACKGROUND2_COLOR);
-              layerOffsetY->textsize(10);
-              layerOffsetY->textcolor((Fl_Color)16);
-              layerOffsetY->callback((Fl_Callback*)cb_layerOffsetY);
-              layerOffsetY->when(FL_WHEN_ENTER_KEY);
-            } // Fl_Value_Input* layerOffsetY
-            o->end();
-          } // Fl_Group* o
-          { layerScale = new Fl_Value_Input(563, 604, 50, 20, "scale: ");
+          { layerScale = new Fl_Value_Input(259, 604, 50, 20, "scale: ");
             layerScale->box(FL_BORDER_BOX);
             layerScale->color((Fl_Color)30);
             layerScale->selection_color((Fl_Color)30);
@@ -1387,6 +1370,88 @@ AnimataUI::AnimataUI() {
             layerScale->callback((Fl_Callback*)cb_layerScale);
             layerScale->when(FL_WHEN_ENTER_KEY);
           } // Fl_Value_Input* layerScale
+          { Fl_Group* o = new Fl_Group(569, 604, 250, 20, "Rotation: ");
+            o->box(FL_FLAT_BOX);
+            o->color((Fl_Color)40);
+            o->labelsize(10);
+            o->labelcolor(FL_BACKGROUND2_COLOR);
+            o->align(Fl_Align(FL_ALIGN_LEFT));
+            { layerRotationX = new Fl_Value_Input(588, 604, 50, 20, "x: ");
+              layerRotationX->box(FL_BORDER_BOX);
+              layerRotationX->color((Fl_Color)30);
+              layerRotationX->selection_color((Fl_Color)30);
+              layerRotationX->labelsize(10);
+              layerRotationX->labelcolor(FL_BACKGROUND2_COLOR);
+              layerRotationX->textsize(10);
+              layerRotationX->textcolor((Fl_Color)16);
+              layerRotationX->callback((Fl_Callback*)cb_layerRotationX);
+              layerRotationX->when(FL_WHEN_ENTER_KEY);
+            } // Fl_Value_Input* layerRotationX
+            { layerRotationY = new Fl_Value_Input(672, 604, 50, 20, "y: ");
+              layerRotationY->box(FL_BORDER_BOX);
+              layerRotationY->color((Fl_Color)30);
+              layerRotationY->selection_color((Fl_Color)30);
+              layerRotationY->labelsize(10);
+              layerRotationY->labelcolor(FL_BACKGROUND2_COLOR);
+              layerRotationY->textsize(10);
+              layerRotationY->textcolor((Fl_Color)16);
+              layerRotationY->callback((Fl_Callback*)cb_layerRotationY);
+              layerRotationY->when(FL_WHEN_ENTER_KEY);
+            } // Fl_Value_Input* layerRotationY
+            { layerRotationZ = new Fl_Value_Input(769, 604, 50, 20, "z: ");
+              layerRotationZ->box(FL_BORDER_BOX);
+              layerRotationZ->color((Fl_Color)30);
+              layerRotationZ->selection_color((Fl_Color)30);
+              layerRotationZ->labelsize(10);
+              layerRotationZ->labelcolor(FL_BACKGROUND2_COLOR);
+              layerRotationZ->textsize(10);
+              layerRotationZ->textcolor((Fl_Color)16);
+              layerRotationZ->callback((Fl_Callback*)cb_layerRotationZ);
+              layerRotationZ->when(FL_WHEN_ENTER_KEY);
+            } // Fl_Value_Input* layerRotationZ
+            o->end();
+          } // Fl_Group* o
+          { Fl_Group* o = new Fl_Group(569, 581, 250, 20, "Offset: ");
+            o->box(FL_FLAT_BOX);
+            o->color((Fl_Color)40);
+            o->labelsize(10);
+            o->labelcolor(FL_BACKGROUND2_COLOR);
+            o->align(Fl_Align(FL_ALIGN_LEFT));
+            { layerOffsetX = new Fl_Value_Input(588, 581, 50, 20, "x: ");
+              layerOffsetX->box(FL_BORDER_BOX);
+              layerOffsetX->color((Fl_Color)30);
+              layerOffsetX->selection_color((Fl_Color)30);
+              layerOffsetX->labelsize(10);
+              layerOffsetX->labelcolor(FL_BACKGROUND2_COLOR);
+              layerOffsetX->textsize(10);
+              layerOffsetX->textcolor((Fl_Color)16);
+              layerOffsetX->callback((Fl_Callback*)cb_layerOffsetX);
+              layerOffsetX->when(FL_WHEN_ENTER_KEY);
+            } // Fl_Value_Input* layerOffsetX
+            { layerOffsetY = new Fl_Value_Input(672, 581, 50, 20, "y: ");
+              layerOffsetY->box(FL_BORDER_BOX);
+              layerOffsetY->color((Fl_Color)30);
+              layerOffsetY->selection_color((Fl_Color)30);
+              layerOffsetY->labelsize(10);
+              layerOffsetY->labelcolor(FL_BACKGROUND2_COLOR);
+              layerOffsetY->textsize(10);
+              layerOffsetY->textcolor((Fl_Color)16);
+              layerOffsetY->callback((Fl_Callback*)cb_layerOffsetY);
+              layerOffsetY->when(FL_WHEN_ENTER_KEY);
+            } // Fl_Value_Input* layerOffsetY
+            { layerOffsetZ = new Fl_Value_Input(769, 581, 50, 20, "depth: ");
+              layerOffsetZ->box(FL_BORDER_BOX);
+              layerOffsetZ->color((Fl_Color)30);
+              layerOffsetZ->selection_color((Fl_Color)30);
+              layerOffsetZ->labelsize(10);
+              layerOffsetZ->labelcolor(FL_BACKGROUND2_COLOR);
+              layerOffsetZ->textsize(10);
+              layerOffsetZ->textcolor((Fl_Color)16);
+              layerOffsetZ->callback((Fl_Callback*)cb_layerOffsetZ);
+              layerOffsetZ->when(FL_WHEN_ENTER_KEY);
+            } // Fl_Value_Input* layerOffsetZ
+            o->end();
+          } // Fl_Group* o
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(111, 531, 100, 121, "Rotation");
@@ -1411,7 +1476,7 @@ AnimataUI::AnimataUI() {
           o->callback((Fl_Callback*)cb_Create, (void*)(ANIMATA_MODE_LAYER_OFFSET));
           o->when(FL_WHEN_CHANGED);
         } // Fl_Button* o
-        { Fl_Button* o = new Fl_Button(116, 581, 90, 20, "Rotate");
+        { Fl_Button* o = new Fl_Button(116, 581, 90, 20, "Rotate XY");
           o->tooltip("(S)");
           o->type(102);
           o->box(FL_BORDER_BOX);
@@ -1421,7 +1486,20 @@ AnimataUI::AnimataUI() {
           o->selection_color((Fl_Color)3);
           o->labelsize(10);
           o->labelcolor(FL_BACKGROUND2_COLOR);
-          o->callback((Fl_Callback*)cb_Create, (void*)(ANIMATA_MODE_LAYER_ROTATE));
+          o->callback((Fl_Callback*)cb_Create, (void*)(ANIMATA_MODE_LAYER_ROTATE_XY));
+          o->when(FL_WHEN_CHANGED);
+        } // Fl_Button* o
+        { Fl_Button* o = new Fl_Button(116, 604, 90, 20, "Rotate Z");
+          o->tooltip("(S)");
+          o->type(102);
+          o->box(FL_BORDER_BOX);
+          o->shortcut(0x73);
+          o->down_box(FL_BORDER_BOX);
+          o->color((Fl_Color)30);
+          o->selection_color((Fl_Color)3);
+          o->labelsize(10);
+          o->labelcolor(FL_BACKGROUND2_COLOR);
+          o->callback((Fl_Callback*)cb_Create, (void*)(ANIMATA_MODE_LAYER_ROTATE_Z));
           o->when(FL_WHEN_CHANGED);
         } // Fl_Button* o
         o->resizable(NULL);
