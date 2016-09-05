@@ -888,7 +888,7 @@ void AnimataWindow::handleMouseMotion(void)
 
 void AnimataWindow::handleMouseDrag(void)
 {
-    Vector2D mouse(Fl::event_x(), Fl::event_y());
+    mouse.set(Fl::event_x(), Fl::event_y());
 
     dragging = true;
 //    Vector2D dragTrans = transformMouseToWorld(dragMouse);

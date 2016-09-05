@@ -61,7 +61,6 @@ Playback::~Playback()
  */
 void Playback::draw()
 {
-    printf("Playback::draw()\n");
     if (!valid()) {
         AnimataWindow::setupOpenGL();
         camera->setSize(Vector2D(w(), h()));
@@ -93,7 +92,6 @@ void Playback::draw()
  */
 int Playback::handle(int event)
 {
-    printf("Playback::handle\n");
     switch(event) {
         case FL_PUSH:
             if(Fl::event_button() == FL_LEFT_MOUSE)
