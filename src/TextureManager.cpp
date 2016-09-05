@@ -216,8 +216,7 @@ void TextureManager::draw(int mode)
                 glPopMatrix();
             }
         }
-        glPopName();
-        glDisable(GL_TEXTURE_2D);
     }
+    glPopName();
+    glDisable(GL_TEXTURE_2D);
 }
-
