@@ -1,9 +1,9 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0303 
-header_name {.h} 
+version 1.0304
+header_name {.h}
 code_name {.cpp}
 decl {class Fl_Eval_Slider;} {public local
-} 
+}
 
 class AnimataUI {open
 } {
@@ -252,7 +252,7 @@ o->clear();}
         }
         Fl_Group {} {
           label {&3 Skeleton} open
-          tooltip {Create the skeleton in this tab.} xywh {0 525 2048 135} box FLAT_BOX color 30 selection_color 30 labelsize 11 labelcolor 7
+          tooltip {Create the skeleton in this tab.} xywh {0 525 2048 135} box FLAT_BOX color 30 selection_color 30 labelsize 11 labelcolor 7 hide
           code0 {o->resizable(NULL);}
         } {
           Fl_Button {} {
@@ -419,7 +419,7 @@ o->clear();}
               Fl_Button {} {
                 label Detach
                 callback {editorBox->detachVertices();
-o->clear();} selected
+o->clear();}
                 tooltip {(SHIFT+D)} xywh {266 627 100 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x10064 color 30 selection_color 3 labelsize 10 labelcolor 7
               }
             }
@@ -680,24 +680,9 @@ editorBox->setLayerPrefsFromUI(PREFS_LAYER_OFFSET_Z, &tempStorage);}
         } {}
         Fl_Group {} {
           label {&7 View} open
-          tooltip {Set up views in this tab.} xywh {0 525 2048 136} box BORDER_BOX color 30 selection_color 30 labelsize 11 labelcolor 7 hide
+          tooltip {Set up views in this tab.} xywh {0 525 2048 136} box BORDER_BOX color 30 selection_color 30 labelsize 11 labelcolor 7
           code0 {o->resizable(NULL);}
         } {
-          Fl_Check_Button playback_show_hide {
-            label {show / hide output}
-            callback {if(o->value())
-{
-  //playback->border(0); 
-  playback->show();
-  //playback->set_visible();
-}
-else
-{
-  playback->hide();
-  //playback->clear_visible();
-}}
-            tooltip {(S)} xywh {230 550 125 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 12 labelcolor 7
-          }
           Fl_Group {} {
             label Editor
             xywh {15 531 100 121} box BORDER_FRAME color 36 labelfont 1 labelsize 12 labelcolor 3 align 21
@@ -787,6 +772,31 @@ else
               private xywh {135 622 65 25} down_box BORDER_BOX value 1 color 30 selection_color 3 labelsize 10 labelcolor 7
               code0 {o->do_callback();}
             }
+          }
+          Fl_Value_Slider playback_alpha {
+            label {Alpha: }
+            callback {playback->setOpacity(o->value());}
+            xywh {269 552 200 20} type Horizontal box BORDER_BOX color 30 selection_color 3 labelsize 10 labelcolor 7 align 4 step 0.001 value 1 textcolor 16
+          }
+          Fl_Check_Button playback_show_hide {
+            label Visible
+            callback {if(o->value())
+{
+  //playback->border(0); 
+  playback->show();
+  //playback->set_visible();
+}
+else
+{
+  playback->hide();
+  //playback->clear_visible();
+}}
+            tooltip {(s)} xywh {468 552 51 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7
+          }
+          Fl_Check_Button playback_fullscreen {
+            label {Full Screen}
+            callback {playback->setFullscreen(o->value());} selected
+            tooltip {(s)} xywh {518 552 71 20} box BORDER_BOX down_box BORDER_BOX shortcut 0x73 color 30 selection_color 3 labelsize 10 labelcolor 7
           }
         }
       }
@@ -971,7 +981,7 @@ if(subLayers)
   }
   decl {union { int i; float f; const char *str; } tempStorage /* temporary storage space for returning values as void * */;} {private local
   }
-} 
+}
 
 class Fl_Eval_Slider {: {public Fl_Slider}
 } {
@@ -1062,4 +1072,4 @@ textcolor_ = FL_FOREGROUND_COLOR;} {}
   Function {value(float f)} {} {
     code {Fl_Slider::value(evalinv(f));} {}
   }
-} 
+}

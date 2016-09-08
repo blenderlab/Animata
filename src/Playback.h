@@ -73,6 +73,8 @@ public:
 
     void show();
     void hide();
+    void setFullscreen(bool state);
+    void setOpacity(float alpha);
 
     /**
      * Returns the camera of the playback window.

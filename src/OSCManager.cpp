@@ -43,7 +43,7 @@ OSCListener::~OSCListener()
 }
 
 void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
-        const IpEndpointName& remoteEndpoint)
+                                 const IpEndpointName& remoteEndpoint)
 {
     if (!rootLayer) {
         return;
@@ -548,6 +548,18 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
                     << "layer is not found" << "\n";
             }
             unlock();
+        }
+        else if (strcmp(m.AddressPattern(), "/opacity") == 0) {
+            osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
+            float val;
+            args >> val >> osc::EndMessage;
+
+            // filter out NaNs
+            if (val != val)
+                return;
+
+            ui->playback->setOpacity(val);
+            ui->playback_alpha->value(val);
         }
     }
     catch (osc::Exception& e) {

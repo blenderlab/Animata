@@ -23,6 +23,8 @@
 
 #include "Playback.h"
 #include "animataUI.h"
+#include <FL/x.H>
+#include <FL/Fl_Window.H>
 
 using namespace Animata;
 
@@ -98,17 +100,9 @@ int Playback::handle(int event)
                 return 1;
         case FL_KEYUP:
             if(Fl::event_key() == 32) {
-                if(fullscreen) {
-                    Fl_Window::fullscreen_off(ox, oy, ow, oh);
-                }
-                else {
-                    ox = this->x();
-                    oy = this->y();
-                    ow = this->w();
-                    oh = this->h();
-                    Fl_Window::fullscreen();
-                }
-                fullscreen = !fullscreen;
+                setFullscreen(!fullscreen);
+                // set ui toggle
+                ui->playback_fullscreen->value(fullscreen);
             }
             return 1;
             break;
@@ -137,6 +131,15 @@ void Playback::show()
     Fl_Gl_Window::show();
 }
 
+void Playback::setOpacity(float alpha)
+{
+    if (alpha > 1.0f)
+        alpha = 1.0f;
+    else if (alpha < 0.0f)
+        alpha = 0.0f;
+    this->set_opacity(alpha);
+}
+
 /**
  * Overrides Fl_Gl_Window::hide() so the opengl context wont be destroyed.
  * If the context is destroyed, the editor context also stops on Mac OSX.
@@ -144,5 +147,22 @@ void Playback::show()
 void Playback::hide()
 {
     Fl_Window::hide();
+}
+
+void Playback::setFullscreen(bool state)
+{
+    if (state == fullscreen)
+        return;
+    if (fullscreen) {
+        Fl_Window::fullscreen_off(ox, oy, ow, oh);
+    }
+    else {
+        ox = this->x();
+        oy = this->y();
+        ow = this->w();
+        oh = this->h();
+        Fl_Window::fullscreen();
+    }
+    fullscreen = !fullscreen;
 }
 
