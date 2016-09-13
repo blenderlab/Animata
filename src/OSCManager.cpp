@@ -549,6 +549,55 @@ void OSCListener::ProcessMessage(const osc::ReceivedMessage& m,
             }
             unlock();
         }
+        else if (strcmp(m.AddressPattern(), "/layer/scale") == 0) {
+            osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
+            const char *namePattern;
+            float val;
+            args >> namePattern >> val >> osc::EndMessage;
+
+            // filter out NaNs
+            if (val != val)
+                return;
+
+            // get all layers
+            lock();
+            vector<Layer *> *layers = ui->editorBox->getAllLayers();
+
+            int found = 0;
+            // try to find exact match for layer names first
+            vector<Layer *>::iterator l = layers->begin();
+            for (; l < layers->end(); l++) {
+                const char *layerName = (*l)->getName();
+                    // skip unnamed layers
+                if (layerName[0] == 0)
+                    continue;
+                if (strcmp(layerName, namePattern) == 0) {
+                    (*l)->setScale(val);
+                    found = 1;
+                }
+            }
+
+                // if exact match is not found try regular expression match
+            if (!found) {
+                vector<Layer *>::iterator l = layers->begin();
+                for (; l < layers->end(); l++) {
+                    const char *layerName = (*l)->getName();
+                        // skip unnamed layers
+                    if (layerName[0] == 0)
+                        continue;
+                    if (patternMatch(layerName, namePattern)) {
+                        (*l)->setScale(val);
+                        found = 1;
+                    }
+                }
+            }
+
+            if (!found) {
+                cerr << "OSC error: " << m.AddressPattern() << ": "
+                << "layer is not found" << "\n";
+            }
+            unlock();
+        }
         else if (strcmp(m.AddressPattern(), "/opacity") == 0) {
             osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
             float val;
