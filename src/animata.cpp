@@ -1262,6 +1262,16 @@ void loadFileAtStartup(void *filename)
     ui->editorBox->setFilename((char*)filename);
 }
 
+void playbackWindow_show(void *nothing)
+{
+    ui->playback->show();
+}
+
+void playbackWindow_fullscreen(void *nothing)
+{
+    ui->playback->setFullscreen(true);
+}
+
 void init(void)
 {
     Fl::add_timeout(1.0, timerCallback);
@@ -1269,6 +1279,7 @@ void init(void)
 
 int main(int argc, char **argv)
 {
+    int abort = 0;
     ui = new AnimataUI();
     ui->editorBox->startup();
     ui->show();
@@ -1278,16 +1289,55 @@ int main(int argc, char **argv)
     init();
 
     /* load file if there's a command line argument */
-    if (argc > 1) {
+    if (argc > 1 && argv[1][0] != '-') {
         /* FIXME: loading file after fltk's mainloop has started, so opengl
          * gets initialised, otherwise textures can't be uploaded */
         Fl::add_timeout(0.1, loadFileAtStartup, argv[1]);
     }
+    if (argc > 1) {
+        // parse property names
+        for (int i = 1; i < argc; i++) {
+            if (strcmp(argv[i], "--file")==0 && (++i < argc)) {
+                Fl::add_timeout(0.1, loadFileAtStartup, argv[i]);
+            }
+            else if (strcmp(argv[i], "--ui")==0 && (i+4 < argc)) {
+                int x, y, w, h;
+                x = atoi(argv[++i]);
+                y = atoi(argv[++i]);
+                w = atoi(argv[++i]);
+                h = atoi(argv[++i]);
+                ui->resize(x, y, w, h);
+            }
+            else if (strcmp(argv[i], "--playback")==0 && (i+4 < argc)) {
+                int x, y, w, h;
+                x = atoi(argv[++i]);
+                y = atoi(argv[++i]);
+                w = atoi(argv[++i]);
+                h = atoi(argv[++i]);
+                ui->playback->resize(x, y, w, h);
+            }
+            else if (strcmp(argv[i], "--show-playback")==0) {
+                Fl::add_timeout(0.1, playbackWindow_show, 0);
+            }
+            else if (strcmp(argv[i], "--fullscreen")==0) {
+                Fl::add_timeout(0.1, playbackWindow_fullscreen, 0);
+            }
+            else if (strcmp(argv[i], "-h")==0 || strcmp(argv[i], "--help")==0) {
+                std::cout << "Command-line options for Animata:" << std::endl;
+                std::cout << "  --file <filename>           Animata model to load" << std::endl;
+                std::cout << "  --ui <x> <y> <w> <h>        position and dimensions of main window" << std::endl;
+                std::cout << "  --playback <x> <y> <w> <h>  position and dimensions of playback window" << std::endl;
+                std::cout << "  --show-playback             show playback window on load" << std::endl;
+                std::cout << "  --fullscreen                make playback window fullscreen on load" << std::endl;
+                abort = 1;
+            }
+        }
+    }
 
-    Fl::run();
+    if (!abort)
+        Fl::run();
 
     delete ui;
-
     return 0;
 }
 
